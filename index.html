@@ -1498,22 +1498,7 @@
                             <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5 0zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                         </svg>
                     </button>
-                    <div class="calendar-dropdown" id="calendar-${pattern.id}">
-                        <div class="calendar-header">
-                            <button class="calendar-nav-btn" onclick="navigateCalendar(${pattern.id}, -1)">
-                                <svg fill="currentColor" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-                                </svg>
-                            </button>
-                            <div class="calendar-month-year" id="calendar-header-${pattern.id}"></div>
-                            <button class="calendar-nav-btn" onclick="navigateCalendar(${pattern.id}, 1)">
-                                <svg fill="currentColor" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="calendar-grid" id="calendar-grid-${pattern.id}"></div>
-                    </div>
+                    
                 </div>
                 
                 <div class="pattern-input-group">
@@ -1647,32 +1632,69 @@
 		  if (e.key === 'Enter') { e.preventDefault(); saveDatePattern(id); }
 		  if (e.key === 'Escape') { e.preventDefault(); e.target.blur(); }
 		}
-        
+
+		// 캘린더 드롭다운을 동적으로 생성하는 함수
+		function createCalendarDropdown(id) {
+		    const container = document.getElementById('calendar-container');
+		    
+		    // 기존 캘린더가 있으면 제거
+		    const existingCalendar = document.getElementById(`calendar-${id}`);
+		    if (existingCalendar) {
+		        existingCalendar.remove();
+		    }
+		    
+		    const calendarDiv = document.createElement('div');
+		    calendarDiv.className = 'calendar-dropdown';
+		    calendarDiv.id = `calendar-${id}`;
+		    calendarDiv.innerHTML = `
+		        <div class="calendar-header">
+		            <button class="calendar-nav-btn" onclick="navigateCalendar(${id}, -1)">
+		                <svg fill="currentColor" viewBox="0 0 16 16">
+		                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+		                </svg>
+		            </button>
+		            <div class="calendar-month-year" id="calendar-header-${id}"></div>
+		            <button class="calendar-nav-btn" onclick="navigateCalendar(${id}, 1)">
+		                <svg fill="currentColor" viewBox="0 0 16 16">
+		                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+		                </svg>
+		            </button>
+		        </div>
+		        <div class="calendar-grid" id="calendar-grid-${id}"></div>
+		    `;
+		    
+		    container.appendChild(calendarDiv);
+		    return calendarDiv;
+		}
+		
         // 날짜 입력 키 핸들링
         function toggleCalendar(id) {
-		  const calendar = document.getElementById(`calendar-${id}`);
-		  const wasVisible = calendar.classList.contains('show');
-
-		  // 모든 캘린더 닫기
-		  document.querySelectorAll('.calendar-dropdown').forEach(cal => cal.classList.remove('show'));
-
-		  if (!wasVisible) {
-			activeCalendar = id;
-			const pattern = patterns.find(p => p.id === id);
-
-			// 기준 날짜 세팅
-			if (pattern?.date && validateDateFormat(pattern.date)) {
-			  currentCalendarDate = parseYYMMDDToDate(pattern.date);
-			} else {
-			  currentCalendarDate = new Date();
-			}
-			renderCalendar(id);
-
-			// 중앙에 띄우기
-			calendar.classList.add('show');
-		  } else {
-			activeCalendar = null;
-		  }
+		    // 모든 캘린더 닫기
+		    document.querySelectorAll('.calendar-dropdown').forEach(cal => cal.classList.remove('show'));
+		    
+		    // 기존에 열린 캘린더가 있는지 확인
+		    const wasVisible = activeCalendar === id;
+		
+		    if (!wasVisible) {
+		        activeCalendar = id;
+		        const pattern = patterns.find(p => p.id === id);
+		
+		        // 캘린더 동적 생성
+		        const calendar = createCalendarDropdown(id);
+		
+		        // 기준 날짜 세팅
+		        if (pattern?.date && validateDateFormat(pattern.date)) {
+		            currentCalendarDate = parseYYMMDDToDate(pattern.date);
+		        } else {
+		            currentCalendarDate = new Date();
+		        }
+		        renderCalendar(id);
+		
+		        // 화면 중앙에 띄우기
+		        calendar.classList.add('show');
+		    } else {
+		        activeCalendar = null;
+		    }
 		}
 
         
