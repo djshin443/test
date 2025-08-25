@@ -25,6 +25,10 @@
     height: auto;
 }
 
+.logo-text {
+    position: relative;
+}
+
 .logo-text::before {
     content: '';
     position: absolute;
