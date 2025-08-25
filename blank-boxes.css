@@ -1,0 +1,34 @@
+/* ===================================
+   BLANK BOXES ([] CONVERSION)
+   =================================== */
+.blank-box {
+    display: inline-block;
+    height: 30px;
+    border: 2px solid var(--primary);
+    border-radius: 6px;
+    margin: 0 4px;
+    vertical-align: middle;
+    background: white;
+    position: relative;
+}
+
+/* Blank Box Size Variants */
+.blank-box.space-1 {
+    width: 50px; /* [] */
+}
+
+.blank-box.space-2 {
+    width: 80px; /* [ ] */
+}
+
+.blank-box.space-3 {
+    width: 110px; /* [   ] */
+}
+
+.blank-box.space-4 {
+    width: 140px; /* [     ] */
+}
+
+.blank-box.space-5-plus {
+    width: 170px; /* [       ] 이상 */
+}
