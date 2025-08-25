@@ -1,0 +1,75 @@
+/* ===================================
+   RESPONSIVE DESIGN & PRINT STYLES
+   =================================== */
+
+/* Print & Export Styles */
+@media print, screen {
+    .calendar-btn.hide-for-export {
+        display: none !important;
+    }
+}
+
+@media print {
+    body {
+        background: white;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .wrapper {
+        display: block;
+    }
+    
+    .control-panel {
+        display: none !important;
+    }
+    
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+    }
+    
+    .patterns-grid {
+        overflow-y: visible;
+        max-height: none;
+    }
+}
+
+/* Tablet Breakpoint */
+@media (max-width: 1200px) {
+    .wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .control-panel {
+        position: static;
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+/* Mobile Breakpoint */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        min-height: auto;
+        border-radius: 16px;
+    }
+    
+    .poster {
+        padding: 30px;
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+    }
+    
+    .pattern-input,
+    .pattern-display {
+        font-size: 1.25rem;
+    }
+}
