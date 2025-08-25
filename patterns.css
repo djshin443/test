@@ -1,1 +1,295 @@
+/* ===================================
+   PATTERN GRID & CARD SYSTEM
+   =================================== */
 
+/* Pattern Grid */
+.patterns-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+    max-height: calc(100% - 300px);
+}
+
+/* Pattern Cards Base */
+.pattern-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 50px 28px 24px 28px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Pattern Card Size Variants */
+.pattern-card.size-small {
+    min-height: 140px;
+}
+
+.pattern-card.size-medium {
+    min-height: 160px;
+}
+
+.pattern-card.size-large {
+    min-height: 180px;
+}
+
+.pattern-card.size-xl {
+    min-height: 220px;
+}
+
+/* Pattern Card Hover Effects */
+.pattern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    header: 4px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.pattern-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.pattern-card:hover::before {
+    transform: scaleX(1);
+}
+
+.pattern-card.editing {
+    background: white;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Examples Hidden State */
+.pattern-card.examples-hidden {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.pattern-card.examples-hidden .pattern-header {
+    display: none;
+}
+
+.pattern-card.examples-hidden .pattern-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+}
+
+.pattern-card.examples-hidden .pattern-label {
+    margin-bottom: 12px;
+}
+
+.pattern-card.examples-hidden.size-small {
+    min-height: 100px;
+}
+
+.pattern-card.examples-hidden.size-medium {
+    min-height: 110px;
+}
+
+.pattern-card.examples-hidden.size-large {
+    min-height: 120px;
+}
+
+.pattern-card.examples-hidden.size-xl {
+    min-height: 130px;
+}
+
+/* Pattern Header */
+.pattern-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    justify-content: space-between;
+}
+
+.pattern-card .pattern-header {
+    display: none;
+}
+
+.pattern-number {
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+}/* ===================================
+   PATTERN GRID & CARD SYSTEM
+   =================================== */
+
+/* Pattern Grid */
+.patterns-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+    max-height: calc(100% - 300px);
+}
+
+/* Pattern Cards Base */
+.pattern-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 50px 28px 24px 28px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Pattern Card Size Variants */
+.pattern-card.size-small {
+    min-height: 140px;
+}
+
+.pattern-card.size-medium {
+    min-height: 160px;
+}
+
+.pattern-card.size-large {
+    min-height: 180px;
+}
+
+.pattern-card.size-xl {
+    min-height: 220px;
+}
+
+/* Pattern Card Hover Effects */
+.pattern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.pattern-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.pattern-card:hover::before {
+    transform: scaleX(1);
+}
+
+.pattern-card.editing {
+    background: white;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Examples Hidden State */
+.pattern-card.examples-hidden {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.pattern-card.examples-hidden .pattern-header {
+    display: none;
+}
+
+.pattern-card.examples-hidden .pattern-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+}
+
+.pattern-card.examples-hidden .pattern-label {
+    margin-bottom: 12px;
+}
+
+.pattern-card.examples-hidden.size-small {
+    min-height: 100px;
+}
+
+.pattern-card.examples-hidden.size-medium {
+    min-height: 110px;
+}
+
+.pattern-card.examples-hidden.size-large {
+    min-height: 120px;
+}
+
+.pattern-card.examples-hidden.size-xl {
+    min-height: 130px;
+}
+
+/* Pattern Header */
+.pattern-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    justify-content: space-between;
+}
+
+.pattern-card .pattern-header {
+    display: none;
+}
+
+.pattern-number {
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+}
