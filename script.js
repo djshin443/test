@@ -21,7 +21,7 @@ function setFontSize(size) {
     document.getElementById('font-size-input').value = size.toFixed(1);
 
     // CSS 변수 업데이트
-    document.documentElement.style.setProperty('--current-font-size', size + 'rem');
+    document.documentElement.style.setProperty('--current-font-size', size);
 
     // 모든 패턴 카드 크기 재조정
     patterns.forEach(pattern => adjustCardSize(pattern.id));
