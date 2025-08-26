@@ -6,6 +6,140 @@ let currentCalendarDate = new Date();
 let currentFontSize = 1.0; // 기본 폰트 크기
 let selectedTextInfo = null; // 선택된 텍스트 정보
 let activeElement = null; // 현재 활성화된 요소
+let panelSelectedTextInfo = null; // 패널용 선택된 텍스트 정보
+
+// 텍스트 선택 감지 및 패널 업데이트
+document.addEventListener('mouseup', function(e) {
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    
+    // 패턴이나 예제 영역에서 선택했는지 확인
+    let targetElement = null;
+    let isValidTarget = false;
+    
+    if (selectedText && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const container = range.commonAncestorContainer;
+        
+        // 텍스트 노드의 부모를 찾거나 직접 요소를 찾기
+        if (container.nodeType === Node.TEXT_NODE) {
+            targetElement = container.parentElement;
+        } else {
+            targetElement = container;
+        }
+        
+        // 부모 요소들을 탐색하여 pattern-display나 examples-display 찾기
+        let currentElement = targetElement;
+        while (currentElement && currentElement !== document.body) {
+            if (currentElement.classList && 
+                (currentElement.classList.contains('pattern-display') || 
+                 currentElement.classList.contains('examples-display'))) {
+                targetElement = currentElement;
+                isValidTarget = true;
+                break;
+            }
+            currentElement = currentElement.parentElement;
+        }
+    }
+    
+    updateTextSelectionPanel(selectedText, selection, targetElement, isValidTarget);
+});
+
+function updateTextSelectionPanel(selectedText, selection, element, isValid) {
+    const infoDiv = document.getElementById('selected-text-info');
+    const previewDiv = document.getElementById('selected-text-preview');
+    const boldBtn = document.getElementById('bold-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const colorBtns = document.querySelectorAll('.color-btn');
+    
+    if (selectedText && isValid && selection.rangeCount > 0) {
+        // 선택된 텍스트가 있을 때
+        panelSelectedTextInfo = {
+            selection: selection,
+            range: selection.getRangeAt(0),
+            element: element,
+            text: selectedText
+        };
+        
+        infoDiv.style.display = 'block';
+        previewDiv.textContent = selectedText.length > 30 ? 
+            selectedText.substring(0, 30) + '...' : selectedText;
+        
+        // 버튼들 활성화
+        boldBtn.disabled = false;
+        clearBtn.disabled = false;
+        colorBtns.forEach(btn => {
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        });
+    } else {
+        // 선택된 텍스트가 없을 때
+        panelSelectedTextInfo = null;
+        infoDiv.style.display = 'none';
+        previewDiv.textContent = 'No text selected';
+        
+        // 버튼들 비활성화
+        boldBtn.disabled = true;
+        clearBtn.disabled = true;
+        colorBtns.forEach(btn => {
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+        });
+    }
+}
+
+// 패널에서 볼드 적용
+function applyBoldFromPanel() {
+    if (!panelSelectedTextInfo) return;
+    
+    const range = panelSelectedTextInfo.range;
+    const text = panelSelectedTextInfo.text;
+    
+    const span = document.createElement('span');
+    span.textContent = text;
+    span.classList.add('text-bold');
+    
+    range.deleteContents();
+    range.insertNode(span);
+    
+    updatePatternFromElement(panelSelectedTextInfo.element);
+    window.getSelection().removeAllRanges(); // 선택 해제
+    updateTextSelectionPanel('', null, null, false);
+}
+
+// 패널에서 색상 적용
+function applyColorFromPanel(color) {
+    if (!panelSelectedTextInfo) return;
+    
+    const range = panelSelectedTextInfo.range;
+    const text = panelSelectedTextInfo.text;
+    
+    const span = document.createElement('span');
+    span.textContent = text;
+    span.style.color = color;
+    
+    range.deleteContents();
+    range.insertNode(span);
+    
+    updatePatternFromElement(panelSelectedTextInfo.element);
+    window.getSelection().removeAllRanges(); // 선택 해제
+    updateTextSelectionPanel('', null, null, false);
+}
+
+// 패널에서 서식 제거
+function clearFormattingFromPanel() {
+    if (!panelSelectedTextInfo) return;
+    
+    const range = panelSelectedTextInfo.range;
+    const text = panelSelectedTextInfo.text;
+    
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+    
+    updatePatternFromElement(panelSelectedTextInfo.element);
+    window.getSelection().removeAllRanges(); // 선택 해제
+    updateTextSelectionPanel('', null, null, false);
+}
 
 // 폰트 크기 조절 함수
 function adjustFontSize(delta) {
@@ -25,93 +159,6 @@ function setFontSize(size) {
 
     // 모든 패턴 카드 크기 재조정
     patterns.forEach(pattern => adjustCardSize(pattern.id));
-}
-
-// 텍스트 서식 기능
-function showTextFormatMenu(event, element) {
-    event.preventDefault();
-
-    const selection = window.getSelection();
-    if (selection.toString().trim() === '') return;
-
-    selectedTextInfo = {
-        selection: selection,
-        range: selection.getRangeAt(0),
-        element: element,
-        text: selection.toString()
-    };
-
-    const menu = document.getElementById('text-format-menu');
-    menu.style.left = event.pageX + 'px';
-    menu.style.top = event.pageY + 'px';
-    menu.classList.add('show');
-
-    activeElement = element;
-}
-
-function hideTextFormatMenu() {
-    document.getElementById('text-format-menu').classList.remove('show');
-    document.getElementById('color-picker-section').classList.remove('show');
-    selectedTextInfo = null;
-    activeElement = null;
-}
-
-function applyBold() {
-    if (!selectedTextInfo) return;
-
-    applyFormatting('bold');
-    hideTextFormatMenu();
-}
-
-function toggleColorPicker() {
-    const colorSection = document.getElementById('color-picker-section');
-    colorSection.classList.toggle('show');
-}
-
-function applyColor(color) {
-    if (!selectedTextInfo) return;
-
-    applyFormatting('color', color);
-    hideTextFormatMenu();
-}
-
-function clearFormatting() {
-    if (!selectedTextInfo) return;
-
-    const range = selectedTextInfo.range;
-    const text = selectedTextInfo.text;
-
-    // 선택된 텍스트를 일반 텍스트로 교체
-    range.deleteContents();
-    range.insertNode(document.createTextNode(text));
-
-    // 패턴 데이터 업데이트
-    updatePatternFromElement(selectedTextInfo.element);
-    hideTextFormatMenu();
-}
-
-function applyFormatting(type, value = '') {
-    if (!selectedTextInfo) return;
-
-    const range = selectedTextInfo.range;
-    const text = selectedTextInfo.text;
-
-    // 새로운 span 요소 생성
-    const span = document.createElement('span');
-    span.textContent = text;
-
-    if (type === 'bold') {
-        span.classList.add('text-bold');
-    } else if (type === 'color') {
-        span.style.color = value;
-    }
-
-    // 선택된 텍스트를 새 span으로 교체
-    range.deleteContents();
-    range.insertNode(span);
-
-    // 패턴 데이터 업데이트
-    updatePatternFromElement(selectedTextInfo.element);
 }
 
 function updatePatternFromElement(element) {
@@ -412,26 +459,6 @@ function createPatternCard(pattern, number) {
             </div>
         </div>
     `;
-
-    // 컨텍스트 메뉴 이벤트 리스너 추가
-    const patternDisplay = card.querySelector('.pattern-display');
-    const examplesDisplay = card.querySelector('.examples-display');
-
-    if (patternDisplay) {
-        patternDisplay.addEventListener('contextmenu', (e) => {
-            if (!card.classList.contains('editing')) {
-                showTextFormatMenu(e, patternDisplay);
-            }
-        });
-    }
-
-    if (examplesDisplay) {
-        examplesDisplay.addEventListener('contextmenu', (e) => {
-            if (!card.classList.contains('editing')) {
-                showTextFormatMenu(e, examplesDisplay);
-            }
-        });
-    }
 
     return card;
 }
@@ -908,11 +935,6 @@ document.addEventListener('click', function(event) {
             activeCalendar = null;
         }
     }
-
-    // 텍스트 서식 메뉴 외부 클릭으로 닫기
-    if (!event.target.closest('.text-format-menu')) {
-        hideTextFormatMenu();
-    }
 });
 
 // 초기화 함수
@@ -941,7 +963,7 @@ if (document.readyState === 'loading') {
     initializeApp();
 }
 
-// 마우스 우클릭 방지
+// 우클릭 방지 (단순 방지만 유지)
 document.addEventListener('contextmenu', function(event) {
     event.preventDefault();
 });
@@ -984,12 +1006,21 @@ document.addEventListener('dragstart', function(event) {
     event.preventDefault();
 });
 
-// 선택 방지 (CSS로도 처리하지만 추가 보안)
+// 선택 방지 (CSS로도 처리하지만 추가 보안) - 단, 텍스트 선택은 허용
 document.addEventListener('selectstart', function(event) {
     // 입력 필드는 선택 허용
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
         return true;
     }
+    
+    // 패턴과 예제 영역에서는 텍스트 선택 허용
+    const isPatternDisplay = event.target.closest('.pattern-display');
+    const isExamplesDisplay = event.target.closest('.examples-display');
+    
+    if (isPatternDisplay || isExamplesDisplay) {
+        return true;
+    }
+    
     event.preventDefault();
     return false;
 });
