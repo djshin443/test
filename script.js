@@ -320,13 +320,17 @@ function validateDateFormat(dateStr) {
 }
 
 function updateDate() {
+    console.log('updateDate 함수 시작');
     const now = new Date();
+    
     const options = { month: 'short', day: 'numeric' };
     const dateStr = now.toLocaleDateString('en-US', options);
     const year = now.getFullYear();
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayName = dayNames[now.getDay()];
+    
     const formattedDate = `${dateStr}, ${year} - ${dayName}`;
+    console.log('생성된 날짜:', formattedDate);
     
     const updateBadge = () => {
         const badge = document.getElementById('date-badge');
@@ -334,16 +338,23 @@ function updateDate() {
             badge.textContent = formattedDate;
             console.log('날짜 배지 업데이트 성공:', formattedDate);
         } else {
-            console.log('date-badge 요소를 찾을 수 없음');
-            setTimeout(updateBadge, 1000);
+            console.error('date-badge 요소를 찾을 수 없음');
+            // DOM이 준비될 때까지 최대 5초 대기
+            setTimeout(() => {
+                const badgeRetry = document.getElementById('date-badge');
+                if (badgeRetry) {
+                    badgeRetry.textContent = formattedDate;
+                    console.log('재시도로 날짜 배지 업데이트 성공');
+                } else {
+                    console.error('재시도에도 date-badge를 찾을 수 없음');
+                }
+            }, 1000);
         }
     };
     
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', updateBadge);
-    } else {
-        updateBadge();
-    }
+    // 즉시 실행 및 지연 실행
+    updateBadge();
+    setTimeout(updateBadge, 500);
 }
 
 function processBlankBoxes(text, isTitle = false) {
@@ -421,7 +432,14 @@ function applyExamplesVisibility() {
 }
 
 function renderPatterns() {
+    console.log('renderPatterns 시작, patterns:', patterns);
     const grid = document.getElementById('patterns-grid');
+    
+    if (!grid) {
+        console.error('patterns-grid 요소를 찾을 수 없습니다');
+        return;
+    }
+    
     grid.innerHTML = '';
 
     if (patterns.length === 0) {
@@ -439,23 +457,31 @@ function renderPatterns() {
     }
 
     patterns.forEach((pattern, index) => {
+        console.log(`패턴 ${pattern.id} 생성 중...`);
         const card = createPatternCard(pattern, index + 1);
         grid.appendChild(card);
         
-        // 개별 폰트 크기 적용
-        if (pattern.fontSize) {
-            setPatternFontSize(pattern.id, pattern.fontSize);
-        }
+        // 개별 폰트 크기 적용 - 렌더링 후 적용
+        setTimeout(() => {
+            if (pattern.fontSize) {
+                setPatternFontSize(pattern.id, pattern.fontSize);
+            } else {
+                // 기본값 설정
+                setPatternFontSize(pattern.id, 1.0);
+            }
+        }, 50);
     });
 
+    // 예제 표시 상태 적용
     setTimeout(() => {
         applyExamplesVisibility();
+        console.log('패턴 렌더링 완료');
     }, 100);
 }
 
 function createPatternCard(pattern, number) {
     const card = document.createElement('div');
-    card.className = 'pattern-card';
+    card.className = 'pattern-card pattern-font-size-1-0'; // 기본 폰트 크기 클래스 추가
     card.id = `pattern-${pattern.id}`;
 
     const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
@@ -943,10 +969,27 @@ document.getElementById('save-modal-overlay').addEventListener('click', function
 function initializeApp() {
     console.log('앱 초기화 시작...');
     
+    // DOM 요소 존재 확인
+    const grid = document.getElementById('patterns-grid');
+    const dateBadge = document.getElementById('date-badge');
+    
+    console.log('patterns-grid 존재:', !!grid);
+    console.log('date-badge 존재:', !!dateBadge);
+    
+    // 날짜 업데이트
     updateDate();
+    
+    // 기본 폰트 크기 설정
     setFontSize(1.0);
+    
+    // 패턴 렌더링 (빈 상태)
     renderPatterns();
-    addPattern();
+    
+    // 첫 패턴 자동 추가
+    setTimeout(() => {
+        addPattern();
+        console.log('첫 패턴 추가 완료');
+    }, 100);
     
     console.log('앱 초기화 완료');
 }
