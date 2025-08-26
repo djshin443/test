@@ -3,17 +3,16 @@ let patternCounter = 0;
 let examplesVisible = false;
 let activeCalendar = null;
 let currentCalendarDate = new Date();
-let currentFontSize = 1.0; // 기본 폰트 크기
-let selectedTextInfo = null; // 선택된 텍스트 정보
-let activeElement = null; // 현재 활성화된 요소
-let panelSelectedTextInfo = null; // 패널용 선택된 텍스트 정보
+let currentFontSize = 1.0; // 전체 폰트 크기 (옵션)
+let selectedTextInfo = null;
+let activeElement = null;
+let panelSelectedTextInfo = null;
 
 // 텍스트 선택 감지 및 패널 업데이트
 document.addEventListener('mouseup', function(e) {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
     
-    // 패턴이나 예제 영역에서 선택했는지 확인
     let targetElement = null;
     let isValidTarget = false;
     
@@ -21,14 +20,12 @@ document.addEventListener('mouseup', function(e) {
         const range = selection.getRangeAt(0);
         const container = range.commonAncestorContainer;
         
-        // 텍스트 노드의 부모를 찾거나 직접 요소를 찾기
         if (container.nodeType === Node.TEXT_NODE) {
             targetElement = container.parentElement;
         } else {
             targetElement = container;
         }
         
-        // 부모 요소들을 탐색하여 pattern-display나 examples-display 찾기
         let currentElement = targetElement;
         while (currentElement && currentElement !== document.body) {
             if (currentElement.classList && 
@@ -53,10 +50,9 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
     const colorBtns = document.querySelectorAll('.color-btn');
     
     if (selectedText && isValid && selection.rangeCount > 0) {
-        // 선택된 텍스트가 있을 때
         panelSelectedTextInfo = {
             selection: selection,
-            range: selection.getRangeAt(0).cloneRange(), // 범위 복사
+            range: selection.getRangeAt(0).cloneRange(),
             element: element,
             text: selectedText
         };
@@ -65,27 +61,24 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
         previewDiv.textContent = selectedText.length > 30 ? 
             selectedText.substring(0, 30) + '...' : selectedText;
         
-        // 버튼들 활성화
         boldBtn.disabled = false;
         clearBtn.disabled = false;
         colorBtns.forEach(btn => {
             btn.style.opacity = '1';
             btn.style.cursor = 'pointer';
-            btn.style.pointerEvents = 'auto'; // 중요: 클릭 이벤트 활성화
+            btn.style.pointerEvents = 'auto';
         });
     } else {
-        // 선택된 텍스트가 없을 때
         panelSelectedTextInfo = null;
         infoDiv.style.display = 'none';
         previewDiv.textContent = 'No text selected';
         
-        // 버튼들 비활성화
         boldBtn.disabled = true;
         clearBtn.disabled = true;
         colorBtns.forEach(btn => {
             btn.style.opacity = '0.5';
             btn.style.cursor = 'not-allowed';
-            btn.style.pointerEvents = 'none'; // 클릭 이벤트 비활성화
+            btn.style.pointerEvents = 'none';
         });
     }
 }
@@ -101,7 +94,6 @@ function applyBoldFromPanel() {
         const range = panelSelectedTextInfo.range;
         const text = panelSelectedTextInfo.text;
         
-        // 새로운 선택 영역 재생성 (기존 선택이 사라질 수 있음)
         const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(range);
@@ -114,7 +106,7 @@ function applyBoldFromPanel() {
         range.insertNode(span);
         
         updatePatternFromElement(panelSelectedTextInfo.element);
-        selection.removeAllRanges(); // 선택 해제
+        selection.removeAllRanges();
         updateTextSelectionPanel('', null, null, false);
         
         console.log('볼드 포맷팅 적용 완료');
@@ -134,7 +126,6 @@ function applyColorFromPanel(color) {
         const range = panelSelectedTextInfo.range;
         const text = panelSelectedTextInfo.text;
         
-        // 새로운 선택 영역 재생성
         const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(range);
@@ -147,7 +138,7 @@ function applyColorFromPanel(color) {
         range.insertNode(span);
         
         updatePatternFromElement(panelSelectedTextInfo.element);
-        selection.removeAllRanges(); // 선택 해제
+        selection.removeAllRanges();
         updateTextSelectionPanel('', null, null, false);
         
         console.log('색상 포맷팅 적용 완료:', color);
@@ -167,7 +158,6 @@ function clearFormattingFromPanel() {
         const range = panelSelectedTextInfo.range;
         const text = panelSelectedTextInfo.text;
         
-        // 새로운 선택 영역 재생성
         const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(range);
@@ -176,7 +166,7 @@ function clearFormattingFromPanel() {
         range.insertNode(document.createTextNode(text));
         
         updatePatternFromElement(panelSelectedTextInfo.element);
-        selection.removeAllRanges(); // 선택 해제
+        selection.removeAllRanges();
         updateTextSelectionPanel('', null, null, false);
         
         console.log('서식 제거 완료');
@@ -185,7 +175,7 @@ function clearFormattingFromPanel() {
     }
 }
 
-// 폰트 크기 조절 함수
+// 전체 폰트 크기 조절 함수 (옵션)
 function adjustFontSize(delta) {
     const newSize = Math.max(0.5, Math.min(3.0, currentFontSize + delta));
     setFontSize(newSize);
@@ -197,16 +187,58 @@ function setFontSize(size) {
 
     currentFontSize = size;
     document.getElementById('font-size-input').value = size.toFixed(1);
-
-    // CSS 변수 업데이트
     document.documentElement.style.setProperty('--current-font-size', size);
 
-    // 모든 패턴 카드 크기 재조정
     patterns.forEach(pattern => adjustCardSize(pattern.id));
 }
 
+// 개별 패턴 글씨 크기 조절 함수
+function adjustPatternFontSize(patternId, delta) {
+    const pattern = patterns.find(p => p.id === patternId);
+    if (!pattern) return;
+    
+    if (!pattern.fontSize) pattern.fontSize = 1.0;
+    
+    const newSize = Math.max(0.5, Math.min(2.0, pattern.fontSize + delta));
+    setPatternFontSize(patternId, newSize);
+}
+
+function setPatternFontSize(patternId, size) {
+    const pattern = patterns.find(p => p.id === patternId);
+    const card = document.getElementById(`pattern-${patternId}`);
+    if (!pattern || !card) return;
+    
+    size = parseFloat(size);
+    if (isNaN(size) || size < 0.5 || size > 2.0) return;
+    
+    pattern.fontSize = size;
+    
+    // 기존 폰트 크기 클래스 제거
+    const fontSizeClasses = [
+        'pattern-font-size-0-5', 'pattern-font-size-0-6', 'pattern-font-size-0-7',
+        'pattern-font-size-0-8', 'pattern-font-size-0-9', 'pattern-font-size-1-0',
+        'pattern-font-size-1-1', 'pattern-font-size-1-2', 'pattern-font-size-1-3',
+        'pattern-font-size-1-4', 'pattern-font-size-1-5', 'pattern-font-size-1-6',
+        'pattern-font-size-1-7', 'pattern-font-size-1-8', 'pattern-font-size-1-9',
+        'pattern-font-size-2-0'
+    ];
+    
+    fontSizeClasses.forEach(cls => card.classList.remove(cls));
+    
+    // 새로운 폰트 크기 클래스 추가
+    const sizeStr = size.toFixed(1).replace('.', '-');
+    card.classList.add(`pattern-font-size-${sizeStr}`);
+    
+    // 표시 업데이트
+    const display = document.getElementById(`pattern-font-display-${patternId}`);
+    if (display) {
+        display.textContent = size.toFixed(1);
+    }
+    
+    adjustCardSize(patternId);
+}
+
 function updatePatternFromElement(element) {
-    // 요소의 ID에서 패턴 ID 추출
     const isPattern = element.classList.contains('pattern-display');
     const isExamples = element.classList.contains('examples-display');
 
@@ -220,7 +252,6 @@ function updatePatternFromElement(element) {
     const pattern = patterns.find(p => p.id === patternId);
     if (!pattern) return;
 
-    // HTML 내용을 패턴 데이터에 저장
     if (isPattern) {
         pattern.patternHTML = element.innerHTML;
     } else if (isExamples) {
@@ -228,18 +259,16 @@ function updatePatternFromElement(element) {
     }
 }
 
-// XSS 방지를 위한 HTML 이스케이프 함수
+// XSS 방지 함수들
 function escapeHTML(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// XSS 방지를 위한 입력값 검증 및 정화
 function sanitizeInput(input) {
     if (typeof input !== 'string') return '';
 
-    // 위험한 문자열 패턴 제거
     const dangerousPatterns = [
         /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
         /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
@@ -257,62 +286,48 @@ function sanitizeInput(input) {
         sanitized = sanitized.replace(pattern, '');
     });
 
-    // HTML 엔티티로 변환
-    return escapeHTML(sanitized).substring(0, 500); // 길이 제한도 적용
+    return escapeHTML(sanitized).substring(0, 500);
 }
 
-// 날짜 포맷팅 유틸리티 함수들
+// 날짜 관련 함수들
 function formatDateToYYMMDD(date) {
     const year = date.getFullYear().toString().slice(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
-
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const dayOfWeek = dayNames[date.getDay()];
-
     return `${year}.${month}.${day} (${dayOfWeek})`;
 }
 
 function parseYYMMDDToDate(dateStr) {
-    // 요일 부분 제거 - 괄호와 그 안의 내용을 제거
     const dateOnly = dateStr.split(' ')[0];
     const parts = dateOnly.split('.');
     if (parts.length !== 3) return new Date();
-
     const year = 2000 + parseInt(parts[0]);
     const month = parseInt(parts[1]) - 1;
     const day = parseInt(parts[2]);
-
     return new Date(year, month, day);
 }
 
 function validateDateFormat(dateStr) {
-    // 요일이 포함된 형식과 포함되지 않은 형식 둘 다 허용
     const regexWithDay = /^\d{2}.\d{2}.\d{2} \([A-Za-z]{3}\)$/;
     const regexWithoutDay = /^\d{2}.\d{2}.\d{2}$/;
-
     if (!regexWithDay.test(dateStr) && !regexWithoutDay.test(dateStr)) {
         return false;
     }
-
     const date = parseYYMMDDToDate(dateStr);
     return !isNaN(date.getTime());
 }
 
-// 날짜 업데이트 - 오늘 날짜로 변경 및 DOM 로드 후 확실히 실행
 function updateDate() {
     const now = new Date();
-    
-    // 영어 형식으로 포맷
     const options = { month: 'short', day: 'numeric' };
     const dateStr = now.toLocaleDateString('en-US', options);
     const year = now.getFullYear();
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayName = dayNames[now.getDay()];
-    
     const formattedDate = `${dateStr}, ${year} - ${dayName}`;
     
-    // DOM이 준비될 때까지 기다린 후 업데이트
     const updateBadge = () => {
         const badge = document.getElementById('date-badge');
         if (badge) {
@@ -320,12 +335,10 @@ function updateDate() {
             console.log('날짜 배지 업데이트 성공:', formattedDate);
         } else {
             console.log('date-badge 요소를 찾을 수 없음');
-            // 1초 후 다시 시도
             setTimeout(updateBadge, 1000);
         }
     };
     
-    // DOM이 로드되었는지 확인
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', updateBadge);
     } else {
@@ -333,37 +346,33 @@ function updateDate() {
     }
 }
 
-// 텍스트에서 [] 를 네모 박스로 변환 (공백 개수로 크기 결정) - XSS 방지 적용
 function processBlankBoxes(text, isTitle = false) {
     if (isTitle) {
-        return escapeHTML(text); // 제목에서는 HTML 이스케이프만 적용
+        return escapeHTML(text);
     }
 
-    // 먼저 입력값을 정화
     const sanitizedText = sanitizeInput(text);
 
-    // [공백들] 패턴을 찾아서 공백 개수에 따라 박스 크기 조절
     return sanitizedText.replace(/\[(\s*)\]/g, function(match, spaces) {
         const spaceCount = spaces.length;
         let sizeClass = '';
         
         if (spaceCount === 0) {
-            sizeClass = 'space-1'; // [] - 가장 작은 크기
+            sizeClass = 'space-1';
         } else if (spaceCount === 1) {
-            sizeClass = 'space-2'; // [ ] - 작은 크기
+            sizeClass = 'space-2';
         } else if (spaceCount === 2 || spaceCount === 3) {
-            sizeClass = 'space-3'; // [  ] 또는 [   ] - 중간 크기
+            sizeClass = 'space-3';
         } else if (spaceCount === 4 || spaceCount === 5) {
-            sizeClass = 'space-4'; // [    ] 또는 [     ] - 큰 크기
+            sizeClass = 'space-4';
         } else {
-            sizeClass = 'space-5-plus'; // 그 이상 - 가장 큰 크기
+            sizeClass = 'space-5-plus';
         }
         
         return `<span class="blank-box ${sizeClass}"></span>`;
     });
 }
 
-// 패턴 카드의 높이 자동 조절 (내용에 따라)
 function adjustCardSize(patternId) {
     const card = document.getElementById(`pattern-${patternId}`);
     const pattern = patterns.find(p => p.id === patternId);
@@ -372,7 +381,6 @@ function adjustCardSize(patternId) {
         return;
     }
 
-    // 기존 크기 클래스 제거
     card.classList.remove('size-small', 'size-medium', 'size-large', 'size-xl');
 
     const totalLength = (pattern.pattern || '').length + (pattern.examples || '').length;
@@ -391,7 +399,6 @@ function adjustCardSize(patternId) {
     card.classList.add(sizeClass);
 }
 
-// 예제 표시 상태 적용 함수
 function applyExamplesVisibility() {
     const examplesSections = document.querySelectorAll('.examples-section');
     const patternCards = document.querySelectorAll('.pattern-card');
@@ -418,7 +425,6 @@ function renderPatterns() {
     grid.innerHTML = '';
 
     if (patterns.length === 0) {
-        // 빈 상태 표시
         const emptyState = document.createElement('div');
         emptyState.style.textAlign = 'center';
         emptyState.style.padding = '60px';
@@ -436,26 +442,34 @@ function renderPatterns() {
         const card = createPatternCard(pattern, index + 1);
         grid.appendChild(card);
         
+        // 개별 폰트 크기 적용
+        if (pattern.fontSize) {
+            setPatternFontSize(pattern.id, pattern.fontSize);
+        }
     });
 
-    // 예제 표시 상태 적용
     setTimeout(() => {
         applyExamplesVisibility();
     }, 100);
 }
 
-// 패턴 카드 생성
 function createPatternCard(pattern, number) {
     const card = document.createElement('div');
     card.className = 'pattern-card';
     card.id = `pattern-${pattern.id}`;
 
-    // 패턴 텍스트 처리 - HTML이 있으면 사용, 없으면 [] 변환
     const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
     const processedExamples = pattern.examplesHTML || (pattern.examples ? processBlankBoxes(pattern.examples) : '');
 
     card.innerHTML = `
         <button class="pattern-delete-btn" onclick="deletePattern(${pattern.id})" title="Delete pattern">Del</button>
+        
+        <!-- 개별 패턴 글씨 크기 컨트롤 -->
+        <div class="pattern-font-controls">
+            <button class="pattern-font-btn" onclick="adjustPatternFontSize(${pattern.id}, -0.1)">-</button>
+            <div class="pattern-font-size-display" id="pattern-font-display-${pattern.id}">${(pattern.fontSize || 1.0).toFixed(1)}</div>
+            <button class="pattern-font-btn" onclick="adjustPatternFontSize(${pattern.id}, 0.1)">+</button>
+        </div>
         
         <!-- 날짜 입력 영역 -->
         <div class="pattern-date-section">
@@ -507,26 +521,21 @@ function createPatternCard(pattern, number) {
     return card;
 }
 
-// 패턴 편집
 function editPattern(id) {
     const card = document.getElementById(`pattern-${id}`);
     const input = document.getElementById(`pattern-input-${id}`);
-
     card.classList.add('editing');
     input.focus();
     input.select();
 }
 
-// 예시 편집
 function editExamples(id) {
     const card = document.getElementById(`pattern-${id}`);
     const textarea = document.getElementById(`examples-input-${id}`);
-
     card.classList.add('editing');
     textarea.focus();
 }
 
-// 패턴 저장
 function savePattern(id) {
     const card = document.getElementById(`pattern-${id}`);
     const input = document.getElementById(`pattern-input-${id}`);
@@ -539,7 +548,6 @@ function savePattern(id) {
     }
 }
 
-// 예시 저장
 function saveExamples(id) {
     const card = document.getElementById(`pattern-${id}`);
     const textarea = document.getElementById(`examples-input-${id}`);
@@ -552,7 +560,6 @@ function saveExamples(id) {
     }
 }
 
-// 패턴 입력 키 핸들링
 function handlePatternKeydown(event, id) {
     if (event.key === 'Enter') {
         event.preventDefault();
@@ -570,7 +577,6 @@ function handlePatternKeydown(event, id) {
     }
 }
 
-// 예시 입력 키 핸들링
 function handleExamplesKeydown(event, id) {
     if (event.key === 'Escape') {
         event.preventDefault();
@@ -585,7 +591,6 @@ function handleExamplesKeydown(event, id) {
     }
 }
 
-// 날짜 저장
 function saveDatePattern(id) {
     const input = document.getElementById(`pattern-date-${id}`);
     const pattern = patterns.find(p => p.id === id);
@@ -595,7 +600,6 @@ function saveDatePattern(id) {
         if (dateValue === '' || validateDateFormat(dateValue)) {
             pattern.date = dateValue;
         } else {
-            // 잘못된 형식일 경우 이전 값으로 복원
             input.value = pattern.date || '';
             alert('날짜 형식이 올바르지 않습니다. YY.MM.DD 형식으로 입력해주세요. (예: 25.08.25)');
         }
@@ -607,11 +611,9 @@ function handleDateKeydown(e, id) {
     if (e.key === 'Escape') { e.preventDefault(); e.target.blur(); }
 }
 
-// 캘린더 드롭다운을 동적으로 생성하는 함수
+// 캘린더 관련 함수들
 function createCalendarDropdown(id) {
     const container = document.getElementById('calendar-container');
-
-    // 기존 캘린더가 있으면 제거
     const existingCalendar = document.getElementById(`calendar-${id}`);
     if (existingCalendar) {
         existingCalendar.remove();
@@ -641,37 +643,27 @@ function createCalendarDropdown(id) {
     return calendarDiv;
 }
 
-// 날짜 입력 키 핸들링
 function toggleCalendar(id) {
-    // 모든 캘린더 닫기
     document.querySelectorAll('.calendar-dropdown').forEach(cal => cal.classList.remove('show'));
-
-    // 기존에 열린 캘린더가 있는지 확인
     const wasVisible = activeCalendar === id;
 
     if (!wasVisible) {
         activeCalendar = id;
         const pattern = patterns.find(p => p.id === id);
-
-        // 캘린더 동적 생성
         const calendar = createCalendarDropdown(id);
 
-        // 기준 날짜 세팅
         if (pattern?.date && validateDateFormat(pattern.date)) {
             currentCalendarDate = parseYYMMDDToDate(pattern.date);
         } else {
             currentCalendarDate = new Date();
         }
         renderCalendar(id);
-
-        // 화면 중앙에 띄우기
         calendar.classList.add('show');
     } else {
         activeCalendar = null;
     }
 }
 
-// 캘린더 렌더링
 function renderCalendar(id) {
     const headerElement = document.getElementById(`calendar-header-${id}`);
     const gridElement = document.getElementById(`calendar-grid-${id}`);
@@ -680,13 +672,9 @@ function renderCalendar(id) {
         'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    // 헤더 업데이트
     headerElement.textContent = `${monthNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
-
-    // 그리드 클리어
     gridElement.innerHTML = '';
 
-    // 요일 헤더 추가
     dayNames.forEach(day => {
         const dayHeader = document.createElement('div');
         dayHeader.className = 'calendar-day-header';
@@ -694,7 +682,6 @@ function renderCalendar(id) {
         gridElement.appendChild(dayHeader);
     });
 
-    // 달력 날짜 생성
     const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
     const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
     const startDate = new Date(firstDay);
@@ -708,7 +695,6 @@ function renderCalendar(id) {
         selectedDate = parseYYMMDDToDate(pattern.date);
     }
 
-    // 6주간의 날짜 생성
     for (let i = 0; i < 42; i++) {
         const date = new Date(startDate);
         date.setDate(startDate.getDate() + i);
@@ -717,7 +703,6 @@ function renderCalendar(id) {
         dayElement.className = 'calendar-day';
         dayElement.textContent = date.getDate();
         
-        // 클래스 설정
         if (date.getMonth() !== currentCalendarDate.getMonth()) {
             dayElement.classList.add('other-month');
         }
@@ -730,20 +715,16 @@ function renderCalendar(id) {
             dayElement.classList.add('selected');
         }
         
-        // 클릭 이벤트
         dayElement.addEventListener('click', () => selectDate(id, date));
-        
         gridElement.appendChild(dayElement);
     }
 }
 
-// 캘린더 네비게이션
 function navigateCalendar(id, direction) {
     currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
     renderCalendar(id);
 }
 
-// 날짜 선택
 function selectDate(id, date) {
     const pattern = patterns.find(p => p.id === id);
     const input = document.getElementById(`pattern-date-${id}`);
@@ -753,18 +734,15 @@ function selectDate(id, date) {
         input.value = pattern.date;
     }
 
-    // 캘린더 닫기
     toggleCalendar(id);
 }
 
 function toggleExamples() {
-    // 전역 상태 변경
     examplesVisible = !examplesVisible;
 
     const btnText = document.getElementById('examples-btn-text');
     const btnIcon = document.getElementById('examples-icon');
 
-    // 버튼 텍스트와 아이콘 업데이트
     if (examplesVisible) {
         btnText.textContent = 'Hide Examples';
         btnIcon.innerHTML = '<path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>';
@@ -773,11 +751,9 @@ function toggleExamples() {
         btnIcon.innerHTML = '<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>';
     }
 
-    // 예제 표시 상태 적용
     applyExamplesVisibility();
 }
 
-// 개별 패턴 삭제 함수 추가
 function deletePattern(id) {
     if (patterns.length === 1) {
         alert('최소 1개의 패턴은 있어야 합니다!');
@@ -790,7 +766,6 @@ function deletePattern(id) {
     }
 }
 
-// 패턴 추가
 function addPattern() {
     if (patterns.length >= 3) {
         alert('최대 3개까지만 추가할 수 있습니다!');
@@ -805,17 +780,16 @@ function addPattern() {
         id: patternCounter,
         pattern: '',
         examples: '',
-        date: defaultDate
+        date: defaultDate,
+        fontSize: 1.0
     };
 
     patterns.push(newPattern);
     renderPatterns();
 
-    // 새로 추가된 패턴 바로 편집
     setTimeout(() => editPattern(patternCounter), 100);
 }
 
-// 모두 지우기
 function clearAll() {
     if (patterns.length === 0) {
         alert('지울 패턴이 없습니다!');
@@ -829,33 +803,16 @@ function clearAll() {
     }
 }
 
-// 저장 옵션 모달 표시
 function showSaveOptions() {
     const modal = document.getElementById('save-modal-overlay');
     modal.style.display = 'flex';
 }
 
-// 저장 옵션 모달 닫기
 function closeSaveModal() {
     const modal = document.getElementById('save-modal-overlay');
     modal.style.display = 'none';
 }
 
-// ESC 키로 모달 닫기
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeSaveModal();
-    }
-});
-
-// 모달 오버레이 클릭으로 닫기
-document.getElementById('save-modal-overlay').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeSaveModal();
-    }
-});
-
-// 파일 저장 (PDF 또는 PNG)
 async function saveAs(format) {
     closeSaveModal();
 
@@ -877,29 +834,27 @@ async function saveAs(format) {
     try {
         const element = document.getElementById('poster-container');
         
-        // 모든 캘린더 버튼과 날짜 배지 숨김 (PDF/PNG 저장 시)
         const calendarButtons = document.querySelectorAll('.calendar-btn');
         const dateBadge = document.getElementById('date-badge');
+        const fontControls = document.querySelectorAll('.pattern-font-controls');
         
         calendarButtons.forEach(btn => btn.classList.add('hide-for-export'));
+        fontControls.forEach(ctrl => ctrl.style.display = 'none');
         if (dateBadge) dateBadge.style.display = 'none'; 
         
-        // 임시로 border-radius 제거 (렌더링 최적화)
         element.style.borderRadius = '0';
         
-        // A4 비율에 맞게 강제 크기 설정 (210mm : 297mm = 1 : 1.414)
         const originalWidth = element.style.width;
         const originalHeight = element.style.height;
         
-        // A4 비율로 강제 설정 (픽셀 기준)
-        const a4Width = 794; // 210mm at 96 DPI
-        const a4Height = 1123; // 297mm at 96 DPI
+        const a4Width = 794;
+        const a4Height = 1123;
         
         element.style.width = `${a4Width}px`;
         element.style.height = `${a4Height}px`;
         
         const canvas = await html2canvas(element, {
-            scale: 3, // 고해상도
+            scale: 3,
             useCORS: true,
             logging: false,
             backgroundColor: '#ffffff',
@@ -914,19 +869,16 @@ async function saveAs(format) {
             foreignObjectRendering: false
         });
         
-        // 원래 크기로 복원
         element.style.width = originalWidth;
         element.style.height = originalHeight;
         
-        // 캘린더 버튼과 날짜 배지 다시 표시
         calendarButtons.forEach(btn => btn.classList.remove('hide-for-export'));
+        fontControls.forEach(ctrl => ctrl.style.display = 'flex');
         if (dateBadge) dateBadge.style.display = 'block';
         
-        // border-radius 복원
         element.style.borderRadius = '24px';
         
         if (format === 'pdf') {
-            // PDF 저장
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: 'portrait',
@@ -936,8 +888,6 @@ async function saveAs(format) {
             });
             
             const imgData = canvas.toDataURL('image/png', 1.0);
-            
-            // A4 크기에 정확히 맞추기
             const pdfWidth = 210;
             const pdfHeight = 297;
             
@@ -946,12 +896,10 @@ async function saveAs(format) {
             
             alert(`PDF가 ${filename}.pdf로 저장되었습니다!`);
         } else {
-            // PNG 저장 - A4 비율 유지된 상태로 저장
             const link = document.createElement('a');
             link.download = `${filename}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
             
-            // 임시로 DOM에 추가하여 클릭
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -968,7 +916,6 @@ async function saveAs(format) {
 
 // 전역 이벤트 리스너
 document.addEventListener('click', function(event) {
-    // 캘린더 외부 클릭으로 닫기
     if (activeCalendar !== null) {
         const calendarElement = document.getElementById(`calendar-${activeCalendar}`);
         const calendarBtn = event.target.closest('.calendar-btn');
@@ -981,83 +928,76 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// 초기화 함수
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeSaveModal();
+    }
+});
+
+document.getElementById('save-modal-overlay').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeSaveModal();
+    }
+});
+
 function initializeApp() {
     console.log('앱 초기화 시작...');
     
-    // 날짜 업데이트
     updateDate();
-    
-    // 기본 폰트 크기 설정
     setFontSize(1.0);
-    
-    // 패턴 렌더링
     renderPatterns();
-    
-    // 첫 패턴 자동 추가
     addPattern();
     
     console.log('앱 초기화 완료');
 }
 
-// DOM이 로드된 후 초기화
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
 }
 
-// 우클릭 방지 (단순 방지만 유지)
+// 보안 관련 이벤트 리스너들
 document.addEventListener('contextmenu', function(event) {
     event.preventDefault();
 });
 
-// 개발자 도구 키보드 단축키 방지
 document.addEventListener('keydown', function(event) {
-    // F12 방지
     if (event.key === 'F12') {
         event.preventDefault();
         return false;
     }
 
-    // Ctrl+Shift+I 방지 (개발자 도구)
     if (event.ctrlKey && event.shiftKey && event.key === 'I') {
         event.preventDefault();
         return false;
     }
 
-    // Ctrl+Shift+J 방지 (콘솔)
     if (event.ctrlKey && event.shiftKey && event.key === 'J') {
         event.preventDefault();
         return false;
     }
 
-    // Ctrl+U 방지 (소스 보기)
     if (event.ctrlKey && event.key === 'u') {
         event.preventDefault();
         return false;
     }
 
-    // Ctrl+Shift+C 방지 (요소 선택)
     if (event.ctrlKey && event.shiftKey && event.key === 'C') {
         event.preventDefault();
         return false;
     }
 });
 
-// 드래그 방지
 document.addEventListener('dragstart', function(event) {
     event.preventDefault();
 });
 
-// 선택 방지 (CSS로도 처리하지만 추가 보안) - 단, 텍스트 선택은 허용
 document.addEventListener('selectstart', function(event) {
-    // 입력 필드는 선택 허용
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
         return true;
     }
     
-    // 패턴과 예제 영역에서는 텍스트 선택 허용
     const isPatternDisplay = event.target.closest('.pattern-display');
     const isExamplesDisplay = event.target.closest('.examples-display');
     
