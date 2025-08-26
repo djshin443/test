@@ -13,13 +13,10 @@
     user-select: none;
 }
 
-/* Allow text selection for input fields and editable content */
-input, 
-textarea,
-.pattern-display,
-.examples-display {
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
+/* Allow text selection for input fields */
+input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
