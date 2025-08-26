@@ -51,18 +51,56 @@
                         <button class="font-size-btn" onclick="adjustFontSize(0.1)">+</button>
                     </div>
                 </div>
-                <div class="text-formatting-info">
+            </div>
+
+            <!-- 텍스트 서식 섹션 추가 -->
+            <div class="control-section">
+                <div class="control-section-title">Text Formatting</div>
+                
+                <!-- 선택된 텍스트 정보 표시 -->
+                <div class="selected-text-info" id="selected-text-info" style="display: none;">
+                    <div class="selected-text-preview" id="selected-text-preview">No text selected</div>
+                </div>
+                
+                <!-- 서식 도구 버튼들 -->
+                <div class="format-tools">
+                    <button class="format-btn" id="bold-btn" onclick="applyBoldFromPanel()" disabled>
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.21 13c2.106 0 3.412-1.087 3.412-2.823 0-1.306-.984-2.283-2.324-2.386v-.055a2.176 2.176 0 0 0 1.852-2.14c0-1.51-1.162-2.46-3.014-2.46H3.843V13H8.21zM5.908 4.674h1.696c.963 0 1.517.451 1.517 1.244 0 .834-.629 1.32-1.73 1.32H5.908V4.674zm0 6.788V8.598h1.73c1.217 0 1.88.492 1.88 1.415 0 .943-.643 1.449-1.832 1.449H5.908z"/>
+                        </svg>
+                        Bold
+                    </button>
+                    
+                    <!-- 색상 버튼들 -->
+                    <div class="color-buttons">
+                        <div class="color-btn" onclick="applyColorFromPanel('#EF4444')" style="background: #EF4444;" title="Red"></div>
+                        <div class="color-btn" onclick="applyColorFromPanel('#F97316')" style="background: #F97316;" title="Orange"></div>
+                        <div class="color-btn" onclick="applyColorFromPanel('#F59E0B')" style="background: #F59E0B;" title="Yellow"></div>
+                        <div class="color-btn" onclick="applyColorFromPanel('#10B981')" style="background: #10B981;" title="Green"></div>
+                        <div class="color-btn" onclick="applyColorFromPanel('#3B82F6')" style="background: #3B82F6;" title="Blue"></div>
+                        <div class="color-btn" onclick="applyColorFromPanel('#8B5CF6')" style="background: #8B5CF6;" title="Purple"></div>
+                    </div>
+                    
+                    <button class="format-btn" id="clear-btn" onclick="clearFormattingFromPanel()" disabled>
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5A2 2 0 0 1 .793 10.5L6.293 5a2 2 0 0 1 1.793-.793zm2.121.707a1 1 0 0 0-1.414 0L4.293 7.414a1 1 0 0 0-.293.707v1.172a1 1 0 0 0 .293.707l2.5 2.5a1 1 0 0 0 .707.293h2.759a1 1 0 0 0 .707-.293l5.5-5.5a1 1 0 0 0 0-1.414l-3.879-3.879z"/>
+                        </svg>
+                        Clear Formatting
+                    </button>
+                </div>
+                
+                <div class="format-instructions">
                     <div class="info-box-title">
                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                             <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                         </svg>
-                        Text Formatting
+                        How to Format Text
                     </div>
                     <ul style="margin-left: 20px; font-size: 0.813rem; color: var(--text-secondary);">
-                        <li>Drag to select text</li>
-                        <li>Right-click for formatting menu</li>
-                        <li>Bold, Color, Remove formatting</li>
+                        <li>Select text by dragging</li>
+                        <li>Use buttons above to format</li>
+                        <li>Works on patterns and examples</li>
                     </ul>
                 </div>
             </div>
@@ -162,40 +200,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 텍스트 서식 메뉴 -->
-    <div class="text-format-menu" id="text-format-menu">
-        <div class="format-option" onclick="applyBold()">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8.21 13c2.106 0 3.412-1.087 3.412-2.823 0-1.306-.984-2.283-2.324-2.386v-.055a2.176 2.176 0 0 0 1.852-2.14c0-1.51-1.162-2.46-3.014-2.46H3.843V13H8.21zM5.908 4.674h1.696c.963 0 1.517.451 1.517 1.244 0 .834-.629 1.32-1.73 1.32H5.908V4.674zm0 6.788V8.598h1.73c1.217 0 1.88.492 1.88 1.415 0 .943-.643 1.449-1.832 1.449H5.908z"/>
-            </svg>
-            Bold
-        </div>
-        
-        <div class="format-option color-option" onclick="toggleColorPicker()">
-            <span>Color</span>
-            <div class="color-preview" id="color-preview"></div>
-        </div>
-        
-        <div class="color-picker-section" id="color-picker-section">
-            <div class="color-grid">
-                <div class="color-option" style="background-color: #EF4444;" onclick="applyColor('#EF4444')" title="빨강"></div>
-                <div class="color-option" style="background-color: #F97316;" onclick="applyColor('#F97316')" title="주황"></div>
-                <div class="color-option" style="background-color: #F59E0B;" onclick="applyColor('#F59E0B')" title="노랑"></div>
-                <div class="color-option" style="background-color: #10B981;" onclick="applyColor('#10B981')" title="초록"></div>
-                <div class="color-option" style="background-color: #3B82F6;" onclick="applyColor('#3B82F6')" title="파랑"></div>
-                <div class="color-option" style="background-color: #1E40AF;" onclick="applyColor('#1E40AF')" title="남색"></div>
-                <div class="color-option" style="background-color: #8B5CF6;" onclick="applyColor('#8B5CF6')" title="보라"></div>
-            </div>
-        </div>
-        
-        <div class="format-option" onclick="clearFormatting()">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5A2 2 0 0 1 .793 10.5L6.293 5a2 2 0 0 1 1.793-.793zm2.121.707a1 1 0 0 0-1.414 0L4.293 7.414a1 1 0 0 0-.293.707v1.172a1 1 0 0 0 .293.707l2.5 2.5a1 1 0 0 0 .707.293h2.759a1 1 0 0 0 .707-.293l5.5-5.5a1 1 0 0 0 0-1.414l-3.879-3.879z"/>
-            </svg>
-            Clear Formatting
         </div>
     </div>
 
