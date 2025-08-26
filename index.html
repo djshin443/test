@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly English Pattern</title>
 
-
 <!-- html2canvas & jsPDF 라이브러리 -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!-- CSS 파일들 임포트 -->
+
 <link rel="stylesheet" href="variables.css">
 <link rel="stylesheet" href="reset.css">
 <link rel="stylesheet" href="layout.css">
@@ -26,7 +28,6 @@
 <link rel="stylesheet" href="modals.css">
 <link rel="stylesheet" href="responsive.css">
 
-
 </head>
 <body>
     <div class="wrapper">
@@ -37,136 +38,214 @@
                 <p class="control-subtitle">Create this week's English patterns for your students</p>
             </div>
 
-
-        <div class="control-section">
-            <div class="control-section-title">Actions</div>
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="addPattern()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                    </svg>
-                    Add New Pattern
-                </button>
-                
-                <button class="btn btn-outline" onclick="toggleExamples()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" id="examples-icon">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                    </svg>
-                    <span id="examples-btn-text">Show Examples</span>
-                </button>
-                
-                <button class="btn btn-outline" onclick="showSaveOptions()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                    </svg>
-                    Save File
-                </button>
-                
-                <button class="btn btn-danger" onclick="clearAll()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                    </svg>
-                    Clear All
-                </button>
+```
+    <div class="control-section">
+        <div class="control-section-title">Font Settings</div>
+        <div class="font-size-control">
+            <label class="font-size-label">Font Size</label>
+            <div class="font-size-input-group">
+                <button class="font-size-btn" onclick="adjustFontSize(-0.1)">-</button>
+                <input type="number" 
+                       id="font-size-input" 
+                       class="font-size-input" 
+                       value="1.0" 
+                       step="0.1" 
+                       min="0.5" 
+                       max="3.0"
+                       onchange="setFontSize(this.value)">
+                <button class="font-size-btn" onclick="adjustFontSize(0.1)">+</button>
             </div>
         </div>
-        
-        <div class="control-section">
-            <div class="info-box">
-                <div class="info-box-title">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                    </svg>
-                    How to use
-                </div>
-                <ul style="margin-left: 20px; font-size: 0.813rem;">
-                    <li>Click on pattern to edit</li>
-                    <li>Type <span class="shortcut">[]</span> <span class="shortcut">[ ]</span> <span class="shortcut">[   ]</span> for different box sizes</li>
-                    <li>Hover over pattern card to see "Del" button</li>
-                    <li>Press <span class="shortcut">Enter</span> to save</li>
-                    <li>Press <span class="shortcut">ESC</span> to cancel</li>
-                    <li>Maximum 3 patterns per sheet</li>
-                </ul>
+        <div class="text-formatting-info">
+            <div class="info-box-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+                Text Formatting
             </div>
+            <ul style="margin-left: 20px; font-size: 0.813rem; color: var(--text-secondary);">
+                <li>Drag to select text</li>
+                <li>Right-click for formatting menu</li>
+                <li>Bold, Color, Remove formatting</li>
+            </ul>
         </div>
     </div>
     
-    <!-- 메인 포스터 -->
-    <div class="container" id="poster-container">
-        <div class="poster">
-            <div class="bg-pattern"></div>
+    <div class="control-section">
+        <div class="control-section-title">Actions</div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="addPattern()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                Add New Pattern
+            </button>
             
-            <!-- 헤더 -->
-            <div class="header">
-                <div class="header-top">
-                    <div class="logo">
-                        <svg width="220" height="35" viewBox="0 0 220 35" class="logo-svg">
-                            <defs>
-                                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <text x="0" y="24" font-family="Poppins, sans-serif" font-size="20" font-weight="800" fill="url(#logoGradient)" letter-spacing="1">ZENITH ENGLISH</text>
-                            <rect x="0" y="28" width="110" height="3" fill="url(#logoGradient)" rx="1.5"/>
-                        </svg>
-                    </div>
-                    <div class="date-badge" id="date-badge"></div>
+            <button class="btn btn-outline" onclick="toggleExamples()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" id="examples-icon">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                <span id="examples-btn-text">Show Examples</span>
+            </button>
+            
+            <button class="btn btn-outline" onclick="showSaveOptions()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Save File
+            </button>
+            
+            <button class="btn btn-danger" onclick="clearAll()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                </svg>
+                Clear All
+            </button>
+        </div>
+    </div>
+    
+    <div class="control-section">
+        <div class="info-box">
+            <div class="info-box-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+                How to use
+            </div>
+            <ul style="margin-left: 20px; font-size: 0.813rem;">
+                <li>Click on pattern to edit</li>
+                <li>Type <span class="shortcut">[]</span> <span class="shortcut">[ ]</span> <span class="shortcut">[   ]</span> for different box sizes</li>
+                <li>Hover over pattern card to see "Del" button</li>
+                <li>Press <span class="shortcut">Enter</span> to save</li>
+                <li>Press <span class="shortcut">ESC</span> to cancel</li>
+                <li>Maximum 3 patterns per sheet</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 메인 포스터 -->
+<div class="container" id="poster-container">
+    <div class="poster">
+        <div class="bg-pattern"></div>
+        
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <svg width="220" height="35" viewBox="0 0 220 35" class="logo-svg">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <text x="0" y="24" font-family="Poppins, sans-serif" font-size="20" font-weight="800" fill="url(#logoGradient)" letter-spacing="1">ZENITH ENGLISH</text>
+                        <rect x="0" y="28" width="110" height="3" fill="url(#logoGradient)" rx="1.5"/>
+                    </svg>
                 </div>
-                
-                <h1 class="main-title" id="main-title">This Week's English<br>Pattern Practice</h1>
-                <p class="subtitle">Practice these patterns to speak better English!</p>
+                <div class="date-badge" id="date-badge"></div>
             </div>
             
-            <!-- 패턴 그리드 -->
-            <div class="patterns-grid" id="patterns-grid">
-                <!-- 패턴들이 여기에 동적으로 생성됩니다 -->
-            </div>
-            
-            <!-- 푸터 -->
-            <div class="footer">
-                <div class="footer-text">
-                    <span class="footer-logo">ZENITH ENGLISH</span>
-                    • Discover, Learn, Succeed
-                </div>
+            <h1 class="main-title" id="main-title">This Week's English<br>Pattern Practice</h1>
+            <p class="subtitle">Practice these patterns to speak better English!</p>
+        </div>
+        
+        <!-- 패턴 그리드 -->
+        <div class="patterns-grid" id="patterns-grid">
+            <!-- 패턴들이 여기에 동적으로 생성됩니다 -->
+        </div>
+        
+        <!-- 푸터 -->
+        <div class="footer">
+            <div class="footer-text">
+                <span class="footer-logo">ZENITH ENGLISH</span>
+                • Discover, Learn, Succeed
             </div>
         </div>
     </div>
+</div>
+```
+
+</div>
+
+<!-- 텍스트 서식 메뉴 -->
+
+<div class="text-format-menu" id="text-format-menu">
+    <div class="format-option" onclick="applyBold()">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.21 13c2.106 0 3.412-1.087 3.412-2.823 0-1.306-.984-2.283-2.324-2.386v-.055a2.176 2.176 0 0 0 1.852-2.14c0-1.51-1.162-2.46-3.014-2.46H3.843V13H8.21zM5.908 4.674h1.696c.963 0 1.517.451 1.517 1.244 0 .834-.629 1.32-1.73 1.32H5.908V4.674zm0 6.788V8.598h1.73c1.217 0 1.88.492 1.88 1.415 0 .943-.643 1.449-1.832 1.449H5.908z"/>
+        </svg>
+        Bold
+    </div>
+
+```
+<div class="format-option color-option" onclick="toggleColorPicker()">
+    <span>Color</span>
+    <div class="color-preview" id="color-preview"></div>
+</div>
+
+<div class="color-picker-section" id="color-picker-section">
+    <div class="color-grid">
+        <div class="color-option" style="background-color: #EF4444;" onclick="applyColor('#EF4444')" title="빨강"></div>
+        <div class="color-option" style="background-color: #F97316;" onclick="applyColor('#F97316')" title="주황"></div>
+        <div class="color-option" style="background-color: #F59E0B;" onclick="applyColor('#F59E0B')" title="노랑"></div>
+        <div class="color-option" style="background-color: #10B981;" onclick="applyColor('#10B981')" title="초록"></div>
+        <div class="color-option" style="background-color: #3B82F6;" onclick="applyColor('#3B82F6')" title="파랑"></div>
+        <div class="color-option" style="background-color: #1E40AF;" onclick="applyColor('#1E40AF')" title="남색"></div>
+        <div class="color-option" style="background-color: #8B5CF6;" onclick="applyColor('#8B5CF6')" title="보라"></div>
+    </div>
+</div>
+
+<div class="format-option" onclick="clearFormatting()">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5A2 2 0 0 1 .793 10.5L6.293 5a2 2 0 0 1 1.793-.793zm2.121.707a1 1 0 0 0-1.414 0L4.293 7.414a1 1 0 0 0-.293.707v1.172a1 1 0 0 0 .293.707l2.5 2.5a1 1 0 0 0 .707.293h2.759a1 1 0 0 0 .707-.293l5.5-5.5a1 1 0 0 0 0-1.414l-3.879-3.879z"/>
+    </svg>
+    Clear Formatting
+</div>
+```
+
 </div>
 
 <div id="calendar-container"></div>
 
 <!-- 저장 옵션 선택 모달 -->
+
 <div class="save-modal-overlay" id="save-modal-overlay">
     <div class="save-modal">
         <div class="save-modal-header">
             <h3 class="save-modal-title">Choose File Format</h3>
             <p class="save-modal-subtitle">Select how you'd like to save your pattern sheet</p>
         </div>
-        
-        <div class="save-options">
-            <div class="save-option pdf" onclick="saveAs('pdf')">
-                <div class="save-option-icon">📄</div>
-                <div class="save-option-title">PDF</div>
-                <div class="save-option-desc">Perfect for printing and sharing. Maintains quality at any size.</div>
-            </div>
-            
-            <div class="save-option png" onclick="saveAs('png')">
-                <div class="save-option-icon">🖼️</div>
-                <div class="save-option-title">PNG</div>
-                <div class="save-option-desc">High-quality image format. Great for digital use and presentations.</div>
-            </div>
+
+```
+    <div class="save-options">
+        <div class="save-option pdf" onclick="saveAs('pdf')">
+            <div class="save-option-icon">📄</div>
+            <div class="save-option-title">PDF</div>
+            <div class="save-option-desc">Perfect for printing and sharing. Maintains quality at any size.</div>
         </div>
         
-        <div class="save-modal-actions">
-            <button class="btn-modal-cancel" onclick="closeSaveModal()">Cancel</button>
+        <div class="save-option png" onclick="saveAs('png')">
+            <div class="save-option-icon">🖼️</div>
+            <div class="save-option-title">PNG</div>
+            <div class="save-option-desc">High-quality image format. Great for digital use and presentations.</div>
         </div>
     </div>
+    
+    <div class="save-modal-actions">
+        <button class="btn-modal-cancel" onclick="closeSaveModal()">Cancel</button>
+    </div>
+</div>
+```
+
 </div>
 
 <!-- PDF 저장 중 로딩 -->
+
 <div class="loading-overlay" id="loading-overlay">
     <div class="loading-spinner"></div>
     <div class="loading-text">Generating PDF...</div>
