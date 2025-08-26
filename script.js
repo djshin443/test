@@ -85,10 +85,7 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
 }
 
 function applyBoldFromPanel() {
-    if (!panelSelectedTextInfo) {
-        console.log('선택된 텍스트 정보가 없습니다.');
-        return;
-    }
+    if (!panelSelectedTextInfo) return;
     
     try {
         const range = panelSelectedTextInfo.range;
@@ -108,18 +105,13 @@ function applyBoldFromPanel() {
         updatePatternFromElement(panelSelectedTextInfo.element);
         selection.removeAllRanges();
         updateTextSelectionPanel('', null, null, false);
-        
-        console.log('볼드 포맷팅 적용 완료');
     } catch (error) {
         console.error('볼드 포맷팅 오류:', error);
     }
 }
 
 function applyColorFromPanel(color) {
-    if (!panelSelectedTextInfo) {
-        console.log('선택된 텍스트 정보가 없습니다.');
-        return;
-    }
+    if (!panelSelectedTextInfo) return;
     
     try {
         const range = panelSelectedTextInfo.range;
@@ -139,18 +131,13 @@ function applyColorFromPanel(color) {
         updatePatternFromElement(panelSelectedTextInfo.element);
         selection.removeAllRanges();
         updateTextSelectionPanel('', null, null, false);
-        
-        console.log('색상 포맷팅 적용 완료:', color);
     } catch (error) {
         console.error('색상 포맷팅 오류:', error);
     }
 }
 
 function clearFormattingFromPanel() {
-    if (!panelSelectedTextInfo) {
-        console.log('선택된 텍스트 정보가 없습니다.');
-        return;
-    }
+    if (!panelSelectedTextInfo) return;
     
     try {
         const range = panelSelectedTextInfo.range;
@@ -166,8 +153,6 @@ function clearFormattingFromPanel() {
         updatePatternFromElement(panelSelectedTextInfo.element);
         selection.removeAllRanges();
         updateTextSelectionPanel('', null, null, false);
-        
-        console.log('서식 제거 완료');
     } catch (error) {
         console.error('서식 제거 오류:', error);
     }
@@ -370,7 +355,6 @@ function validateDateFormat(dateStr) {
 }
 
 function updateDate() {
-    console.log('updateDate 함수 시작');
     const now = new Date();
     
     const options = { month: 'short', day: 'numeric' };
@@ -380,29 +364,14 @@ function updateDate() {
     const dayName = dayNames[now.getDay()];
     
     const formattedDate = `${dateStr}, ${year} - ${dayName}`;
-    console.log('생성된 날짜:', formattedDate);
     
     const updateBadge = () => {
         const badge = document.getElementById('date-badge');
         if (badge) {
             badge.textContent = formattedDate;
-            console.log('날짜 배지 업데이트 성공:', formattedDate);
-        } else {
-            console.error('date-badge 요소를 찾을 수 없음');
-            // DOM이 준비될 때까지 최대 5초 대기
-            setTimeout(() => {
-                const badgeRetry = document.getElementById('date-badge');
-                if (badgeRetry) {
-                    badgeRetry.textContent = formattedDate;
-                    console.log('재시도로 날짜 배지 업데이트 성공');
-                } else {
-                    console.error('재시도에도 date-badge를 찾을 수 없음');
-                }
-            }, 1000);
         }
     };
     
-    // 즉시 실행 및 지연 실행
     updateBadge();
     setTimeout(updateBadge, 500);
 }
@@ -430,7 +399,6 @@ function applyExamplesVisibility() {
 }
 
 function renderPatterns() {
-    console.log('renderPatterns 시작, patterns:', patterns);
     const grid = document.getElementById('patterns-grid');
     
     if (!grid) {
@@ -455,7 +423,6 @@ function renderPatterns() {
     }
 
     patterns.forEach((pattern, index) => {
-        console.log(`패턴 ${pattern.id} 생성 중...`);
         const card = createPatternCard(pattern, index + 1);
         grid.appendChild(card);
         
@@ -473,7 +440,6 @@ function renderPatterns() {
     // 예제 표시 상태 적용
     setTimeout(() => {
         applyExamplesVisibility();
-        console.log('패턴 렌더링 완료');
     }, 100);
 }
 
@@ -967,53 +933,8 @@ document.getElementById('save-modal-overlay').addEventListener('click', function
     }
 });
 
-// ============== 보안 관련 이벤트 리스너 ==============
-document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-});
-
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'F12' ||
-        (event.ctrlKey && event.shiftKey && event.key === 'I') ||
-        (event.ctrlKey && event.shiftKey && event.key === 'J') ||
-        (event.ctrlKey && event.key === 'u') ||
-        (event.ctrlKey && event.shiftKey && event.key === 'C')) {
-        event.preventDefault();
-        return false;
-    }
-});
-
-document.addEventListener('dragstart', function(event) {
-    event.preventDefault();
-});
-
-document.addEventListener('selectstart', function(event) {
-    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-        return true;
-    }
-    
-    const isPatternDisplay = event.target.closest('.pattern-display');
-    const isExamplesDisplay = event.target.closest('.examples-display');
-    
-    if (isPatternDisplay || isExamplesDisplay) {
-        return true;
-    }
-    
-    event.preventDefault();
-    return false;
-});
-
 // ============== 초기화 함수 ==============
 function initializeApp() {
-    console.log('앱 초기화 시작...');
-    
-    // DOM 요소 존재 확인
-    const grid = document.getElementById('patterns-grid');
-    const dateBadge = document.getElementById('date-badge');
-    
-    console.log('patterns-grid 존재:', !!grid);
-    console.log('date-badge 존재:', !!dateBadge);
-    
     // 날짜 업데이트
     updateDate();
     
@@ -1026,10 +947,7 @@ function initializeApp() {
     // 첫 패턴 자동 추가
     setTimeout(() => {
         addPattern();
-        console.log('첫 패턴 추가 완료');
     }, 100);
-    
-    console.log('앱 초기화 완료');
 }
 
 // ============== 앱 시작 ==============
