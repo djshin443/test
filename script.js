@@ -1,4 +1,23 @@
-let patterns = [];
+function createPatternCard(pattern, number) {
+    console.log(`패턴 카드 ${pattern.id} 생성 시작`);
+    
+    const card = document.createElement('div');
+    card.className = 'pattern-card';
+    card.id = `pattern-${pattern.id}`;
+
+    const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
+    const processedExamples = pattern.examplesHTML || (pattern.examples ?function createPatternCard(pattern, number) {
+    console.log(`패턴 카드 ${pattern.id} 생성 시작`);
+    
+    const card = document.createElement('div');
+    card.className = 'pattern-card';
+    card.id = `pattern-${pattern.id}`;
+
+    const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
+    const processedExamples = pattern.examplesHTML || (pattern.examples ? processBlankBoxes(pattern.examples) : '');
+
+    card.innerHTML = `
+        <button class="pattern-deletelet patterns = [];
 let patternCounter = 0;
 let examplesVisible = false;
 let activeCalendar = null;
