@@ -1,33 +1,15 @@
-function createPatternCard(pattern, number) {
-    console.log(`패턴 카드 ${pattern.id} 생성 시작`);
-    
-    const card = document.createElement('div');
-    card.className = 'pattern-card';
-    card.id = `pattern-${pattern.id}`;
-
-    const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
-    const processedExamples = pattern.examplesHTML || (pattern.examples ?function createPatternCard(pattern, number) {
-    console.log(`패턴 카드 ${pattern.id} 생성 시작`);
-    
-    const card = document.createElement('div');
-    card.className = 'pattern-card';
-    card.id = `pattern-${pattern.id}`;
-
-    const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
-    const processedExamples = pattern.examplesHTML || (pattern.examples ? processBlankBoxes(pattern.examples) : '');
-
-    card.innerHTML = `
-        <button class="pattern-deletelet patterns = [];
+// ============== 전역 변수 선언 ==============
+let patterns = [];
 let patternCounter = 0;
 let examplesVisible = false;
 let activeCalendar = null;
 let currentCalendarDate = new Date();
-let currentFontSize = 1.0; // 전체 폰트 크기 (옵션)
+let currentFontSize = 1.0;
 let selectedTextInfo = null;
 let activeElement = null;
 let panelSelectedTextInfo = null;
 
-// 텍스트 선택 감지 및 패널 업데이트
+// ============== 텍스트 선택 및 서식 관련 함수 ==============
 document.addEventListener('mouseup', function(e) {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
@@ -102,7 +84,6 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
     }
 }
 
-// 패널에서 볼드 적용
 function applyBoldFromPanel() {
     if (!panelSelectedTextInfo) {
         console.log('선택된 텍스트 정보가 없습니다.');
@@ -134,7 +115,6 @@ function applyBoldFromPanel() {
     }
 }
 
-// 패널에서 색상 적용
 function applyColorFromPanel(color) {
     if (!panelSelectedTextInfo) {
         console.log('선택된 텍스트 정보가 없습니다.');
@@ -166,7 +146,6 @@ function applyColorFromPanel(color) {
     }
 }
 
-// 패널에서 서식 제거
 function clearFormattingFromPanel() {
     if (!panelSelectedTextInfo) {
         console.log('선택된 텍스트 정보가 없습니다.');
@@ -194,7 +173,28 @@ function clearFormattingFromPanel() {
     }
 }
 
-// 전체 폰트 크기 조절 함수 (옵션)
+function updatePatternFromElement(element) {
+    const isPattern = element.classList.contains('pattern-display');
+    const isExamples = element.classList.contains('examples-display');
+
+    if (!isPattern && !isExamples) return;
+
+    const elementId = element.id;
+    const matches = elementId.match(/(\d+)/);
+    if (!matches) return;
+
+    const patternId = parseInt(matches[1]);
+    const pattern = patterns.find(p => p.id === patternId);
+    if (!pattern) return;
+
+    if (isPattern) {
+        pattern.patternHTML = element.innerHTML;
+    } else if (isExamples) {
+        pattern.examplesHTML = element.innerHTML;
+    }
+}
+
+// ============== 폰트 크기 관련 함수 ==============
 function adjustFontSize(delta) {
     const newSize = Math.max(0.5, Math.min(3.0, currentFontSize + delta));
     setFontSize(newSize);
@@ -211,7 +211,6 @@ function setFontSize(size) {
     patterns.forEach(pattern => adjustCardSize(pattern.id));
 }
 
-// 개별 패턴 글씨 크기 조절 함수
 function adjustPatternFontSize(patternId, delta) {
     const pattern = patterns.find(p => p.id === patternId);
     if (!pattern) return;
@@ -257,28 +256,7 @@ function setPatternFontSize(patternId, size) {
     adjustCardSize(patternId);
 }
 
-function updatePatternFromElement(element) {
-    const isPattern = element.classList.contains('pattern-display');
-    const isExamples = element.classList.contains('examples-display');
-
-    if (!isPattern && !isExamples) return;
-
-    const elementId = element.id;
-    const matches = elementId.match(/(\d+)/);
-    if (!matches) return;
-
-    const patternId = parseInt(matches[1]);
-    const pattern = patterns.find(p => p.id === patternId);
-    if (!pattern) return;
-
-    if (isPattern) {
-        pattern.patternHTML = element.innerHTML;
-    } else if (isExamples) {
-        pattern.examplesHTML = element.innerHTML;
-    }
-}
-
-// XSS 방지 함수들
+// ============== 유틸리티 함수 ==============
 function escapeHTML(text) {
     const div = document.createElement('div');
     div.textContent = text;
@@ -308,7 +286,60 @@ function sanitizeInput(input) {
     return escapeHTML(sanitized).substring(0, 500);
 }
 
-// 날짜 관련 함수들
+function processBlankBoxes(text, isTitle = false) {
+    if (isTitle) {
+        return escapeHTML(text);
+    }
+
+    const sanitizedText = sanitizeInput(text);
+
+    return sanitizedText.replace(/\[(\s*)\]/g, function(match, spaces) {
+        const spaceCount = spaces.length;
+        let sizeClass = '';
+        
+        if (spaceCount === 0) {
+            sizeClass = 'space-1';
+        } else if (spaceCount === 1) {
+            sizeClass = 'space-2';
+        } else if (spaceCount === 2 || spaceCount === 3) {
+            sizeClass = 'space-3';
+        } else if (spaceCount === 4 || spaceCount === 5) {
+            sizeClass = 'space-4';
+        } else {
+            sizeClass = 'space-5-plus';
+        }
+        
+        return `<span class="blank-box ${sizeClass}"></span>`;
+    });
+}
+
+function adjustCardSize(patternId) {
+    const card = document.getElementById(`pattern-${patternId}`);
+    const pattern = patterns.find(p => p.id === patternId);
+
+    if (!card || !pattern) {
+        return;
+    }
+
+    card.classList.remove('size-small', 'size-medium', 'size-large', 'size-xl');
+
+    const totalLength = (pattern.pattern || '').length + (pattern.examples || '').length;
+    let sizeClass = '';
+
+    if (totalLength < 50) {
+        sizeClass = 'size-small';
+    } else if (totalLength < 100) {
+        sizeClass = 'size-medium';
+    } else if (totalLength < 200) {
+        sizeClass = 'size-large';
+    } else {
+        sizeClass = 'size-xl';
+    }
+
+    card.classList.add(sizeClass);
+}
+
+// ============== 날짜 관련 함수 ==============
 function formatDateToYYMMDD(date) {
     const year = date.getFullYear().toString().slice(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -376,59 +407,7 @@ function updateDate() {
     setTimeout(updateBadge, 500);
 }
 
-function processBlankBoxes(text, isTitle = false) {
-    if (isTitle) {
-        return escapeHTML(text);
-    }
-
-    const sanitizedText = sanitizeInput(text);
-
-    return sanitizedText.replace(/\[(\s*)\]/g, function(match, spaces) {
-        const spaceCount = spaces.length;
-        let sizeClass = '';
-        
-        if (spaceCount === 0) {
-            sizeClass = 'space-1';
-        } else if (spaceCount === 1) {
-            sizeClass = 'space-2';
-        } else if (spaceCount === 2 || spaceCount === 3) {
-            sizeClass = 'space-3';
-        } else if (spaceCount === 4 || spaceCount === 5) {
-            sizeClass = 'space-4';
-        } else {
-            sizeClass = 'space-5-plus';
-        }
-        
-        return `<span class="blank-box ${sizeClass}"></span>`;
-    });
-}
-
-function adjustCardSize(patternId) {
-    const card = document.getElementById(`pattern-${patternId}`);
-    const pattern = patterns.find(p => p.id === patternId);
-
-    if (!card || !pattern) {
-        return;
-    }
-
-    card.classList.remove('size-small', 'size-medium', 'size-large', 'size-xl');
-
-    const totalLength = (pattern.pattern || '').length + (pattern.examples || '').length;
-    let sizeClass = '';
-
-    if (totalLength < 50) {
-        sizeClass = 'size-small';
-    } else if (totalLength < 100) {
-        sizeClass = 'size-medium';
-    } else if (totalLength < 200) {
-        sizeClass = 'size-large';
-    } else {
-        sizeClass = 'size-xl';
-    }
-
-    card.classList.add(sizeClass);
-}
-
+// ============== 패턴 렌더링 관련 함수 ==============
 function applyExamplesVisibility() {
     const examplesSections = document.querySelectorAll('.examples-section');
     const patternCards = document.querySelectorAll('.pattern-card');
@@ -500,7 +479,7 @@ function renderPatterns() {
 
 function createPatternCard(pattern, number) {
     const card = document.createElement('div');
-    card.className = 'pattern-card pattern-font-size-1-0'; // 기본 폰트 크기 클래스 추가
+    card.className = 'pattern-card pattern-font-size-1-0';
     card.id = `pattern-${pattern.id}`;
 
     const processedPattern = pattern.patternHTML || (pattern.pattern ? processBlankBoxes(pattern.pattern) : '');
@@ -566,6 +545,7 @@ function createPatternCard(pattern, number) {
     return card;
 }
 
+// ============== 패턴 편집 관련 함수 ==============
 function editPattern(id) {
     const card = document.getElementById(`pattern-${id}`);
     const input = document.getElementById(`pattern-input-${id}`);
@@ -656,7 +636,7 @@ function handleDateKeydown(e, id) {
     if (e.key === 'Escape') { e.preventDefault(); e.target.blur(); }
 }
 
-// 캘린더 관련 함수들
+// ============== 캘린더 관련 함수 ==============
 function createCalendarDropdown(id) {
     const container = document.getElementById('calendar-container');
     const existingCalendar = document.getElementById(`calendar-${id}`);
@@ -782,6 +762,7 @@ function selectDate(id, date) {
     toggleCalendar(id);
 }
 
+// ============== 메인 액션 함수들 ==============
 function toggleExamples() {
     examplesVisible = !examplesVisible;
 
@@ -848,6 +829,7 @@ function clearAll() {
     }
 }
 
+// ============== 저장 관련 함수 ==============
 function showSaveOptions() {
     const modal = document.getElementById('save-modal-overlay');
     modal.style.display = 'flex';
@@ -959,7 +941,7 @@ async function saveAs(format) {
     }
 }
 
-// 전역 이벤트 리스너
+// ============== 전역 이벤트 리스너 ==============
 document.addEventListener('click', function(event) {
     if (activeCalendar !== null) {
         const calendarElement = document.getElementById(`calendar-${activeCalendar}`);
@@ -985,6 +967,43 @@ document.getElementById('save-modal-overlay').addEventListener('click', function
     }
 });
 
+// ============== 보안 관련 이벤트 리스너 ==============
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'F12' ||
+        (event.ctrlKey && event.shiftKey && event.key === 'I') ||
+        (event.ctrlKey && event.shiftKey && event.key === 'J') ||
+        (event.ctrlKey && event.key === 'u') ||
+        (event.ctrlKey && event.shiftKey && event.key === 'C')) {
+        event.preventDefault();
+        return false;
+    }
+});
+
+document.addEventListener('dragstart', function(event) {
+    event.preventDefault();
+});
+
+document.addEventListener('selectstart', function(event) {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        return true;
+    }
+    
+    const isPatternDisplay = event.target.closest('.pattern-display');
+    const isExamplesDisplay = event.target.closest('.examples-display');
+    
+    if (isPatternDisplay || isExamplesDisplay) {
+        return true;
+    }
+    
+    event.preventDefault();
+    return false;
+});
+
+// ============== 초기화 함수 ==============
 function initializeApp() {
     console.log('앱 초기화 시작...');
     
@@ -1013,60 +1032,9 @@ function initializeApp() {
     console.log('앱 초기화 완료');
 }
 
+// ============== 앱 시작 ==============
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
 }
-
-// 보안 관련 이벤트 리스너들
-document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-});
-
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'F12') {
-        event.preventDefault();
-        return false;
-    }
-
-    if (event.ctrlKey && event.shiftKey && event.key === 'I') {
-        event.preventDefault();
-        return false;
-    }
-
-    if (event.ctrlKey && event.shiftKey && event.key === 'J') {
-        event.preventDefault();
-        return false;
-    }
-
-    if (event.ctrlKey && event.key === 'u') {
-        event.preventDefault();
-        return false;
-    }
-
-    if (event.ctrlKey && event.shiftKey && event.key === 'C') {
-        event.preventDefault();
-        return false;
-    }
-});
-
-document.addEventListener('dragstart', function(event) {
-    event.preventDefault();
-});
-
-document.addEventListener('selectstart', function(event) {
-    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-        return true;
-    }
-    
-    const isPatternDisplay = event.target.closest('.pattern-display');
-    const isExamplesDisplay = event.target.closest('.examples-display');
-    
-    if (isPatternDisplay || isExamplesDisplay) {
-        return true;
-    }
-    
-    event.preventDefault();
-    return false;
-});
