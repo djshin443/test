@@ -231,9 +231,9 @@ function createPatternCard(pattern, number) {
     card.className = 'pattern-card';
     card.id = `pattern-${pattern.id}`;
     
-    // 패턴 텍스트에서 [] 를 네모 박스로 변환 (HTML 콘텐츠 지원)
+    // HTML 콘텐츠가 있으면 우선 사용, 없으면 일반 텍스트 처리
     const processedPattern = pattern.htmlContent || (pattern.pattern ? processBlankBoxesWithHTML(pattern.pattern) : '');
-    const processedExamples = pattern.examples ? processBlankBoxesWithHTML(pattern.examples) : '';
+    const processedExamples = pattern.examplesHtmlContent || (pattern.examples ? processBlankBoxesWithHTML(pattern.examples) : '');
     
     card.innerHTML = `
         <button class="pattern-delete-btn" onclick="deletePattern(${pattern.id})" title="Delete pattern">Del</button>
@@ -277,7 +277,7 @@ function createPatternCard(pattern, number) {
                       placeholder="Enter example sentences (one per line, use [], [ ], [   ] for different sizes)"
                       onkeydown="handleExamplesKeydown(event, ${pattern.id})"
                       onblur="saveExamples(${pattern.id})">${pattern.examples || ''}</textarea>
-            <div class="examples-display ${!pattern.examples ? 'empty' : ''}"
+            <div class="examples-display ${!processedExamples ? 'empty' : ''}"
                  onclick="editExamples(${pattern.id})">
                 ${processedExamples || 'Click to add example sentences (use [], [ ], [   ] for different sizes)'}
             </div>
@@ -320,22 +320,13 @@ function savePattern(id) {
     
     if (pattern) {
         pattern.pattern = input.value.trim();
-        // HTML 콘텐츠 초기화 (새로 입력된 경우)
-        if (pattern.htmlContent) {
-            delete pattern.htmlContent;
-        }
-        
-        // activeTextSelection 임시 저장
-        const tempActiveTextSelection = activeTextSelection;
+        // HTML 콘텐츠는 새 텍스트가 입력되었을 때만 초기화
+        // (기존 스타일을 유지하고 싶다면 이 부분 제거)
         
         adjustCardSize(pattern.id);
         renderPatterns();
         
-        // activeTextSelection 복원 (단, DOM이 재생성되었으므로 무효화)
-        // 따라서 null로 설정하여 새로운 선택을 유도
         activeTextSelection = null;
-        
-        // 텍스트 에디터 컨트롤 숨기기
         hideTextEditorControls();
     }
 }
@@ -1552,7 +1543,7 @@ function updatePatternData(patternId) {
             pattern.htmlContent = displayElement.innerHTML;
         }
         if (examplesDisplay && !examplesDisplay.classList.contains('empty')) {
-            // examples-display의 HTML 내용 저장  
+            // examples-display의 HTML 내용 저장
             pattern.examplesHtmlContent = examplesDisplay.innerHTML;
         }
     }
