@@ -56,7 +56,7 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
         // 선택된 텍스트가 있을 때
         panelSelectedTextInfo = {
             selection: selection,
-            range: selection.getRangeAt(0),
+            range: selection.getRangeAt(0).cloneRange(), // 범위 복사
             element: element,
             text: selectedText
         };
@@ -71,6 +71,7 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
         colorBtns.forEach(btn => {
             btn.style.opacity = '1';
             btn.style.cursor = 'pointer';
+            btn.style.pointerEvents = 'auto'; // 중요: 클릭 이벤트 활성화
         });
     } else {
         // 선택된 텍스트가 없을 때
@@ -84,61 +85,104 @@ function updateTextSelectionPanel(selectedText, selection, element, isValid) {
         colorBtns.forEach(btn => {
             btn.style.opacity = '0.5';
             btn.style.cursor = 'not-allowed';
+            btn.style.pointerEvents = 'none'; // 클릭 이벤트 비활성화
         });
     }
 }
 
 // 패널에서 볼드 적용
 function applyBoldFromPanel() {
-    if (!panelSelectedTextInfo) return;
+    if (!panelSelectedTextInfo) {
+        console.log('선택된 텍스트 정보가 없습니다.');
+        return;
+    }
     
-    const range = panelSelectedTextInfo.range;
-    const text = panelSelectedTextInfo.text;
-    
-    const span = document.createElement('span');
-    span.textContent = text;
-    span.classList.add('text-bold');
-    
-    range.deleteContents();
-    range.insertNode(span);
-    
-    updatePatternFromElement(panelSelectedTextInfo.element);
-    window.getSelection().removeAllRanges(); // 선택 해제
-    updateTextSelectionPanel('', null, null, false);
+    try {
+        const range = panelSelectedTextInfo.range;
+        const text = panelSelectedTextInfo.text;
+        
+        // 새로운 선택 영역 재생성 (기존 선택이 사라질 수 있음)
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        const span = document.createElement('span');
+        span.textContent = text;
+        span.classList.add('text-bold');
+        
+        range.deleteContents();
+        range.insertNode(span);
+        
+        updatePatternFromElement(panelSelectedTextInfo.element);
+        selection.removeAllRanges(); // 선택 해제
+        updateTextSelectionPanel('', null, null, false);
+        
+        console.log('볼드 포맷팅 적용 완료');
+    } catch (error) {
+        console.error('볼드 포맷팅 오류:', error);
+    }
 }
 
 // 패널에서 색상 적용
 function applyColorFromPanel(color) {
-    if (!panelSelectedTextInfo) return;
+    if (!panelSelectedTextInfo) {
+        console.log('선택된 텍스트 정보가 없습니다.');
+        return;
+    }
     
-    const range = panelSelectedTextInfo.range;
-    const text = panelSelectedTextInfo.text;
-    
-    const span = document.createElement('span');
-    span.textContent = text;
-    span.style.color = color;
-    
-    range.deleteContents();
-    range.insertNode(span);
-    
-    updatePatternFromElement(panelSelectedTextInfo.element);
-    window.getSelection().removeAllRanges(); // 선택 해제
-    updateTextSelectionPanel('', null, null, false);
+    try {
+        const range = panelSelectedTextInfo.range;
+        const text = panelSelectedTextInfo.text;
+        
+        // 새로운 선택 영역 재생성
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        const span = document.createElement('span');
+        span.textContent = text;
+        span.style.color = color;
+        
+        range.deleteContents();
+        range.insertNode(span);
+        
+        updatePatternFromElement(panelSelectedTextInfo.element);
+        selection.removeAllRanges(); // 선택 해제
+        updateTextSelectionPanel('', null, null, false);
+        
+        console.log('색상 포맷팅 적용 완료:', color);
+    } catch (error) {
+        console.error('색상 포맷팅 오류:', error);
+    }
 }
 
 // 패널에서 서식 제거
 function clearFormattingFromPanel() {
-    if (!panelSelectedTextInfo) return;
+    if (!panelSelectedTextInfo) {
+        console.log('선택된 텍스트 정보가 없습니다.');
+        return;
+    }
     
-    const range = panelSelectedTextInfo.range;
-    const text = panelSelectedTextInfo.text;
-    
-    range.deleteContents();
-    range.insertNode(document.createTextNode(text));
-    
-    updatePatternFromElement(panelSelectedTextInfo.element);
-    window.getSelection().removeAllRanges(); // 선택 해제
-    updateTextSelectionPanel('', null, null, false);
+    try {
+        const range = panelSelectedTextInfo.range;
+        const text = panelSelectedTextInfo.text;
+        
+        // 새로운 선택 영역 재생성
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        range.deleteContents();
+        range.insertNode(document.createTextNode(text));
+        
+        updatePatternFromElement(panelSelectedTextInfo.element);
+        selection.removeAllRanges(); // 선택 해제
+        updateTextSelectionPanel('', null, null, false);
+        
+        console.log('서식 제거 완료');
+    } catch (error) {
+        console.error('서식 제거 오류:', error);
+    }
 }
 
 // 폰트 크기 조절 함수
