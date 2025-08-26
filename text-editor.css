@@ -1,0 +1,209 @@
+/* ===================================
+   TEXT EDITOR SYSTEM
+   =================================== */
+
+/* Text Selection Styles */
+.pattern-display.editing-mode {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+.selected-text {
+    position: relative;
+    display: inline;
+}
+
+/* Color Palette */
+.color-palette {
+    position: absolute;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: var(--shadow-lg);
+    display: none;
+    z-index: 200;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 200px;
+}
+
+.color-palette.show {
+    display: flex;
+}
+
+.color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    border-color: var(--text);
+}
+
+.color-option.red { background: #EF4444; }
+.color-option.orange { background: #F97316; }
+.color-option.yellow { background: #EAB308; }
+.color-option.green { background: #10B981; }
+.color-option.blue { background: #3B82F6; }
+.color-option.indigo { background: #6366F1; }
+.color-option.purple { background: #8B5CF6; }
+.color-option.black { background: #1F2937; }
+
+/* Font Size Controls */
+.font-size-controls {
+    position: absolute;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow-lg);
+    display: none;
+    z-index: 200;
+    flex-direction: column;
+    gap: 12px;
+    width: 220px;
+}
+
+.font-size-controls.show {
+    display: flex;
+}
+
+.font-size-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.font-size-label {
+    font-size: 0.813rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.font-size-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.font-size-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.font-size-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--surface);
+    outline: none;
+    cursor: pointer;
+}
+
+.font-size-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.font-size-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.font-size-presets {
+    display: flex;
+    gap: 6px;
+    justify-content: space-between;
+}
+
+.preset-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    color: var(--text);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary);
+    background: var(--surface);
+}
+
+.preset-btn:active {
+    background: var(--primary);
+    color: white;
+}
+
+/* Text Editor Toolbar */
+.text-editor-toolbar {
+    position: fixed;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: var(--shadow-lg);
+    display: none;
+    z-index: 10000;
+    flex-direction: row;
+    gap: 4px;
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+}
+
+.text-editor-toolbar.show {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.toolbar-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: var(--text);
+    font-size: 0.813rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+    background: var(--surface);
+}
+
+.toolbar-btn.active {
+    background: var(--primary);
+    color: white;
+}

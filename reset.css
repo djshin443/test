@@ -13,8 +13,8 @@
     user-select: none;
 }
 
-/* Allow text selection for input fields */
-input, textarea {
+/* Allow text selection for input fields and pattern displays */
+input, textarea, .pattern-display {
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
