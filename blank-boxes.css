@@ -3,10 +3,13 @@
    =================================== */
 .blank-box {
     display: inline-block;
-    height: 1.8em;  /* 고정 픽셀 대신 em 단위로 변경 */
-    border: 2px solid var(--primary);
-    border-radius: 6px;
-    margin: 0 4px;
+    /* em 단위로 높이 설정 - 폰트 크기에 비례 */
+    height: 1.8em;
+    /* 테두리도 em 단위로 설정하여 비례 조절 */
+    border: 0.125em solid var(--primary);
+    border-radius: 0.375em;
+    /* 마진도 em 단위로 */
+    margin: 0 0.25em;
     vertical-align: middle;
     background: white;
     position: relative;
@@ -25,12 +28,18 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-size: 0.875rem;
+    /* 폰트 크기 상속받기 */
+    font-size: inherit;
     font-weight: 600;
     /* 추가: 클릭 가능함을 표시 */
     cursor: pointer;
     /* 추가: 부드러운 변경 */
     transition: all 0.2s ease;
+    /* 라인 높이 설정으로 정렬 개선 */
+    line-height: 1;
+    /* 패딩 추가로 내부 여백 확보 */
+    padding: 0 0.2em;
+    box-sizing: border-box;
 }
 
 /* 빈 박스 내부 텍스트 스타일 */
@@ -41,11 +50,6 @@
     -ms-user-select: text;
 }
 
-/* 스타일 적용된 blank-box 우선순위 */
-.blank-box[data-styled="true"] {
-    /* 인라인 스타일이 적용되면 우선순위 부여 */
-}
-
 /* 인라인 스타일이 적용된 경우 우선순위 보장 */
 .blank-box[style*="color"] {
     color: inherit !important;
@@ -53,11 +57,9 @@
 
 .blank-box[style*="font-size"] {
     font-size: inherit !important;
-    /* em 단위로 높이 자동 조정 */
-    height: 1.8em !important;
 }
 
-/* Blank Box Size Variants - em 단위로 변경 */
+/* Blank Box Size Variants - 모두 em 단위로 변경 */
 .blank-box.space-1 {
     width: 3em; /* [] */
 }
@@ -81,11 +83,23 @@
 /* Hover 효과 (선택 가능함을 시각적으로 표시) */
 .blank-box:hover {
     border-color: var(--primary-dark);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 0.125em rgba(99, 102, 241, 0.1);
 }
 
 /* 선택된 상태 (우클릭 시) */
 .blank-box[data-selected="true"] {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+    outline: 0.125em solid var(--primary);
+    outline-offset: 0.125em;
+}
+
+/* 부모 요소의 폰트 크기가 변경될 때 자동으로 조절되도록 */
+.pattern-display .blank-box,
+.examples-display .blank-box {
+    /* 부모의 폰트 크기를 상속받아 자동으로 크기 조절 */
+    font-size: inherit;
+}
+
+/* 스타일이 적용된 blank-box의 크기 유지 */
+.blank-box[data-styled="true"] {
+    /* 폰트 크기가 변경되어도 em 단위로 설정된 너비/높이가 자동 조절됨 */
 }
