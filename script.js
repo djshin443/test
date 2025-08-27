@@ -1375,39 +1375,112 @@ function applyStyleToSelection(property, value) {
     }
     
     try {
-        // 현재 선택상태 확인 및 복원
         const selection = window.getSelection();
         selection.removeAllRanges();
         
-        // 저장된 range 정보로 새로운 range 생성
+        // DOM 노드가 여전히 문서에 존재하는지 확인
+        if (!document.body.contains(activeTextSelection.element)) {
+            alert('선택 영역이 더 이상 존재하지 않습니다. 다시 선택해 주세요.');
+            hideTextEditorControls();
+            return;
+        }
+        
+        // Range 복원을 더 안전하게 처리
         let newRange;
-        try {
-            newRange = document.createRange();
-            newRange.setStart(activeTextSelection.startContainer, activeTextSelection.startOffset);
-            newRange.setEnd(activeTextSelection.endContainer, activeTextSelection.endOffset);
-        } catch (e) {
-            // Range 설정 실패 시 기존 range 사용
-            console.warn('Range 복원 실패, 기존 range 사용:', e);
-            newRange = activeTextSelection.range;
+        let rangeRestored = false;
+        
+        // 먼저 저장된 노드로 시도
+        if (activeTextSelection.startContainer && 
+            activeTextSelection.endContainer &&
+            document.body.contains(activeTextSelection.startContainer.parentElement || activeTextSelection.startContainer) &&
+            document.body.contains(activeTextSelection.endContainer.parentElement || activeTextSelection.endContainer)) {
+            try {
+                newRange = document.createRange();
+                newRange.setStart(activeTextSelection.startContainer, activeTextSelection.startOffset);
+                newRange.setEnd(activeTextSelection.endContainer, activeTextSelection.endOffset);
+                rangeRestored = true;
+            } catch (e) {
+                console.warn('저장된 노드로 Range 복원 실패:', e);
+            }
+        }
+        
+        // 복원 실패 시 element 내에서 텍스트 검색
+        if (!rangeRestored) {
+            const searchText = activeTextSelection.text;
+            const element = activeTextSelection.element;
+            const textContent = element.textContent;
+            const index = textContent.indexOf(searchText);
+            
+            if (index === -1) {
+                alert('선택된 텍스트를 찾을 수 없습니다. 다시 선택해 주세요.');
+                hideTextEditorControls();
+                return;
+            }
+            
+            // 텍스트 노드 찾기
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            let currentIndex = 0;
+            let startNode = null;
+            let startOffset = 0;
+            let endNode = null;
+            let endOffset = 0;
+            
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                const nodeLength = node.textContent.length;
+                
+                if (!startNode && currentIndex + nodeLength > index) {
+                    startNode = node;
+                    startOffset = index - currentIndex;
+                }
+                
+                if (startNode && currentIndex + nodeLength >= index + searchText.length) {
+                    endNode = node;
+                    endOffset = index + searchText.length - currentIndex;
+                    break;
+                }
+                
+                currentIndex += nodeLength;
+            }
+            
+            if (startNode && endNode) {
+                try {
+                    newRange = document.createRange();
+                    newRange.setStart(startNode, startOffset);
+                    newRange.setEnd(endNode, endOffset);
+                    rangeRestored = true;
+                } catch (e) {
+                    console.error('텍스트 검색으로 Range 생성 실패:', e);
+                    alert('스타일 적용 중 오류가 발생했습니다. 다시 선택해 주세요.');
+                    hideTextEditorControls();
+                    return;
+                }
+            } else {
+                alert('선택 영역을 복원할 수 없습니다. 다시 선택해 주세요.');
+                hideTextEditorControls();
+                return;
+            }
         }
         
         // 선택 영역 복원
         selection.addRange(newRange);
         
-        // 실제 선택된 텍스트가 예상과 다른지 확인
+        // 실제 선택된 텍스트 확인
         const currentSelectedText = selection.toString();
-        if (currentSelectedText !== activeTextSelection.text) {
-            console.warn('선택된 텍스트가 예상과 다름:', {
-                expected: activeTextSelection.text,
-                actual: currentSelectedText
+        if (Math.abs(currentSelectedText.length - activeTextSelection.text.length) > 2) {
+            console.warn('선택된 텍스트 길이가 다름:', {
+                expected: activeTextSelection.text.length,
+                actual: currentSelectedText.length
             });
-            
-            // 다른 경우 사용자에게 알림
-            alert('선택 영역이 변경되었습니다. 다시 선택해 주세요.');
-            hideTextEditorControls();
-            return;
         }
         
+        // 스타일 적용 로직 (기존 코드 유지)
         const selectedText = activeTextSelection.text;
         let targetNode = newRange.commonAncestorContainer;
         if (targetNode.nodeType === Node.TEXT_NODE) {
@@ -1417,26 +1490,26 @@ function applyStyleToSelection(property, value) {
         let span;
         
         if (targetNode.tagName === 'SPAN') {
-            // 기존 span의 특정 속성만 업데이트
             span = targetNode;
             span.style.setProperty(property, value);
             
-            // 새로운 range 생성하여 activeTextSelection 업데이트
             const updatedRange = document.createRange();
             updatedRange.selectNodeContents(span);
-            activeTextSelection.range = updatedRange;
-            activeTextSelection.startContainer = updatedRange.startContainer;
-            activeTextSelection.endContainer = updatedRange.endContainer;
-            activeTextSelection.startOffset = updatedRange.startOffset;
-            activeTextSelection.endOffset = updatedRange.endOffset;
+            activeTextSelection = {
+                range: updatedRange,
+                text: span.textContent,
+                element: activeTextSelection.element,
+                startContainer: updatedRange.startContainer,
+                endContainer: updatedRange.endContainer,
+                startOffset: updatedRange.startOffset,
+                endOffset: updatedRange.endOffset,
+                timestamp: Date.now()
+            };
         } else {
-            // 새로운 span 생성 - 기존 스타일 보존
             span = document.createElement('span');
             
-            // 선택된 영역이 이미 다른 span 안에 있는지 확인하고 기존 스타일 복사
             let parentSpan = targetNode.closest('span');
             if (parentSpan) {
-                // 기존 스타일 복사
                 if (parentSpan.style.color && property !== 'color') {
                     span.style.color = parentSpan.style.color;
                 }
@@ -1445,37 +1518,34 @@ function applyStyleToSelection(property, value) {
                 }
             }
             
-            // 새 속성 적용
             span.style.setProperty(property, value);
+            span.style.whiteSpace = 'pre-wrap';
             
-            // 공백 보존을 위해 특별 처리
-            span.style.whiteSpace = 'pre-wrap'; // 공백과 줄바꿈 보존
-            
-            // 텍스트를 HTML 엔티티로 변환하여 공백 보존
             const preservedText = selectedText
-                .replace(/  /g, '\u00A0\u00A0')  // 연속된 공백을 non-breaking space로
-                .replace(/ /g, '\u00A0');  // 모든 공백을 non-breaking space로
+                .replace(/  /g, '\u00A0\u00A0')
+                .replace(/ /g, '\u00A0');
             
             span.textContent = preservedText;
             
             newRange.deleteContents();
             newRange.insertNode(span);
             
-            // 새로운 range 생성하여 activeTextSelection 업데이트
             const newSpanRange = document.createRange();
             newSpanRange.selectNodeContents(span);
-            activeTextSelection.range = newSpanRange;
-            activeTextSelection.startContainer = newSpanRange.startContainer;
-            activeTextSelection.endContainer = newSpanRange.endContainer;
-            activeTextSelection.startOffset = newSpanRange.startOffset;
-            activeTextSelection.endOffset = newSpanRange.endOffset;
-            activeTextSelection.timestamp = Date.now(); // 타임스탬프 업데이트
+            activeTextSelection = {
+                range: newSpanRange,
+                text: span.textContent,
+                element: activeTextSelection.element,
+                startContainer: newSpanRange.startContainer,
+                endContainer: newSpanRange.endContainer,
+                startOffset: newSpanRange.startOffset,
+                endOffset: newSpanRange.endOffset,
+                timestamp: Date.now()
+            };
         }
         
-        // 선택 해제
         clearSelection();
         
-        // 패턴 데이터 업데이트
         const patternId = getPatternIdFromElement(activeTextSelection.element);
         if (patternId) {
             updatePatternData(patternId);
@@ -1485,6 +1555,14 @@ function applyStyleToSelection(property, value) {
         console.error('스타일 적용 오류:', error);
         alert('스타일 적용 중 오류가 발생했습니다. 다시 시도해 주세요.');
         hideTextEditorControls();
+    }
+}
+
+// clearSelection 함수도 추가
+function clearSelection() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        selection.removeAllRanges();
     }
 }
 
