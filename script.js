@@ -1395,7 +1395,7 @@ function applyStyleToSelection(property, value) {
         selection.addRange(newRange);
         
         // 실제 선택된 텍스트가 예상과 다른지 확인
-        const currentSelectedText = selection.toString().trim();
+        const currentSelectedText = selection.toString();
         if (currentSelectedText !== activeTextSelection.text) {
             console.warn('선택된 텍스트가 예상과 다름:', {
                 expected: activeTextSelection.text,
@@ -1447,6 +1447,9 @@ function applyStyleToSelection(property, value) {
             
             // 새 속성 적용
             span.style.setProperty(property, value);
+            
+            // 공백 보존을 위해 innerHTML 대신 textContent 사용하되, 공백 처리 개선
+            span.style.whiteSpace = 'pre-wrap'; // 공백과 줄바꿈 보존
             span.textContent = selectedText;
             
             newRange.deleteContents();
