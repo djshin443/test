@@ -214,3 +214,83 @@
 .examples-display span {
     white-space: pre-wrap;
 }
+
+/* 모바일 툴팁 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* 모바일 더블탭 표시기 */
+.double-tap-indicator {
+    position: fixed;
+    pointer-events: none;
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(99, 102, 241, 0.5);
+    border-radius: 50%;
+    opacity: 0;
+    animation: tapRipple 0.6s ease;
+    z-index: 9999;
+}
+
+@keyframes tapRipple {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* 모바일 터치 영역 최적화 */
+@media (max-width: 768px) {
+    .pattern-display,
+    .examples-display {
+        /* 터치 선택 개선 */
+        -webkit-touch-callout: default;
+        -webkit-user-select: text;
+        user-select: text;
+    }
+    
+    .text-editor-toolbar {
+        /* 모바일에서 더 큰 버튼 */
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .toolbar-btn {
+        padding: 12px 16px;
+        font-size: 0.938rem;
+        min-width: 60px;
+    }
+    
+    /* 컬러 팔레트 모바일 최적화 */
+    .color-palette {
+        width: 240px;
+        padding: 16px;
+    }
+    
+    .color-option {
+        width: 32px;
+        height: 32px;
+    }
+    
+    /* 폰트 크기 컨트롤 모바일 최적화 */
+    .font-size-controls {
+        width: 260px;
+    }
+    
+    .preset-btn {
+        padding: 10px 12px;
+        font-size: 0.813rem;
+    }
+}
