@@ -1459,7 +1459,22 @@ function applyStyleToTextOnly(range, property, value) {
         }
     }
     
-    span.appendChild(extractedContent);
+    // 텍스트 노드의 공백을 보존하며 추가
+    const childNodes = Array.from(extractedContent.childNodes);
+    childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            // 공백을 &nbsp;로 변환
+            const text = preserveSpaces(node.textContent);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = text;
+            while (tempDiv.firstChild) {
+                span.appendChild(tempDiv.firstChild);
+            }
+        } else {
+            span.appendChild(node);
+        }
+    });
+    
     range.insertNode(span);
     
     // activeTextSelection 업데이트
@@ -1470,35 +1485,36 @@ function applyStyleToTextOnly(range, property, value) {
 }
 
 // 새로운 함수: blank-box와 텍스트가 혼재된 경우
+// 기존 함수 교체
 function applyStyleToMixedContent(range, property, value) {
-    // 선택 영역의 HTML을 가져옴
     const fragment = range.extractContents();
-    
-    // 새 컨테이너 생성
     const wrapper = document.createElement('span');
     wrapper.style.setProperty(property, value);
+    wrapper.style.whiteSpace = 'pre-wrap';  // 추가
     
-    // fragment의 모든 자식 노드 처리
     const childNodes = Array.from(fragment.childNodes);
     
     childNodes.forEach(node => {
         if (node.nodeType === Node.TEXT_NODE) {
-            // 텍스트 노드는 span으로 감싸기
-            if (node.textContent.trim()) {
+            if (node.textContent.trim() || node.textContent.includes(' ')) {
                 const textSpan = document.createElement('span');
                 textSpan.style.setProperty(property, value);
-                textSpan.textContent = node.textContent;
+                textSpan.style.whiteSpace = 'pre-wrap';  // 추가
+                
+                // 공백 보존 처리
+                const preservedText = preserveSpaces(node.textContent);
+                textSpan.innerHTML = preservedText;
+                
                 wrapper.appendChild(textSpan);
-            } else {
-                wrapper.appendChild(node);
+            } else if (node.textContent === '') {
+                // 빈 텍스트 노드도 보존
+                wrapper.appendChild(document.createTextNode(''));
             }
         } else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.classList && node.classList.contains('blank-box')) {
-                // blank-box 복제하고 스타일 적용
                 const clonedBox = node.cloneNode(true);
                 clonedBox.style.setProperty(property, value, 'important');
                 
-                // 폰트 크기 변경 시 박스 높이도 조정
                 if (property === 'font-size') {
                     const sizeValue = parseFloat(value);
                     clonedBox.style.setProperty('--size-multiplier', sizeValue);
@@ -1507,17 +1523,18 @@ function applyStyleToMixedContent(range, property, value) {
                 
                 wrapper.appendChild(clonedBox);
             } else {
-                // 다른 요소는 스타일 적용
+                // 다른 요소도 공백 보존
+                if (node.tagName === 'SPAN' && !node.style.whiteSpace) {
+                    node.style.whiteSpace = 'pre-wrap';
+                }
                 node.style.setProperty(property, value);
                 wrapper.appendChild(node);
             }
         }
     });
     
-    // wrapper 삽입
     range.insertNode(wrapper);
     
-    // activeTextSelection 업데이트
     const newRange = document.createRange();
     newRange.selectNodeContents(wrapper);
     activeTextSelection.range = newRange;
@@ -1530,6 +1547,45 @@ function clearSelection() {
     if (selection.rangeCount > 0) {
         selection.removeAllRanges();
     }
+}
+
+// 완전히 새로운 함수 추가
+function preserveSpaces(text) {
+    if (!text) return '';
+    
+    // 각 문자를 확인하며 처리
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+        
+        if (char === ' ') {
+            // 연속된 공백이거나, 문장 시작/끝의 공백
+            if (i === 0 || i === text.length - 1 || nextChar === ' ') {
+                result += '&nbsp;';
+            } else {
+                // 단어 사이의 단일 공백도 보존
+                result += '&nbsp;';
+            }
+        } else if (char === '\n') {
+            result += '<br>';
+        } else if (char === '\t') {
+            result += '&nbsp;&nbsp;&nbsp;&nbsp;';
+        } else {
+            // HTML 특수문자 이스케이프
+            if (char === '<') {
+                result += '&lt;';
+            } else if (char === '>') {
+                result += '&gt;';
+            } else if (char === '&') {
+                result += '&amp;';
+            } else {
+                result += char;
+            }
+        }
+    }
+    
+    return result;
 }
 
 // 텍스트 스타일 초기화
@@ -1594,20 +1650,29 @@ function getPatternIdFromElement(element) {
 
 // 패턴 데이터 업데이트
 function updatePatternData(patternId) {
-   const pattern = patterns.find(p => p.id === patternId);
-   const displayElement = document.querySelector(`#pattern-${patternId} .pattern-display`);
-   const examplesDisplay = document.querySelector(`#pattern-${patternId} .examples-display`);
-   
-   if (pattern) {
-       if (displayElement && !displayElement.classList.contains('empty')) {
-           // pattern-display의 HTML 내용 저장
-           pattern.htmlContent = displayElement.innerHTML;
-       }
-       if (examplesDisplay && !examplesDisplay.classList.contains('empty')) {
-           // examples-display의 HTML 내용 저장
-           pattern.examplesHtmlContent = examplesDisplay.innerHTML;
-       }
-   }
+    const pattern = patterns.find(p => p.id === patternId);
+    const displayElement = document.querySelector(`#pattern-${patternId} .pattern-display`);
+    const examplesDisplay = document.querySelector(`#pattern-${patternId} .examples-display`);
+    
+    if (pattern) {
+        if (displayElement && !displayElement.classList.contains('empty')) {
+            // HTML 저장 시 공백 보존 확인
+            let htmlContent = displayElement.innerHTML;
+            
+            // white-space 스타일이 없는 span에 추가
+            htmlContent = htmlContent.replace(/<span(?![^>]*white-space)/g, '<span style="white-space: pre-wrap;"');
+            
+            pattern.htmlContent = htmlContent;
+        }
+        if (examplesDisplay && !examplesDisplay.classList.contains('empty')) {
+            let htmlContent = examplesDisplay.innerHTML;
+            
+            // white-space 스타일이 없는 span에 추가
+            htmlContent = htmlContent.replace(/<span(?![^>]*white-space)/g, '<span style="white-space: pre-wrap;"');
+            
+            pattern.examplesHtmlContent = htmlContent;
+        }
+    }
 }
 
 // 텍스트 에디터 컨트롤 숨기기
