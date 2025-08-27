@@ -1396,6 +1396,9 @@ function applyStyleToSelection(property, value) {
             return;
         }
         
+        // 선택된 텍스트 저장 (preservedText 정의)
+        const preservedText = activeTextSelection.text;
+        
         // Range 복원을 더 안전하게 처리
         let newRange;
         let rangeRestored = false;
@@ -1417,7 +1420,7 @@ function applyStyleToSelection(property, value) {
         
         // 복원 실패 시 element 내에서 텍스트 검색
         if (!rangeRestored) {
-            const searchText = activeTextSelection.text;
+            const searchText = preservedText;
             const element = activeTextSelection.element;
             const textContent = element.textContent;
             const index = textContent.indexOf(searchText);
@@ -1484,15 +1487,14 @@ function applyStyleToSelection(property, value) {
         
         // 실제 선택된 텍스트 확인
         const currentSelectedText = selection.toString();
-        if (Math.abs(currentSelectedText.length - activeTextSelection.text.length) > 2) {
+        if (Math.abs(currentSelectedText.length - preservedText.length) > 2) {
             console.warn('선택된 텍스트 길이가 다름:', {
-                expected: activeTextSelection.text.length,
+                expected: preservedText.length,
                 actual: currentSelectedText.length
             });
         }
         
-        // 스타일 적용 로직 (기존 코드 유지)
-        const selectedText = activeTextSelection.text;
+        // 스타일 적용 로직
         let targetNode = newRange.commonAncestorContainer;
         if (targetNode.nodeType === Node.TEXT_NODE) {
             targetNode = targetNode.parentElement;
@@ -1500,6 +1502,7 @@ function applyStyleToSelection(property, value) {
         
         let span;
         
+        // 이미 span으로 감싸져 있는 경우
         if (targetNode.tagName === 'SPAN') {
             span = targetNode;
             span.style.setProperty(property, value);
@@ -1517,8 +1520,10 @@ function applyStyleToSelection(property, value) {
                 timestamp: Date.now()
             };
         } else {
+            // 새로운 span 생성
             span = document.createElement('span');
             
+            // 부모 span의 스타일 상속
             let parentSpan = targetNode.closest('span');
             if (parentSpan) {
                 if (parentSpan.style.color && property !== 'color') {
@@ -1529,13 +1534,16 @@ function applyStyleToSelection(property, value) {
                 }
             }
             
+            // 새 스타일 적용
             span.style.setProperty(property, value);
             span.style.whiteSpace = 'pre-wrap';
             span.textContent = preservedText;
             
+            // 기존 내용 삭제하고 새 span 삽입
             newRange.deleteContents();
             newRange.insertNode(span);
             
+            // activeTextSelection 업데이트
             const newSpanRange = document.createRange();
             newSpanRange.selectNodeContents(span);
             activeTextSelection = {
@@ -1550,8 +1558,10 @@ function applyStyleToSelection(property, value) {
             };
         }
         
+        // 선택 해제
         clearSelection();
         
+        // 패턴 데이터 업데이트
         const patternId = getPatternIdFromElement(activeTextSelection.element);
         if (patternId) {
             updatePatternData(patternId);
@@ -1563,6 +1573,7 @@ function applyStyleToSelection(property, value) {
         hideTextEditorControls();
     }
 }
+
 
 // clearSelection 함수도 추가
 function clearSelection() {
@@ -1709,7 +1720,7 @@ function isMobileDevice() {
            (window.innerWidth <= 768);
 }
 
-// 모바일 터치 이벤트 처리
+// 모바일 터치 이벤트 처리 (개선)
 document.addEventListener('touchend', function(event) {
     // 모바일이 아니면 무시
     if (!isMobileDevice()) return;
@@ -1721,81 +1732,87 @@ document.addEventListener('touchend', function(event) {
         return;
     }
     
-    const selection = window.getSelection();
-    const selectedText = selection.toString().trim();
-    
-    // 텍스트가 선택된 상태에서만 처리
-    if (!selectedText || selection.rangeCount === 0) {
-        tapCount = 0;
-        return;
-    }
-    
-    const currentTime = new Date().getTime();
-    const tapDelay = currentTime - lastTapTime;
-    
-    // 500ms 이내에 탭한 경우를 더블탭으로 간주
-    if (tapDelay < 500 && tapDelay > 50) {
-        tapCount++;
+    // 약간의 지연을 주어 선택이 완료되기를 기다림
+    setTimeout(() => {
+        const selection = window.getSelection();
+        const selectedText = selection.toString().trim();
         
-        if (tapCount === 2) {
-            // 더블탭 감지
+        // 텍스트가 선택된 상태에서만 처리
+        if (!selectedText || selection.rangeCount === 0) {
             tapCount = 0;
-            
-            // 선택된 텍스트가 패턴 디스플레이 영역인지 확인
-            const range = selection.getRangeAt(0);
-            let element = range.commonAncestorContainer;
-            
-            if (element.nodeType === Node.TEXT_NODE) {
-                element = element.parentElement;
-            }
-            
-            const patternDisplay = element.closest('.pattern-display, .examples-display');
-            
-            if (patternDisplay && !patternDisplay.closest('.editing')) {
-                // 선택 정보 저장
-                activeTextSelection = {
-                    range: range.cloneRange(),
-                    text: selectedText,
-                    element: patternDisplay,
-                    startContainer: range.startContainer,
-                    endContainer: range.endContainer,
-                    startOffset: range.startOffset,
-                    endOffset: range.endOffset,
-                    timestamp: Date.now()
-                };
-                
-                // 터치 위치 기반으로 툴바 표시
-                let x, y;
-                if (event.changedTouches && event.changedTouches.length > 0) {
-                    x = event.changedTouches[0].clientX;
-                    y = event.changedTouches[0].clientY;
-                } else {
-                    // 폴백: 선택 영역의 중앙
-                    const rect = range.getBoundingClientRect();
-                    x = rect.left + (rect.width / 2);
-                    y = rect.top;
-                }
-                
-                showTextEditorToolbar(x, y);
-                
-                // 진동 피드백 (지원하는 경우)
-                if (navigator.vibrate) {
-                    navigator.vibrate(50);
-                }
-            }
+            return;
         }
-    } else {
-        // 탭 간격이 너무 길면 리셋
-        tapCount = 1;
-    }
-    
-    lastTapTime = currentTime;
-    
-    // 타이머로 탭 카운트 리셋
-    if (tapTimer) clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => {
-        tapCount = 0;
-    }, 600);
+        
+        const currentTime = new Date().getTime();
+        const tapDelay = currentTime - lastTapTime;
+        
+        // 500ms 이내에 탭한 경우를 더블탭으로 간주
+        if (tapDelay < 500 && tapDelay > 50) {
+            tapCount++;
+            
+            if (tapCount === 2) {
+                // 더블탭 감지
+                tapCount = 0;
+                
+                // 선택된 텍스트가 패턴 디스플레이 영역인지 확인
+                const range = selection.getRangeAt(0);
+                let element = range.commonAncestorContainer;
+                
+                if (element.nodeType === Node.TEXT_NODE) {
+                    element = element.parentElement;
+                }
+                
+                const patternDisplay = element.closest('.pattern-display, .examples-display');
+                
+                if (patternDisplay && !patternDisplay.closest('.editing')) {
+                    // Range를 즉시 복제하여 저장
+                    const clonedRange = range.cloneRange();
+                    
+                    // 선택 정보 저장
+                    activeTextSelection = {
+                        range: clonedRange,
+                        text: selectedText,
+                        element: patternDisplay,
+                        startContainer: clonedRange.startContainer,
+                        endContainer: clonedRange.endContainer,
+                        startOffset: clonedRange.startOffset,
+                        endOffset: clonedRange.endOffset,
+                        timestamp: Date.now()
+                    };
+                    
+                    // 터치 위치 기반으로 툴바 표시
+                    let x, y;
+                    if (event.changedTouches && event.changedTouches.length > 0) {
+                        x = event.changedTouches[0].clientX;
+                        y = event.changedTouches[0].clientY;
+                    } else {
+                        // 폴백: 선택 영역의 중앙
+                        const rect = range.getBoundingClientRect();
+                        x = rect.left + (rect.width / 2);
+                        y = rect.top;
+                    }
+                    
+                    showTextEditorToolbar(x, y);
+                    
+                    // 진동 피드백 (지원하는 경우)
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50);
+                    }
+                }
+            }
+        } else {
+            // 탭 간격이 너무 길면 리셋
+            tapCount = 1;
+        }
+        
+        lastTapTime = currentTime;
+        
+        // 타이머로 탭 카운트 리셋
+        if (tapTimer) clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => {
+            tapCount = 0;
+        }, 600);
+    }, 100); // 100ms 지연 추가
 });
 
 // 데스크톱 우클릭은 그대로 유지
