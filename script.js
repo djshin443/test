@@ -1552,8 +1552,8 @@ function applyStyleToMixedContent(range, property, value) {
             }
         } else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.classList && node.classList.contains('blank-box')) {
-                const clonedBox = node.cloneNode(true);
-                clonedBox.style.setProperty(property, value, 'important');
+			    const clonedBox = node.cloneNode(true);
+			    clonedBox.style.setProperty(property, value, 'important');;
                 
                 if (property === 'font-size') {
                     const sizeValue = parseFloat(value);
