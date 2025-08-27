@@ -10,24 +10,40 @@
     vertical-align: middle;
     background: white;
     position: relative;
-    /* 텍스트 선택 활성화 */
     user-select: text;
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
-    /* 텍스트가 들어갈 수 있도록 설정 */
     overflow: visible;
     white-space: nowrap;
-    /* 기본 텍스트 색상을 보라색으로 설정 */
     color: var(--primary);
-    /* 텍스트 정렬 */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 0.875rem;
     font-weight: 600;
+    /* 인라인 스타일 우선순위를 위한 속성 */
+    color: var(--primary);
 }
+
+/* 인라인 스타일이 적용된 경우 우선순위 보장 */
+.blank-box[style*="color"] {
+    color: inherit !important;
+}
+
+.blank-box[style*="font-size"] {
+    font-size: inherit !important;
+    /* 크기 변경 시 박스 크기도 조정 */
+    height: calc(30px * var(--size-multiplier, 1)) !important;
+}
+
+/* 나머지 크기 클래스들은 그대로 유지 */
+.blank-box.space-1 { width: 50px; }
+.blank-box.space-2 { width: 80px; }
+.blank-box.space-3 { width: 110px; }
+.blank-box.space-4 { width: 140px; }
+.blank-box.space-5-plus { width: 170px; }
 
 /* 빈 박스 내부 텍스트 스타일 */
 .blank-box * {

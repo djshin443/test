@@ -115,10 +115,9 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
         return '';
     }
     
-    // 먼저 입력값을 정화하지만 [] 패턴은 보존
+    // 위험한 패턴만 제거하고 [] 패턴은 보존
     let sanitizedText = text;
     if (typeof sanitizedText === 'string') {
-        // 위험한 패턴만 제거하고 [] 패턴은 보존
         const dangerousPatterns = [
             /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
             /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
@@ -135,7 +134,6 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
             sanitizedText = sanitizedText.replace(pattern, '');
         });
         
-        // 길이 제한
         sanitizedText = sanitizedText.substring(0, 500);
     }
     
@@ -145,18 +143,20 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
         let sizeClass = '';
         
         if (spaceCount === 0) {
-            sizeClass = 'space-1'; // [] - 가장 작은 크기
+            sizeClass = 'space-1';
         } else if (spaceCount === 1) {
-            sizeClass = 'space-2'; // [ ] - 작은 크기
+            sizeClass = 'space-2';
         } else if (spaceCount === 2 || spaceCount === 3) {
-            sizeClass = 'space-3'; // [  ] 또는 [   ] - 중간 크기
+            sizeClass = 'space-3';
         } else if (spaceCount === 4 || spaceCount === 5) {
-            sizeClass = 'space-4'; // [    ] 또는 [     ] - 큰 크기
+            sizeClass = 'space-4';
         } else {
-            sizeClass = 'space-5-plus'; // 그 이상 - 가장 큰 크기
+            sizeClass = 'space-5-plus';
         }
         
-        return `<span class="blank-box ${sizeClass}"></span>`;
+        // contenteditable로 선택 가능하게 하고, data 속성 추가
+        return `<span class="blank-box ${sizeClass}" data-blank-box="true" data-selectable="true">​</span>`;
+        // ​는 Zero-width space - 선택 가능하면서 보이지 않는 문자
     });
 }
 
@@ -1050,10 +1050,20 @@ document.addEventListener('click', function(event) {
 
 // 우클릭으로 텍스트 에디터 표시하는 함수
 function handleTextSelectionOnRightClick(event) {
-    event.preventDefault(); // 기본 컨텍스트 메뉴 방지
+    event.preventDefault();
     
     const selection = window.getSelection();
-    const selectedText = selection.toString().trim();
+    let selectedText = selection.toString().trim();
+    
+    // 선택된 텍스트가 없지만 blank-box를 클릭한 경우
+    if (!selectedText && event.target.classList && event.target.classList.contains('blank-box')) {
+        // blank-box 자체를 선택
+        const range = document.createRange();
+        range.selectNode(event.target);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        selectedText = '[]'; // 임시 텍스트
+    }
     
     if (!selectedText || selection.rangeCount === 0) {
         return;
@@ -1067,38 +1077,21 @@ function handleTextSelectionOnRightClick(event) {
     }
     
     // 편집 가능한 영역 찾기
-    let patternDisplay = null;
-    while (element && element !== document.body) {
-        if (element.classList && (
-            element.classList.contains('pattern-display') || 
-            element.classList.contains('examples-display')
-        )) {
-            patternDisplay = element;
-            break;
-        }
-        element = element.parentElement;
-    }
+    let patternDisplay = element.closest('.pattern-display, .examples-display');
     
-    // input/textarea는 스타일 적용 불가
     if (!patternDisplay) {
         return;
     }
-    
-    // Range 정보를 저장
-    const startContainer = range.startContainer;
-    const endContainer = range.endContainer;
-    const startOffset = range.startOffset;
-    const endOffset = range.endOffset;
     
     // 선택 정보 저장
     activeTextSelection = {
         range: range.cloneRange(),
         text: selectedText,
         element: patternDisplay,
-        startContainer: startContainer,
-        endContainer: endContainer,
-        startOffset: startOffset,
-        endOffset: endOffset,
+        startContainer: range.startContainer,
+        endContainer: range.endContainer,
+        startOffset: range.startOffset,
+        endOffset: range.endOffset,
         timestamp: Date.now()
     };
     
@@ -1375,9 +1368,11 @@ function changeTextFontSize(size) {
 }
 
 // 선택된 텍스트를 스타일과 함께 감싸기
-// 선택된 텍스트를 스타일과 함께 감싸기
 function applyStyleToSelection(property, value) {
-    if (!activeTextSelection) return;
+    if (!activeTextSelection) {
+        console.log('No active text selection');
+        return;
+    }
     
     if (activeTextSelection.element.tagName === 'INPUT' || 
         activeTextSelection.element.tagName === 'TEXTAREA') {
@@ -1397,140 +1392,29 @@ function applyStyleToSelection(property, value) {
             return;
         }
         
-        // 선택된 텍스트 저장
-        const preservedText = activeTextSelection.text;
-        
         // Range 복원
-        let newRange;
-        let rangeRestored = false;
+        const range = activeTextSelection.range;
+        selection.addRange(range);
         
-        // 먼저 저장된 노드로 시도
-        if (activeTextSelection.startContainer && 
-            activeTextSelection.endContainer &&
-            document.body.contains(activeTextSelection.startContainer.parentElement || activeTextSelection.startContainer) &&
-            document.body.contains(activeTextSelection.endContainer.parentElement || activeTextSelection.endContainer)) {
-            try {
-                newRange = document.createRange();
-                newRange.setStart(activeTextSelection.startContainer, activeTextSelection.startOffset);
-                newRange.setEnd(activeTextSelection.endContainer, activeTextSelection.endOffset);
-                rangeRestored = true;
-            } catch (e) {
-                console.warn('저장된 노드로 Range 복원 실패:', e);
-            }
+        // 선택된 영역의 모든 요소 가져오기
+        const container = range.commonAncestorContainer;
+        const parentElement = container.nodeType === Node.TEXT_NODE ? 
+            container.parentElement : container;
+        
+        // 선택 영역이 blank-box를 포함하는지 확인
+        const selectedHtml = getSelectedHtml(range);
+        const hasBlankBox = selectedHtml.includes('blank-box');
+        
+        if (hasBlankBox) {
+            // blank-box가 포함된 경우
+            applyStyleToMixedContent(range, property, value);
+        } else {
+            // 일반 텍스트만 있는 경우
+            applyStyleToTextOnly(range, property, value);
         }
-        
-        // 복원 실패 시 element 내에서 텍스트 검색
-        if (!rangeRestored) {
-            const searchText = preservedText;
-            const element = activeTextSelection.element;
-            const textContent = element.textContent;
-            const index = textContent.indexOf(searchText);
-            
-            if (index === -1) {
-                alert('선택된 텍스트를 찾을 수 없습니다. 다시 선택해 주세요.');
-                hideTextEditorControls();
-                return;
-            }
-            
-            // 텍스트 노드 찾기
-            const walker = document.createTreeWalker(
-                element,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-            );
-            
-            let currentIndex = 0;
-            let startNode = null;
-            let startOffset = 0;
-            let endNode = null;
-            let endOffset = 0;
-            
-            while (walker.nextNode()) {
-                const node = walker.currentNode;
-                const nodeLength = node.textContent.length;
-                
-                if (!startNode && currentIndex + nodeLength > index) {
-                    startNode = node;
-                    startOffset = index - currentIndex;
-                }
-                
-                if (startNode && currentIndex + nodeLength >= index + searchText.length) {
-                    endNode = node;
-                    endOffset = index + searchText.length - currentIndex;
-                    break;
-                }
-                
-                currentIndex += nodeLength;
-            }
-            
-            if (startNode && endNode) {
-                try {
-                    newRange = document.createRange();
-                    newRange.setStart(startNode, startOffset);
-                    newRange.setEnd(endNode, endOffset);
-                    rangeRestored = true;
-                } catch (e) {
-                    console.error('텍스트 검색으로 Range 생성 실패:', e);
-                    alert('스타일 적용 중 오류가 발생했습니다. 다시 선택해 주세요.');
-                    hideTextEditorControls();
-                    return;
-                }
-            } else {
-                alert('선택 영역을 복원할 수 없습니다. 다시 선택해 주세요.');
-                hideTextEditorControls();
-                return;
-            }
-        }
-        
-        // 선택 영역 복원
-        selection.addRange(newRange);
-        
-        // 실제로 선택된 콘텐츠를 추출
-        const extractedContent = newRange.extractContents();
-        
-        // 새 span 생성
-        const span = document.createElement('span');
-        span.style.setProperty(property, value);
-        span.style.whiteSpace = 'pre-wrap';
-        
-        // 부모 span의 스타일 상속
-        const targetNode = newRange.commonAncestorContainer.nodeType === Node.TEXT_NODE ?
-            newRange.commonAncestorContainer.parentElement :
-            newRange.commonAncestorContainer;
-            
-        let parentSpan = targetNode.closest('span');
-        if (parentSpan) {
-            if (parentSpan.style.color && property !== 'color') {
-                span.style.color = parentSpan.style.color;
-            }
-            if (parentSpan.style.fontSize && property !== 'font-size') {
-                span.style.fontSize = parentSpan.style.fontSize;
-            }
-        }
-        
-        // 추출한 콘텐츠를 span에 추가
-        span.appendChild(extractedContent);
-        
-        // span을 원래 위치에 삽입
-        newRange.insertNode(span);
-        
-        // activeTextSelection 업데이트
-        const newSpanRange = document.createRange();
-        newSpanRange.selectNodeContents(span);
-        activeTextSelection = {
-            range: newSpanRange,
-            text: span.textContent,
-            element: activeTextSelection.element,
-            startContainer: newSpanRange.startContainer,
-            endContainer: newSpanRange.endContainer,
-            startOffset: newSpanRange.startOffset,
-            endOffset: newSpanRange.endOffset,
-            timestamp: Date.now()
-        };
         
         // 선택 해제
-        clearSelection();
+        selection.removeAllRanges();
         
         // 패턴 데이터 업데이트
         const patternId = getPatternIdFromElement(activeTextSelection.element);
@@ -1545,6 +1429,101 @@ function applyStyleToSelection(property, value) {
     }
 }
 
+// 새로운 헬퍼 함수: 선택된 HTML 가져오기
+function getSelectedHtml(range) {
+    const container = document.createElement('div');
+    container.appendChild(range.cloneContents());
+    return container.innerHTML;
+}
+
+// 새로운 함수: 텍스트만 있는 경우 스타일 적용
+function applyStyleToTextOnly(range, property, value) {
+    const extractedContent = range.extractContents();
+    
+    const span = document.createElement('span');
+    span.style.setProperty(property, value);
+    span.style.whiteSpace = 'pre-wrap';
+    
+    // 부모 스타일 상속
+    const targetNode = range.commonAncestorContainer.nodeType === Node.TEXT_NODE ?
+        range.commonAncestorContainer.parentElement :
+        range.commonAncestorContainer;
+    
+    let parentSpan = targetNode.closest('span:not(.blank-box)');
+    if (parentSpan) {
+        if (parentSpan.style.color && property !== 'color') {
+            span.style.color = parentSpan.style.color;
+        }
+        if (parentSpan.style.fontSize && property !== 'font-size') {
+            span.style.fontSize = parentSpan.style.fontSize;
+        }
+    }
+    
+    span.appendChild(extractedContent);
+    range.insertNode(span);
+    
+    // activeTextSelection 업데이트
+    const newSpanRange = document.createRange();
+    newSpanRange.selectNodeContents(span);
+    activeTextSelection.range = newSpanRange;
+    activeTextSelection.text = span.textContent;
+}
+
+// 새로운 함수: blank-box와 텍스트가 혼재된 경우
+function applyStyleToMixedContent(range, property, value) {
+    // 선택 영역의 HTML을 가져옴
+    const fragment = range.extractContents();
+    
+    // 새 컨테이너 생성
+    const wrapper = document.createElement('span');
+    wrapper.style.setProperty(property, value);
+    
+    // fragment의 모든 자식 노드 처리
+    const childNodes = Array.from(fragment.childNodes);
+    
+    childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            // 텍스트 노드는 span으로 감싸기
+            if (node.textContent.trim()) {
+                const textSpan = document.createElement('span');
+                textSpan.style.setProperty(property, value);
+                textSpan.textContent = node.textContent;
+                wrapper.appendChild(textSpan);
+            } else {
+                wrapper.appendChild(node);
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.classList && node.classList.contains('blank-box')) {
+                // blank-box 복제하고 스타일 적용
+                const clonedBox = node.cloneNode(true);
+                clonedBox.style.setProperty(property, value, 'important');
+                
+                // 폰트 크기 변경 시 박스 높이도 조정
+                if (property === 'font-size') {
+                    const sizeValue = parseFloat(value);
+                    clonedBox.style.setProperty('--size-multiplier', sizeValue);
+                    clonedBox.style.height = `${30 * sizeValue}px`;
+                }
+                
+                wrapper.appendChild(clonedBox);
+            } else {
+                // 다른 요소는 스타일 적용
+                node.style.setProperty(property, value);
+                wrapper.appendChild(node);
+            }
+        }
+    });
+    
+    // wrapper 삽입
+    range.insertNode(wrapper);
+    
+    // activeTextSelection 업데이트
+    const newRange = document.createRange();
+    newRange.selectNodeContents(wrapper);
+    activeTextSelection.range = newRange;
+    activeTextSelection.text = wrapper.textContent;
+}
+
 // clearSelection 함수도 추가
 function clearSelection() {
     const selection = window.getSelection();
@@ -1555,50 +1534,52 @@ function clearSelection() {
 
 // 텍스트 스타일 초기화
 function resetTextStyle() {
-   if (!activeTextSelection) return;
-   
-   try {
-       const range = activeTextSelection.range;
-       const selectedText = activeTextSelection.text;
-       
-       // 현재 선택된 노드 찾기
-       let targetNode = range.commonAncestorContainer;
-       if (targetNode.nodeType === Node.TEXT_NODE) {
-           targetNode = targetNode.parentElement;
-       }
-       
-       // span 태그인 경우 스타일 제거하고 텍스트만 유지
-       if (targetNode.tagName === 'SPAN') {
-           const parent = targetNode.parentNode;
-           const textNode = document.createTextNode(targetNode.textContent);
-           parent.replaceChild(textNode, targetNode);
-           
-           // 새로운 range 생성
-           const newRange = document.createRange();
-           newRange.setStart(textNode, 0);
-           newRange.setEnd(textNode, textNode.textContent.length);
-           activeTextSelection.range = newRange;
-       } else {
-           // 일반 텍스트인 경우 그대로 유지
-           const textNode = document.createTextNode(selectedText);
-           range.deleteContents();
-           range.insertNode(textNode);
-       }
-       
-       // 선택 해제
-       clearSelection();
-       
-       // 패턴 데이터 업데이트
-       const patternId = getPatternIdFromElement(activeTextSelection.element);
-       if (patternId) {
-           updatePatternData(patternId);
-       }
-       
-       hideTextEditorControls();
-   } catch (error) {
-       console.error('스타일 초기화 오류:', error);
-       hideTextEditorControls();
-   }
+    if (!activeTextSelection) return;
+    
+    try {
+        const range = activeTextSelection.range;
+        const container = range.commonAncestorContainer;
+        const parentElement = container.nodeType === Node.TEXT_NODE ? 
+            container.parentElement : container;
+        
+        // 선택 영역의 HTML 가져오기
+        const fragment = range.extractContents();
+        const tempDiv = document.createElement('div');
+        tempDiv.appendChild(fragment);
+        
+        // 모든 스타일 제거
+        const styledElements = tempDiv.querySelectorAll('[style]');
+        styledElements.forEach(el => {
+            if (el.classList && el.classList.contains('blank-box')) {
+                // blank-box는 스타일만 제거
+                el.removeAttribute('style');
+            } else if (el.tagName === 'SPAN') {
+                // 일반 span은 텍스트만 추출
+                const textNode = document.createTextNode(el.textContent);
+                el.parentNode.replaceChild(textNode, el);
+            }
+        });
+        
+        // 정리된 내용을 다시 삽입
+        while (tempDiv.firstChild) {
+            range.insertNode(tempDiv.lastChild);
+        }
+        
+        // 선택 해제
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        
+        // 패턴 데이터 업데이트
+        const patternId = getPatternIdFromElement(activeTextSelection.element);
+        if (patternId) {
+            updatePatternData(patternId);
+        }
+        
+        hideTextEditorControls();
+    } catch (error) {
+        console.error('스타일 초기화 오류:', error);
+        hideTextEditorControls();
+    }
 }
 
 // 패턴 ID 가져오기
