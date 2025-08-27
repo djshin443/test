@@ -30,19 +30,19 @@
 
 /* Pattern Card Size Variants - 예시 표시 시 */
 .pattern-card.size-small {
-    min-height: 120px; /* 140px에서 120px로 줄임 */
+    min-height: 110px; /* 120px에서 110px로 더 줄임 */
 }
 
 .pattern-card.size-medium {
-    min-height: 135px; /* 160px에서 135px로 줄임 */
+    min-height: 120px; /* 135px에서 120px로 더 줄임 */
 }
 
 .pattern-card.size-large {
-    min-height: 150px; /* 180px에서 150px로 줄임 */
+    min-height: 135px; /* 150px에서 135px로 더 줄임 */
 }
 
 .pattern-card.size-xl {
-    min-height: 180px; /* 220px에서 180px로 줄임 */
+    min-height: 160px; /* 180px에서 160px로 더 줄임 */
 }
 
 /* Pattern Card Hover Effects */
