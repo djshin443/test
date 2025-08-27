@@ -110,8 +110,34 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
         return text;
     }
     
-    // 먼저 입력값을 정화
-    const sanitizedText = sanitizeInput(text);
+    // 빈 문자열이나 null 처리
+    if (!text || text.trim() === '') {
+        return '';
+    }
+    
+    // 먼저 입력값을 정화하지만 [] 패턴은 보존
+    let sanitizedText = text;
+    if (typeof sanitizedText === 'string') {
+        // 위험한 패턴만 제거하고 [] 패턴은 보존
+        const dangerousPatterns = [
+            /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
+            /javascript:/gi,
+            /on\w+\s*=/gi,
+            /<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi,
+            /<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi,
+            /<link\b[^>]*>/gi,
+            /<meta\b[^>]*>/gi,
+            /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi
+        ];
+        
+        dangerousPatterns.forEach(pattern => {
+            sanitizedText = sanitizedText.replace(pattern, '');
+        });
+        
+        // 길이 제한
+        sanitizedText = sanitizedText.substring(0, 500);
+    }
     
     // [공백들] 패턴을 찾아서 공백 개수에 따라 박스 크기 조절
     return sanitizedText.replace(/\[(\s*)\]/g, function(match, spaces) {
@@ -320,8 +346,8 @@ function savePattern(id) {
     
     if (pattern) {
         pattern.pattern = input.value.trim();
-        // HTML 콘텐츠는 새 텍스트가 입력되었을 때만 초기화
-        // (기존 스타일을 유지하고 싶다면 이 부분 제거)
+        // HTML 콘텐츠 초기화 (새로운 텍스트 입력 시)
+        pattern.htmlContent = null;
         
         adjustCardSize(pattern.id);
         renderPatterns();
@@ -339,6 +365,8 @@ function saveExamples(id) {
     
     if (pattern) {
         pattern.examples = textarea.value.trim();
+        // HTML 콘텐츠 초기화 (새로운 텍스트 입력 시)
+        pattern.examplesHtmlContent = null;
         
         // activeTextSelection 임시 저장
         const tempActiveTextSelection = activeTextSelection;
