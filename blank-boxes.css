@@ -3,7 +3,7 @@
    =================================== */
 .blank-box {
     display: inline-block;
-    height: 30px;
+    height: 1.8em;  /* 고정 픽셀 대신 em 단위로 변경 */
     border: 2px solid var(--primary);
     border-radius: 6px;
     margin: 0 4px;
@@ -53,29 +53,29 @@
 
 .blank-box[style*="font-size"] {
     font-size: inherit !important;
-    /* 크기 변경 시 박스 크기도 조정 */
-    height: calc(30px * var(--size-multiplier, 1)) !important;
+    /* em 단위로 높이 자동 조정 */
+    height: 1.8em !important;
 }
 
-/* Blank Box Size Variants */
+/* Blank Box Size Variants - em 단위로 변경 */
 .blank-box.space-1 {
-    width: 50px; /* [] */
+    width: 3em; /* [] */
 }
 
 .blank-box.space-2 {
-    width: 80px; /* [ ] */
+    width: 4.5em; /* [ ] */
 }
 
 .blank-box.space-3 {
-    width: 110px; /* [   ] */
+    width: 6.5em; /* [   ] */
 }
 
 .blank-box.space-4 {
-    width: 140px; /* [     ] */
+    width: 8em; /* [     ] */
 }
 
 .blank-box.space-5-plus {
-    width: 170px; /* [       ] 이상 */
+    width: 10em; /* [       ] 이상 */
 }
 
 /* Hover 효과 (선택 가능함을 시각적으로 표시) */
