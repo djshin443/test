@@ -1019,19 +1019,23 @@ document.addEventListener('click', function(event) {
     
     // 패턴 디스플레이 클릭 처리 (기존 로직)
     const patternDisplay = event.target.closest('.pattern-display');
-	if (patternDisplay) {
-		const selection = window.getSelection();
-		if (!selection.toString().trim()) {
-			// 편집 모드로 진입하므로 텍스트 에디터 컨트롤 숨기기
-			hideTextEditorControls();
-			
-			const patternId = patternDisplay.dataset.patternId;
-			if (patternId) {
-				editPattern(parseInt(patternId));
-			}
-		}
-		return;
-	}
+    if (patternDisplay) {
+        const selection = window.getSelection();
+        if (!selection.toString().trim()) {
+            // 모바일에서는 클릭 무시 (더블탭은 이미 구현되어 있음)
+            if (isMobileDevice()) {
+                return;
+            }
+            
+            hideTextEditorControls();
+            const patternId = patternDisplay.dataset.patternId;
+            if (patternId) {
+                editPattern(parseInt(patternId));
+            }
+        }
+        return;
+    }
+    
     
     // 그 외의 모든 곳을 클릭하면 텍스트 에디터 컨트롤 숨기기
     hideTextEditorControls();
