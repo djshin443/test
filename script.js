@@ -1691,19 +1691,123 @@ document.addEventListener('click', function(event) {
    }
 });
 
-// 마우스 우클릭 - 텍스트 에디터 툴바 표시용
+// 모바일 더블탭 지원을 위한 변수
+let lastTapTime = 0;
+let tapCount = 0;
+let tapTimer = null;
+let mobileSelection = null;
+
+// 모바일 디바이스 감지 함수
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768);
+}
+
+// 모바일 터치 이벤트 처리
+document.addEventListener('touchend', function(event) {
+    // 모바일이 아니면 무시
+    if (!isMobileDevice()) return;
+    
+    // 텍스트 에디터 관련 요소 터치는 무시
+    if (event.target.closest('#text-editor-toolbar') ||
+        event.target.closest('#color-palette') ||
+        event.target.closest('#font-size-controls')) {
+        return;
+    }
+    
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    
+    // 텍스트가 선택된 상태에서만 처리
+    if (!selectedText || selection.rangeCount === 0) {
+        tapCount = 0;
+        return;
+    }
+    
+    const currentTime = new Date().getTime();
+    const tapDelay = currentTime - lastTapTime;
+    
+    // 500ms 이내에 탭한 경우를 더블탭으로 간주
+    if (tapDelay < 500 && tapDelay > 50) {
+        tapCount++;
+        
+        if (tapCount === 2) {
+            // 더블탭 감지
+            tapCount = 0;
+            
+            // 선택된 텍스트가 패턴 디스플레이 영역인지 확인
+            const range = selection.getRangeAt(0);
+            let element = range.commonAncestorContainer;
+            
+            if (element.nodeType === Node.TEXT_NODE) {
+                element = element.parentElement;
+            }
+            
+            const patternDisplay = element.closest('.pattern-display, .examples-display');
+            
+            if (patternDisplay && !patternDisplay.closest('.editing')) {
+                // 선택 정보 저장
+                activeTextSelection = {
+                    range: range.cloneRange(),
+                    text: selectedText,
+                    element: patternDisplay,
+                    startContainer: range.startContainer,
+                    endContainer: range.endContainer,
+                    startOffset: range.startOffset,
+                    endOffset: range.endOffset,
+                    timestamp: Date.now()
+                };
+                
+                // 터치 위치 기반으로 툴바 표시
+                let x, y;
+                if (event.changedTouches && event.changedTouches.length > 0) {
+                    x = event.changedTouches[0].clientX;
+                    y = event.changedTouches[0].clientY;
+                } else {
+                    // 폴백: 선택 영역의 중앙
+                    const rect = range.getBoundingClientRect();
+                    x = rect.left + (rect.width / 2);
+                    y = rect.top;
+                }
+                
+                showTextEditorToolbar(x, y);
+                
+                // 진동 피드백 (지원하는 경우)
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+        }
+    } else {
+        // 탭 간격이 너무 길면 리셋
+        tapCount = 1;
+    }
+    
+    lastTapTime = currentTime;
+    
+    // 타이머로 탭 카운트 리셋
+    if (tapTimer) clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => {
+        tapCount = 0;
+    }, 600);
+});
+
+// 데스크톱 우클릭은 그대로 유지
 document.addEventListener('contextmenu', function(event) {
-   // 텍스트가 선택된 상태에서 우클릭한 경우
-   const selection = window.getSelection();
-   const selectedText = selection.toString().trim();
-   
-   if (selectedText) {
-       // 선택된 텍스트가 있으면 우클릭 허용하고 텍스트 에디터 표시
-       handleTextSelectionOnRightClick(event);
-   } else {
-       // 텍스트 선택이 없으면 우클릭 방지
-       event.preventDefault();
-   }
+    // 모바일에서는 우클릭 방지
+    if (isMobileDevice()) {
+        event.preventDefault();
+        return;
+    }
+    
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    
+    if (selectedText) {
+        handleTextSelectionOnRightClick(event);
+    } else {
+        event.preventDefault();
+    }
 });
 
 // 초기화
