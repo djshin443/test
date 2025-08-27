@@ -1520,9 +1520,6 @@ function applyStyleToSelection(property, value) {
             
             span.style.setProperty(property, value);
             span.style.whiteSpace = 'pre-wrap';
-            
-            
-            
             span.textContent = preservedText;
             
             newRange.deleteContents();
