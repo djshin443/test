@@ -1521,9 +1521,7 @@ function applyStyleToSelection(property, value) {
             span.style.setProperty(property, value);
             span.style.whiteSpace = 'pre-wrap';
             
-            const preservedText = selectedText
-                .replace(/  /g, '\u00A0\u00A0')
-                .replace(/ /g, '\u00A0');
+            
             
             span.textContent = preservedText;
             
