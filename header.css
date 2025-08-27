@@ -54,11 +54,11 @@
 
 .main-title {
     font-family: 'Poppins', sans-serif;
-    font-size: 3rem;
+    font-size: 2.5rem; /* 3rem에서 2.5rem으로 줄임 */
     font-weight: 900;
     line-height: 1.1;
     letter-spacing: -0.03em;
-    margin-bottom: 12px;
+    margin-bottom: 8px; /* 12px에서 8px로 줄임 */
     color: var(--text);
 }
 
