@@ -31,7 +31,7 @@ body {
 }
 
 .poster {
-    padding: 50px 60px;
+    padding: 40px 50px; /* 50px 60px에서 40px 50px로 줄임 */
     height: 100%;
     display: flex;
     flex-direction: column;
