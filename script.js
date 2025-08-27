@@ -273,7 +273,6 @@ function createPatternCard(pattern, number) {
                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5 0zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                 </svg>
             </button>
-            
         </div>
         
         <div class="pattern-input-group">
@@ -286,9 +285,10 @@ function createPatternCard(pattern, number) {
                    onkeydown="handlePatternKeydown(event, ${pattern.id})"
                    onblur="savePattern(${pattern.id})">
             <div class="pattern-display ${!processedPattern ? 'empty' : ''}" 
-				 data-pattern-id="${pattern.id}">
-				${processedPattern || 'Click to add pattern (use [], [ ], [   ] for different sizes)'}
-			</div>
+                 data-pattern-id="${pattern.id}"
+                 ondblclick="editPattern(${pattern.id})">
+                ${processedPattern || 'Click to add pattern (use [], [ ], [   ] for different sizes)'}
+            </div>
         </div>
         
         <div class="examples-section" id="examples-section-${pattern.id}">
@@ -299,9 +299,9 @@ function createPatternCard(pattern, number) {
                       onkeydown="handleExamplesKeydown(event, ${pattern.id})"
                       onblur="saveExamples(${pattern.id})">${pattern.examples || ''}</textarea>
             <div class="examples-display ${!processedExamples ? 'empty' : ''}"
-			     onclick="editExamples(${pattern.id})">
-			    ${processedExamples || 'Add examples (use [] for blanks)'}
-			</div>
+                 ondblclick="editExamples(${pattern.id})">
+                ${processedExamples || 'Add examples (use [] for blanks)'}
+            </div>
         </div>
     `;
     
@@ -1012,32 +1012,11 @@ document.addEventListener('click', function(event) {
         return;
     }
     
-    // 패턴 디스플레이 더블클릭 처리 (모든 기기)
-    const patternDisplay = event.target.closest('.pattern-display');
-    if (patternDisplay) {
-        const selection = window.getSelection();
-        
-        // 텍스트가 선택된 상태면 편집 모드로 진입하지 않음
-        if (selection.toString().trim()) {
-            return;
-        }
-        
-        // 더블클릭 감지 (PC와 모바일 모두)
-        const currentTime = new Date().getTime();
-        const clickDelay = currentTime - (patternDisplay.lastClickTime || 0);
-        
-        if (clickDelay < 300) {  // 300ms 이내 두 번 클릭
-            hideTextEditorControls();
-            const patternId = patternDisplay.dataset.patternId;
-            if (patternId) {
-                editPattern(parseInt(patternId));
-            }
-        }
-        
-        patternDisplay.lastClickTime = currentTime;
+    // 패턴 디스플레이나 예시 디스플레이 클릭은 무시 (더블클릭 이벤트를 위해)
+    const isDisplayClick = event.target.closest('.pattern-display, .examples-display');
+    if (isDisplayClick) {
         return;
     }
-    
     
     // 그 외의 모든 곳을 클릭하면 텍스트 에디터 컨트롤 숨기기
     hideTextEditorControls();
@@ -1799,98 +1778,36 @@ function isMobileDevice() {
 }
 
 // 모바일 터치 이벤트 처리 (개선)
-document.addEventListener('touchend', function(event) {
-    // 모바일이 아니면 무시
+document.addEventListener('touchstart', function(event) {
     if (!isMobileDevice()) return;
     
-    // 텍스트 에디터 관련 요소 터치는 무시
-    if (event.target.closest('#text-editor-toolbar') ||
-        event.target.closest('#color-palette') ||
-        event.target.closest('#font-size-controls')) {
-        return;
-    }
+    const patternDisplay = event.target.closest('.pattern-display');
+    const examplesDisplay = event.target.closest('.examples-display');
     
-    // 약간의 지연을 주어 선택이 완료되기를 기다림
-    setTimeout(() => {
-        const selection = window.getSelection();
-        const selectedText = selection.toString().trim();
-        
-        // 텍스트가 선택된 상태에서만 처리
-        if (!selectedText || selection.rangeCount === 0) {
-            tapCount = 0;
-            return;
-        }
-        
+    if (patternDisplay || examplesDisplay) {
         const currentTime = new Date().getTime();
         const tapDelay = currentTime - lastTapTime;
         
-        // 500ms 이내에 탭한 경우를 더블탭으로 간주
-        if (tapDelay < 500 && tapDelay > 50) {
-            tapCount++;
+        if (tapDelay < 300 && tapDelay > 50) {
+            // 더블탭 감지
+            event.preventDefault();
             
-            if (tapCount === 2) {
-                // 더블탭 감지
-                tapCount = 0;
-                
-                // 선택된 텍스트가 패턴 디스플레이 영역인지 확인
-                const range = selection.getRangeAt(0);
-                let element = range.commonAncestorContainer;
-                
-                if (element.nodeType === Node.TEXT_NODE) {
-                    element = element.parentElement;
+            if (patternDisplay) {
+                const patternId = patternDisplay.dataset.patternId;
+                if (patternId) {
+                    editPattern(parseInt(patternId));
                 }
-                
-                const patternDisplay = element.closest('.pattern-display, .examples-display');
-                
-                if (patternDisplay && !patternDisplay.closest('.editing')) {
-                    // Range를 즉시 복제하여 저장
-                    const clonedRange = range.cloneRange();
-                    
-                    // 선택 정보 저장
-                    activeTextSelection = {
-                        range: clonedRange,
-                        text: selectedText,
-                        element: patternDisplay,
-                        startContainer: clonedRange.startContainer,
-                        endContainer: clonedRange.endContainer,
-                        startOffset: clonedRange.startOffset,
-                        endOffset: clonedRange.endOffset,
-                        timestamp: Date.now()
-                    };
-                    
-                    // 터치 위치 기반으로 툴바 표시
-                    let x, y;
-                    if (event.changedTouches && event.changedTouches.length > 0) {
-                        x = event.changedTouches[0].clientX;
-                        y = event.changedTouches[0].clientY;
-                    } else {
-                        // 폴백: 선택 영역의 중앙
-                        const rect = range.getBoundingClientRect();
-                        x = rect.left + (rect.width / 2);
-                        y = rect.top;
-                    }
-                    
-                    showTextEditorToolbar(x, y);
-                    
-                    // 진동 피드백 (지원하는 경우)
-                    if (navigator.vibrate) {
-                        navigator.vibrate(50);
-                    }
+            } else if (examplesDisplay) {
+                const card = examplesDisplay.closest('.pattern-card');
+                if (card) {
+                    const patternId = parseInt(card.id.replace('pattern-', ''));
+                    editExamples(patternId);
                 }
             }
-        } else {
-            // 탭 간격이 너무 길면 리셋
-            tapCount = 1;
         }
         
         lastTapTime = currentTime;
-        
-        // 타이머로 탭 카운트 리셋
-        if (tapTimer) clearTimeout(tapTimer);
-        tapTimer = setTimeout(() => {
-            tapCount = 0;
-        }, 600);
-    }, 100); // 100ms 지연 추가
+    }
 });
 
 // 데스크톱 우클릭은 그대로 유지
