@@ -1445,38 +1445,35 @@ function applyStyleToSelection(property, value) {
         return;
     }
     
-    // ✅ blank-box 전용 처리 (최우선)
+    // blank-box 전용 처리 (최우선)
     if (activeTextSelection.isBlankBox && activeTextSelection.blankBoxElement) {
-        const blankBox = activeTextSelection.blankBoxElement;
-        
-        // 스타일 적용
-        if (property === 'color') {
-            // 기존 보라색 제거하고 새 색상 적용
-            blankBox.style.cssText = blankBox.style.cssText.replace(/color:[^;]+;?/g, '');
-            blankBox.style.setProperty('color', value, 'important');
-            blankBox.setAttribute('data-styled', 'true');
-        } else if (property === 'font-size') {
-            const sizeValue = parseFloat(value);
-            blankBox.style.setProperty('font-size', value, 'important');
-            blankBox.style.setProperty('height', `${30 * sizeValue}px`, 'important');
-            
-            // 너비도 비례하여 조정
-            const currentWidth = parseInt(window.getComputedStyle(blankBox).width);
-            blankBox.style.setProperty('width', `${currentWidth * sizeValue}px`, 'important');
-        }
-        
-        // 시각적 피드백 제거
-        blankBox.style.outline = '';
-        blankBox.style.outlineOffset = '';
-        
-        // 패턴 데이터 업데이트
-        const patternId = getPatternIdFromElement(activeTextSelection.element);
-        if (patternId) {
-            updatePatternData(patternId);
-        }
-        
-        return;  // 여기서 종료
-    }
+	    const blankBox = activeTextSelection.blankBoxElement;
+	    
+	    // 스타일 적용
+	    if (property === 'color') {
+	        blankBox.style.cssText = blankBox.style.cssText.replace(/color:[^;]+;?/g, '');
+	        blankBox.style.setProperty('color', value, 'important');
+	        blankBox.setAttribute('data-styled', 'true');
+	    } else if (property === 'font-size') {
+	        const sizeValue = parseFloat(value);
+	        
+	        // 폰트 크기만 적용 (높이와 너비는 자동으로 조정되도록)
+	        blankBox.style.setProperty('font-size', value, 'important');
+	        // 높이와 너비는 설정하지 않음 - CSS가 자동으로 처리하도록
+	    }
+	    
+	    // 시각적 피드백 제거
+	    blankBox.style.outline = '';
+	    blankBox.style.outlineOffset = '';
+	    
+	    // 패턴 데이터 업데이트
+	    const patternId = getPatternIdFromElement(activeTextSelection.element);
+	    if (patternId) {
+	        updatePatternData(patternId);
+	    }
+	    
+	    return;
+	}
     
     // 일반 텍스트 처리 (기존 코드)
     try {
