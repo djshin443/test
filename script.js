@@ -1455,11 +1455,9 @@ function applyStyleToSelection(property, value) {
 	        blankBox.style.setProperty('color', value, 'important');
 	        blankBox.setAttribute('data-styled', 'true');
 	    } else if (property === 'font-size') {
-	        const sizeValue = parseFloat(value);
-	        
-	        // 폰트 크기만 적용 (높이와 너비는 자동으로 조정되도록)
+	        // font-size만 설정하면 em 단위로 설정된 width와 height가 자동으로 조절됨
 	        blankBox.style.setProperty('font-size', value, 'important');
-	        // 높이와 너비는 설정하지 않음 - CSS가 자동으로 처리하도록
+	        blankBox.setAttribute('data-styled', 'true');
 	    }
 	    
 	    // 시각적 피드백 제거
@@ -1525,12 +1523,11 @@ function applyStyleToSelection(property, value) {
 }
 
 // 새로운 함수: blank-box와 텍스트가 혼재된 경우
-// 기존 함수 교체
 function applyStyleToMixedContent(range, property, value) {
     const fragment = range.extractContents();
     const wrapper = document.createElement('span');
     wrapper.style.setProperty(property, value);
-    wrapper.style.whiteSpace = 'pre-wrap';  // 추가
+    wrapper.style.whiteSpace = 'pre-wrap';
     
     const childNodes = Array.from(fragment.childNodes);
     
@@ -1539,7 +1536,7 @@ function applyStyleToMixedContent(range, property, value) {
             if (node.textContent.trim() || node.textContent.includes(' ')) {
                 const textSpan = document.createElement('span');
                 textSpan.style.setProperty(property, value);
-                textSpan.style.whiteSpace = 'pre-wrap';  // 추가
+                textSpan.style.whiteSpace = 'pre-wrap';
                 
                 // 공백 보존 처리
                 const preservedText = preserveSpaces(node.textContent);
@@ -1552,14 +1549,14 @@ function applyStyleToMixedContent(range, property, value) {
             }
         } else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.classList && node.classList.contains('blank-box')) {
-			    const clonedBox = node.cloneNode(true);
-			    clonedBox.style.setProperty(property, value, 'important');;
-                
+                const clonedBox = node.cloneNode(true);
+                // blank-box의 경우 font-size만 설정하면 em 단위가 자동으로 조절됨
                 if (property === 'font-size') {
-                    const sizeValue = parseFloat(value);
-                    clonedBox.style.setProperty('--size-multiplier', sizeValue);
-                    clonedBox.style.height = `${30 * sizeValue}px`;
+                    clonedBox.style.setProperty('font-size', value, 'important');
+                } else {
+                    clonedBox.style.setProperty(property, value, 'important');
                 }
+                clonedBox.setAttribute('data-styled', 'true');
                 
                 wrapper.appendChild(clonedBox);
             } else {
