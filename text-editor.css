@@ -206,4 +206,11 @@
 .toolbar-btn.active {
     background: var(--primary);
     color: white;
+
+}
+
+/* 스타일이 적용된 텍스트의 공백 보존 */
+.pattern-display span,
+.examples-display span {
+    white-space: pre-wrap;
 }
