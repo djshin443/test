@@ -1448,9 +1448,15 @@ function applyStyleToSelection(property, value) {
             // 새 속성 적용
             span.style.setProperty(property, value);
             
-            // 공백 보존을 위해 innerHTML 대신 textContent 사용하되, 공백 처리 개선
+            // 공백 보존을 위해 특별 처리
             span.style.whiteSpace = 'pre-wrap'; // 공백과 줄바꿈 보존
-            span.textContent = selectedText;
+            
+            // 텍스트를 HTML 엔티티로 변환하여 공백 보존
+            const preservedText = selectedText
+                .replace(/  /g, '\u00A0\u00A0')  // 연속된 공백을 non-breaking space로
+                .replace(/ /g, '\u00A0');  // 모든 공백을 non-breaking space로
+            
+            span.textContent = preservedText;
             
             newRange.deleteContents();
             newRange.insertNode(span);
@@ -1479,13 +1485,6 @@ function applyStyleToSelection(property, value) {
         console.error('스타일 적용 오류:', error);
         alert('스타일 적용 중 오류가 발생했습니다. 다시 시도해 주세요.');
         hideTextEditorControls();
-    }
-}
-
-function clearSelection() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-        selection.removeAllRanges();
     }
 }
 
