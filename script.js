@@ -1375,6 +1375,7 @@ function changeTextFontSize(size) {
 }
 
 // 선택된 텍스트를 스타일과 함께 감싸기
+// 선택된 텍스트를 스타일과 함께 감싸기
 function applyStyleToSelection(property, value) {
    if (!activeTextSelection) return;
    
@@ -1431,7 +1432,7 @@ function applyStyleToSelection(property, value) {
                return;
            }
            
-           // 텍스트 노드 찾기
+           // 텍스트 노드 찾기 (빈 박스 포함)
            const walker = document.createTreeWalker(
                element,
                NodeFilter.SHOW_TEXT,
@@ -1485,11 +1486,11 @@ function applyStyleToSelection(property, value) {
        // 선택 영역 복원
        selection.addRange(newRange);
        
-       // 스타일 적용 로직 - 수정된 버전
+       // 스타일 적용 로직
        const startContainer = newRange.startContainer;
        const endContainer = newRange.endContainer;
        
-       // 단일 텍스트 노드 내에서의 선택인 경우
+       // 단일 텍스트 노드 내에서의 선택인 경우 (빈 박스 처리 포함)
        if (startContainer === endContainer && startContainer.nodeType === Node.TEXT_NODE) {
            const textNode = startContainer;
            const parentElement = textNode.parentElement;
@@ -1508,9 +1509,23 @@ function applyStyleToSelection(property, value) {
            span.style.whiteSpace = 'pre-wrap';
            span.textContent = selectedText;
            
+           // 빈 박스 내부인지 확인하여 기본 색상 설정
+           const isInsideBlankBox = parentElement.classList && parentElement.classList.contains('blank-box');
+           
            // 부모 span의 스타일 상속
            let parentSpan = parentElement.closest('span');
-           if (parentSpan) {
+           if (!parentSpan && !isInsideBlankBox) {
+               // 일반 텍스트의 기본 색상
+               if (property !== 'color') {
+                   span.style.color = 'var(--text)'; // 검은색
+               }
+           } else if (!parentSpan && isInsideBlankBox) {
+               // 빈 박스 내부의 기본 색상
+               if (property !== 'color') {
+                   span.style.color = 'var(--primary)'; // 보라색
+               }
+           } else if (parentSpan) {
+               // 부모 span이 있는 경우 스타일 상속
                if (parentSpan.style.color && property !== 'color') {
                    span.style.color = parentSpan.style.color;
                }
@@ -1536,7 +1551,6 @@ function applyStyleToSelection(property, value) {
            }
            
            // 부모 요소에 새 노드들 삽입
-           // textNode 다음 위치에 새 노드들을 삽입하고 원래 textNode는 제거
            const nextSibling = textNode.nextSibling;
            
            nodes.forEach(node => {
@@ -1591,9 +1605,22 @@ function applyStyleToSelection(property, value) {
                // 새로운 span 생성
                const span = document.createElement('span');
                
-               // 부모 span의 스타일 상속
+               // 빈 박스 내부인지 확인
+               const isInsideBlankBox = targetNode.closest('.blank-box');
+               
+               // 부모 span의 스타일 상속 (기본 색상 설정)
                let parentSpan = targetNode.closest('span');
-               if (parentSpan) {
+               if (!parentSpan && !isInsideBlankBox) {
+                   // 일반 텍스트의 기본 색상
+                   if (property !== 'color') {
+                       span.style.color = 'var(--text)'; // 검은색
+                   }
+               } else if (!parentSpan && isInsideBlankBox) {
+                   // 빈 박스 내부의 기본 색상
+                   if (property !== 'color') {
+                       span.style.color = 'var(--primary)'; // 보라색
+                   }
+               } else if (parentSpan) {
                    if (parentSpan.style.color && property !== 'color') {
                        span.style.color = parentSpan.style.color;
                    }
