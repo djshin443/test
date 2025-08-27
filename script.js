@@ -1017,22 +1017,29 @@ document.addEventListener('click', function(event) {
         return;
     }
     
-    // 패턴 디스플레이 클릭 처리 (기존 로직)
+    // 패턴 디스플레이 더블클릭 처리 (모든 기기)
     const patternDisplay = event.target.closest('.pattern-display');
     if (patternDisplay) {
         const selection = window.getSelection();
-        if (!selection.toString().trim()) {
-            // 모바일에서는 클릭 무시 (더블탭은 이미 구현되어 있음)
-            if (isMobileDevice()) {
-                return;
-            }
-            
+        
+        // 텍스트가 선택된 상태면 편집 모드로 진입하지 않음
+        if (selection.toString().trim()) {
+            return;
+        }
+        
+        // 더블클릭 감지 (PC와 모바일 모두)
+        const currentTime = new Date().getTime();
+        const clickDelay = currentTime - (patternDisplay.lastClickTime || 0);
+        
+        if (clickDelay < 300) {  // 300ms 이내 두 번 클릭
             hideTextEditorControls();
             const patternId = patternDisplay.dataset.patternId;
             if (patternId) {
                 editPattern(parseInt(patternId));
             }
         }
+        
+        patternDisplay.lastClickTime = currentTime;
         return;
     }
     
