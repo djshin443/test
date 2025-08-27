@@ -304,9 +304,9 @@ function createPatternCard(pattern, number) {
                       onkeydown="handleExamplesKeydown(event, ${pattern.id})"
                       onblur="saveExamples(${pattern.id})">${pattern.examples || ''}</textarea>
             <div class="examples-display ${!processedExamples ? 'empty' : ''}"
-                 onclick="editExamples(${pattern.id})">
-                ${processedExamples || 'Click to add example sentences (use [], [ ], [   ] for different sizes)'}
-            </div>
+			     onclick="editExamples(${pattern.id})">
+			    ${processedExamples || 'Add examples (use [] for blanks)'}
+			</div>
         </div>
     `;
     
