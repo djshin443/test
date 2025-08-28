@@ -1369,7 +1369,9 @@ function applyStyleToTextOnly(range, property, value) {
     const span = document.createElement('span');
     span.style.setProperty(property, value);
     span.style.whiteSpace = 'pre-wrap';
-    
+    span.style.verticalAlign = 'baseline';  /* 추가 */
+    span.style.display = 'inline';           /* 추가 */
+	
     // 부모 스타일 상속
     const targetNode = range.commonAncestorContainer.nodeType === Node.TEXT_NODE ?
         range.commonAncestorContainer.parentElement :
@@ -1507,6 +1509,8 @@ function applyStyleToMixedContent(range, property, value) {
     const wrapper = document.createElement('span');
     wrapper.style.setProperty(property, value);
     wrapper.style.whiteSpace = 'pre-wrap';
+	wrapper.style.verticalAlign = 'baseline';  /* 추가 */
+    wrapper.style.display = 'inline';           /* 추가 */
     
     const childNodes = Array.from(fragment.childNodes);
     
@@ -1516,6 +1520,8 @@ function applyStyleToMixedContent(range, property, value) {
                 const textSpan = document.createElement('span');
                 textSpan.style.setProperty(property, value);
                 textSpan.style.whiteSpace = 'pre-wrap';
+                textSpan.style.verticalAlign = 'baseline';  /* 추가 */
+                textSpan.style.display = 'inline';           /* 추가 */
                 
                 // 공백 보존 처리
                 const preservedText = preserveSpaces(node.textContent);
@@ -1540,9 +1546,11 @@ function applyStyleToMixedContent(range, property, value) {
                 wrapper.appendChild(clonedBox);
             } else {
                 // 다른 요소도 공백 보존
-                if (node.tagName === 'SPAN' && !node.style.whiteSpace) {
-                    node.style.whiteSpace = 'pre-wrap';
-                }
+                if (node.tagName === 'SPAN') {
+	                node.style.whiteSpace = 'pre-wrap';
+	                node.style.verticalAlign = 'baseline';      /* 추가 */
+	                node.style.display = 'inline';               /* 추가 */
+	            }
                 node.style.setProperty(property, value);
                 wrapper.appendChild(node);
             }
