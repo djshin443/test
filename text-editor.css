@@ -213,6 +213,16 @@
 .pattern-display span,
 .examples-display span {
     white-space: pre-wrap;
+    vertical-align: baseline;  /* 추가 */
+    display: inline;           /* 추가 */
+    line-height: inherit;      /* 추가 */
+}
+
+/* 중첩된 span 정렬 보정 */      /* 새로 추가된 블록 */
+.pattern-display span span,
+.examples-display span span {
+    vertical-align: baseline;
+    line-height: 1;
 }
 
 /* 모바일 툴팁 애니메이션 */
@@ -294,3 +304,4 @@
         font-size: 0.813rem;
     }
 }
+
