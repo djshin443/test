@@ -1,10 +1,9 @@
-/* ===================================
-   BLANK BOXES ([] CONVERSION)
-   =================================== */
 .blank-box {
     display: inline-block;
     /* em 단위로 높이 설정 - 폰트 크기에 비례 */
     height: 1.8em;
+    /* 최소 너비 설정 추가 */
+    min-width: 2em;
     /* 테두리도 em 단위로 설정하여 비례 조절 */
     border: 0.125em solid var(--primary);
     border-radius: 0.375em;
@@ -38,11 +37,11 @@
     /* 라인 높이 설정으로 정렬 개선 */
     line-height: 1;
     /* 패딩 추가로 내부 여백 확보 */
-    padding: 0 0.2em;
+    padding: 0 0.5em;
     box-sizing: border-box;
 }
 
-/* blank-box가 span 내부에 있을 때 정렬 보정 */  /* 새로 추가된 블록 */
+/* blank-box가 span 내부에 있을 때 정렬 보정 */
 span .blank-box {
     vertical-align: baseline;
     margin-bottom: -0.15em; /* 미세 조정 */
