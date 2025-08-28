@@ -9,12 +9,6 @@ let textEditorToolbar = null;
 // 폰트 크기 기준값 관리를 위한 전역 변수 추가
 let originalFontSizes = new Map(); // 각 요소의 원본 폰트 크기 저장
 
-// 모바일 더블탭 지원을 위한 변수
-let lastTapTime = 0;
-let tapCount = 0;
-let tapTimer = null;
-let mobileSelection = null;
-
 // 텍스트 에디터 초기화
 function initTextEditor() {
     // 컬러 팔레트 생성
@@ -39,14 +33,17 @@ function addTextEditorEventListeners() {
             !event.target.closest('#font-size-controls')) {
             
             // 드래그가 시작되면 기존 activeTextSelection 초기화
-            if (activeTextSelection) {
+            if (activeTextSelection && !event.target.closest('.pattern-display, .examples-display')) {
                 activeTextSelection = null;
             }
         }
     });
     
-    // mouseup 이벤트는 텍스트 선택 감지만 (툴바 표시하지 않음)
+    // mouseup 이벤트로 텍스트 선택 감지 및 툴바 활성화
     document.addEventListener('mouseup', handleTextSelection);
+    
+    // 키보드 선택도 지원 (Shift + 화살표 등)
+    document.addEventListener('keyup', handleTextSelection);
 }
 
 // 컬러 팔레트 생성
@@ -188,21 +185,18 @@ function createTextEditorToolbar() {
     document.getElementById('toolbar-color-btn').addEventListener('click', function(e) {
         e.stopPropagation();
         e.preventDefault();
-        console.log('Color 버튼 클릭됨');
         showColorPalette(e);
     });
     
     document.getElementById('toolbar-size-btn').addEventListener('click', function(e) {
         e.stopPropagation();
         e.preventDefault();
-        console.log('Size 버튼 클릭됨');
         showFontSizeControls(e);
     });
     
     document.getElementById('toolbar-reset-btn').addEventListener('click', function(e) {
         e.stopPropagation();
         e.preventDefault();
-        console.log('Reset 버튼 클릭됨');
         resetTextStyle();
     });
 }
@@ -219,97 +213,25 @@ document.addEventListener('click', function(event) {
         return;
     }
     
-    // 입력 필드들 (input, textarea) 클릭 시에는 텍스트 에디터 컨트롤 숨기지 않음
+    // 입력 필드들 (input, textarea) 클릭 시에는 컨트롤 숨기지 않음
     const isInputField = event.target.matches('input, textarea') || event.target.closest('input, textarea');
     if (isInputField) {
         return;
     }
     
-    // 패턴 디스플레이나 예시 디스플레이 클릭은 무시 (더블클릭 이벤트를 위해)
+    // 패턴 디스플레이나 예시 디스플레이 클릭은 무시
     const isDisplayClick = event.target.closest('.pattern-display, .examples-display');
     if (isDisplayClick) {
         return;
     }
     
-    // 그 외의 모든 곳을 클릭하면 텍스트 에디터 컨트롤 숨기기
+    // 그 외의 모든 곳을 클릭하면 선택 해제하고 컨트롤 숨기기
     hideTextEditorControls();
 });
 
-// 우클릭으로 텍스트 에디터 표시하는 함수
-function handleTextSelectionOnRightClick(event) {
-    event.preventDefault();
-    
-    // blank-box를 직접 우클릭한 경우
-    if (event.target.classList && event.target.classList.contains('blank-box')) {
-        console.log('Blank box 직접 선택됨');
-        
-        const blankBox = event.target;
-        const patternDisplay = blankBox.closest('.pattern-display, .examples-display');
-        
-        if (!patternDisplay) return;
-        
-        // blank-box 전용 선택 상태 저장
-        activeTextSelection = {
-            isBlankBox: true,
-            blankBoxElement: blankBox,
-            element: patternDisplay,
-            text: '[]',
-            timestamp: Date.now()
-        };
-        
-        // blank-box에 시각적 피드백
-        blankBox.style.outline = '2px solid #6366F1';
-        blankBox.style.outlineOffset = '2px';
-        
-        showTextEditorToolbar(event.clientX, event.clientY);
-        return;
-    }
-    
-    // 일반 텍스트 선택 처리
-    const selection = window.getSelection();
-    const selectedText = selection.toString().trim();
-    
-    if (!selectedText || selection.rangeCount === 0) {
-        return;
-    }
-    
-    const range = selection.getRangeAt(0);
-    let element = range.commonAncestorContainer;
-    
-    if (element.nodeType === Node.TEXT_NODE) {
-        element = element.parentElement;
-    }
-    
-    let patternDisplay = element.closest('.pattern-display, .examples-display');
-    
-    if (!patternDisplay) {
-        return;
-    }
-    
-    activeTextSelection = {
-        range: range.cloneRange(),
-        text: selectedText,
-        element: patternDisplay,
-        startContainer: range.startContainer,
-        endContainer: range.endContainer,
-        startOffset: range.startOffset,
-        endOffset: range.endOffset,
-        timestamp: Date.now()
-    };
-    
-    showTextEditorToolbar(event.clientX, event.clientY);
-}
-
-// 텍스트 선택 처리 (드래그 완료 시 - 이제 툴바를 바로 표시하지 않음)
+// 텍스트 선택 처리 (선택 완료 시 바로 툴바 활성화)
 function handleTextSelection(event) {
-    // 툴바나 컨트롤이 이미 표시중이면 무시
-    if (textEditorToolbar && textEditorToolbar.classList.contains('show')) {
-        return;
-    }
-    if (colorPalette && colorPalette.classList.contains('show')) return;
-    if (fontSizeControls && fontSizeControls.classList.contains('show')) return;
-    
-    // 툴바 관련 요소 클릭시 무시
+    // 툴바나 컨트롤 관련 요소 클릭시 무시
     if (event.target && (
         event.target.closest('#text-editor-toolbar') ||
         event.target.closest('#color-palette') ||
@@ -318,85 +240,67 @@ function handleTextSelection(event) {
         return;
     }
     
-    // 드래그로 텍스트를 선택했을 때는 툴바를 표시하지 않음
-    // 대신 사용자가 우클릭할 때까지 대기
     setTimeout(() => {
         const selection = window.getSelection();
         const selectedText = selection.toString().trim();
         
         if (!selectedText || selection.rangeCount === 0) {
-            // 선택이 없을 때만 activeTextSelection 초기화
-            if (!textEditorToolbar || !textEditorToolbar.classList.contains('show')) {
-                activeTextSelection = null;
-            }
+            // 선택이 없을 때 activeTextSelection 초기화
+            activeTextSelection = null;
             return;
         }
         
-        // 선택은 되었지만 툴바는 표시하지 않음 (우클릭을 기다림)
-        console.log('텍스트가 선택되었습니다. 우클릭하여 편집 도구를 표시하세요.');
+        const range = selection.getRangeAt(0);
+        let element = range.commonAncestorContainer;
+        
+        if (element.nodeType === Node.TEXT_NODE) {
+            element = element.parentElement;
+        }
+        
+        // blank-box 직접 선택 확인
+        if (element.classList && element.classList.contains('blank-box')) {
+            const patternDisplay = element.closest('.pattern-display, .examples-display');
+            
+            if (!patternDisplay) return;
+            
+            activeTextSelection = {
+                isBlankBox: true,
+                blankBoxElement: element,
+                element: patternDisplay,
+                text: '[]',
+                timestamp: Date.now()
+            };
+            
+            // blank-box에 시각적 피드백
+            element.style.outline = '2px solid #6366F1';
+            element.style.outlineOffset = '2px';
+            
+            return;
+        }
+        
+        let patternDisplay = element.closest('.pattern-display, .examples-display');
+        
+        if (!patternDisplay) {
+            return;
+        }
+        
+        // 입력 필드에서 선택한 경우 무시
+        if (patternDisplay.tagName === 'INPUT' || patternDisplay.tagName === 'TEXTAREA') {
+            return;
+        }
+        
+        activeTextSelection = {
+            range: range.cloneRange(),
+            text: selectedText,
+            element: patternDisplay,
+            startContainer: range.startContainer,
+            endContainer: range.endContainer,
+            startOffset: range.startOffset,
+            endOffset: range.endOffset,
+            timestamp: Date.now()
+        };
         
     }, 50);
-}
-
-// 툴바 표시
-function showTextEditorToolbar(x, y) {
-    console.log('showTextEditorToolbar 호출됨:', x, y);
-    console.log('textEditorToolbar 존재:', !!textEditorToolbar);
-    
-    // 기존 컨트롤 숨기기 (툴바는 제외)
-    if (colorPalette) colorPalette.style.display = 'none';
-    if (fontSizeControls) fontSizeControls.style.display = 'none';
-    
-    if (!textEditorToolbar) {
-        console.error('텍스트 에디터 툴바가 존재하지 않음');
-        return;
-    }
-    
-    // 먼저 툴바를 보이게 한 후 실제 크기 측정
-    textEditorToolbar.style.visibility = 'hidden';
-    textEditorToolbar.style.display = 'flex';
-    textEditorToolbar.classList.add('show');
-    
-    // 실제 툴바 크기 측정
-    const toolbarRect = textEditorToolbar.getBoundingClientRect();
-    const toolbarWidth = toolbarRect.width;
-    const toolbarHeight = toolbarRect.height;
-    
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const scrollX = window.scrollX || window.pageXOffset;
-    const scrollY = window.scrollY || window.pageYOffset;
-    
-    // X 좌표 조정 (스크롤 위치 고려)
-    let leftPosition = x + scrollX;
-    if (leftPosition + toolbarWidth > viewportWidth + scrollX) {
-        leftPosition = viewportWidth + scrollX - toolbarWidth - 10;
-    }
-    if (leftPosition < scrollX + 10) {
-        leftPosition = scrollX + 10;
-    }
-    
-    // Y 좌표 조정 (마우스 위치에서 약간 위쪽에 표시, 스크롤 위치 고려)
-    let topPosition = y + scrollY - toolbarHeight - 10;
-    if (topPosition < scrollY + 10) {
-        topPosition = y + scrollY + 20; // 마우스 아래쪽에 표시
-    }
-    if (topPosition + toolbarHeight > viewportHeight + scrollY - 20) {
-        topPosition = viewportHeight + scrollY - toolbarHeight - 20;
-    }
-    
-    textEditorToolbar.style.left = leftPosition + 'px';
-    textEditorToolbar.style.top = topPosition + 'px';
-    textEditorToolbar.style.visibility = 'visible';
-    
-    console.log('툴바 스타일 설정됨:', {
-        left: textEditorToolbar.style.left,
-        top: textEditorToolbar.style.top,
-        mouseX: x,
-        mouseY: y,
-        scrollX: scrollX,
-        scrollY: scrollY
-    });
 }
 
 // 컬러 팔레트 표시
@@ -407,8 +311,6 @@ function showColorPalette(e) {
     }
     
     if (!activeTextSelection) {
-        console.log('No active selection - trying to restore from current selection');
-        
         // 현재 브라우저 선택 상태에서 activeTextSelection 복원 시도
         const selection = window.getSelection();
         if (selection.rangeCount > 0 && selection.toString().trim()) {
@@ -444,7 +346,7 @@ function showColorPalette(e) {
     
     const toolbarRect = textEditorToolbar.getBoundingClientRect();
     colorPalette.style.left = toolbarRect.left + 'px';
-    colorPalette.style.top = (toolbarRect.bottom + 10) + 'px';
+    colorPalette.style.top = (toolbarRect.top - 150) + 'px';
     colorPalette.style.display = 'flex';
     colorPalette.classList.add('show');
     
@@ -463,8 +365,6 @@ function showFontSizeControls(e) {
     }
     
     if (!activeTextSelection) {
-        console.log('No active selection - trying to restore from current selection');
-        
         // 현재 브라우저 선택 상태에서 activeTextSelection 복원 시도
         const selection = window.getSelection();
         if (selection.rangeCount > 0 && selection.toString().trim()) {
@@ -500,7 +400,7 @@ function showFontSizeControls(e) {
     
     const toolbarRect = textEditorToolbar.getBoundingClientRect();
     fontSizeControls.style.left = toolbarRect.left + 'px';
-    fontSizeControls.style.top = (toolbarRect.bottom + 10) + 'px';
+    fontSizeControls.style.top = (toolbarRect.top - 180) + 'px';
     fontSizeControls.style.display = 'flex';
     fontSizeControls.classList.add('show');
     
@@ -729,7 +629,6 @@ function applyStyleToTextOnly(range, property, value) {
 // 새로운 함수: 텍스트만 있는 경우 스타일 적용
 function applyStyleToSelection(property, value) {
     if (!activeTextSelection) {
-        console.log('No active text selection');
         return;
     }
     
@@ -838,66 +737,99 @@ function applyStyleToSelection(property, value) {
     }
 }
 
-// 새로운 함수: blank-box와 텍스트가 혼재된 경우
+// 새로운 함수: blank-box와 텍스트가 혼재된 경우 - 안전한 방식으로 처리
 function applyStyleToMixedContent(range, property, value) {
+    // 선택된 영역의 내용을 추출
     const fragment = range.extractContents();
-    const wrapper = document.createElement('span');
-    wrapper.style.setProperty(property, value);
-    wrapper.style.whiteSpace = 'pre-wrap';
-	wrapper.style.verticalAlign = 'baseline';  /* 추가 */
-    wrapper.style.display = 'inline';           /* 추가 */
+    const tempContainer = document.createElement('div');
+    tempContainer.appendChild(fragment);
     
-    const childNodes = Array.from(fragment.childNodes);
-    
-    childNodes.forEach(node => {
+    // 모든 노드를 순회하면서 처리
+    const processNode = (node) => {
         if (node.nodeType === Node.TEXT_NODE) {
-            if (node.textContent.trim() || node.textContent.includes(' ')) {
+            // 텍스트 노드가 내용이 있는 경우
+            if (node.textContent && (node.textContent.trim() || node.textContent.includes(' '))) {
                 const textSpan = document.createElement('span');
                 textSpan.style.setProperty(property, value);
                 textSpan.style.whiteSpace = 'pre-wrap';
-                textSpan.style.verticalAlign = 'baseline';  /* 추가 */
-                textSpan.style.display = 'inline';           /* 추가 */
-                
-                // 공백 보존 처리
-                const preservedText = preserveSpaces(node.textContent);
-                textSpan.innerHTML = preservedText;
-                
-                wrapper.appendChild(textSpan);
-            } else if (node.textContent === '') {
-                // 빈 텍스트 노드도 보존
-                wrapper.appendChild(document.createTextNode(''));
+                textSpan.style.verticalAlign = 'baseline';
+                textSpan.style.display = 'inline';
+                textSpan.innerHTML = preserveSpaces(node.textContent);
+                return textSpan;
             }
+            return node;
         } else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.classList && node.classList.contains('blank-box')) {
-                const clonedBox = node.cloneNode(true);
-                // blank-box의 경우 font-size만 설정하면 em 단위가 자동으로 조절됨
-                if (property === 'font-size') {
-                    clonedBox.style.setProperty('font-size', value, 'important');
-                } else {
-                    clonedBox.style.setProperty(property, value, 'important');
+                // blank-box는 직접 스타일만 적용하고 그대로 반환
+                if (property === 'color') {
+                    node.style.setProperty('color', value, 'important');
+                } else if (property === 'font-size') {
+                    node.style.setProperty('font-size', value, 'important');
                 }
-                clonedBox.setAttribute('data-styled', 'true');
-                
-                wrapper.appendChild(clonedBox);
-            } else {
-                // 다른 요소도 공백 보존
-                if (node.tagName === 'SPAN') {
-	                node.style.whiteSpace = 'pre-wrap';
-	                node.style.verticalAlign = 'baseline';      /* 추가 */
-	                node.style.display = 'inline';               /* 추가 */
-	            }
+                node.setAttribute('data-styled', 'true');
+                return node; // 기존 노드를 그대로 반환
+            } else if (node.tagName === 'SPAN') {
+                // 기존 span 요소는 스타일만 추가
                 node.style.setProperty(property, value);
-                wrapper.appendChild(node);
+                node.style.whiteSpace = 'pre-wrap';
+                node.style.verticalAlign = 'baseline';
+                node.style.display = 'inline';
+                
+                // 자식 노드들도 재귀적으로 처리
+                const childNodes = Array.from(node.childNodes);
+                childNodes.forEach((childNode, index) => {
+                    const processedChild = processNode(childNode);
+                    if (processedChild !== childNode) {
+                        node.replaceChild(processedChild, childNode);
+                    }
+                });
+                return node;
+            } else {
+                // 다른 요소들은 자식 노드 처리 후 스타일 적용
+                const childNodes = Array.from(node.childNodes);
+                childNodes.forEach((childNode, index) => {
+                    const processedChild = processNode(childNode);
+                    if (processedChild !== childNode) {
+                        node.replaceChild(processedChild, childNode);
+                    }
+                });
+                node.style.setProperty(property, value);
+                return node;
             }
         }
+        return node;
+    };
+    
+    // 최상위 노드들 처리
+    const childNodes = Array.from(tempContainer.childNodes);
+    const processedNodes = [];
+    
+    childNodes.forEach(node => {
+        const processedNode = processNode(node);
+        processedNodes.push(processedNode);
     });
     
-    range.insertNode(wrapper);
+    // DocumentFragment를 사용하여 순서 유지하면서 한번에 삽입
+    const fragmentToInsert = document.createDocumentFragment();
+    processedNodes.forEach(node => {
+        fragmentToInsert.appendChild(node);
+    });
     
-    const newRange = document.createRange();
-    newRange.selectNodeContents(wrapper);
-    activeTextSelection.range = newRange;
-    activeTextSelection.text = wrapper.textContent;
+    // 한 번에 모든 노드 삽입
+    range.insertNode(fragmentToInsert);
+    
+    // 새로운 범위 설정
+    try {
+        const newRange = document.createRange();
+        if (processedNodes.length > 0) {
+            newRange.setStartBefore(processedNodes[0]);
+            newRange.setEndAfter(processedNodes[processedNodes.length - 1]);
+        }
+        activeTextSelection.range = newRange;
+    } catch (e) {
+        // 범위 설정 실패 시 원본 범위 유지
+        activeTextSelection.range = range;
+    }
 }
 
 // clearSelection 함수도 추가
@@ -946,29 +878,53 @@ function resetTextStyle() {
     
     // blank-box 리셋 처리
     if (activeTextSelection.isBlankBox && activeTextSelection.blankBoxElement) {
-        const blankBox = activeTextSelection.blankBoxElement;
-        const elementId = blankBox.getAttribute('data-element-id');
-        
-        // 원본 크기가 있다면 복원, 없다면 1.0으로 설정
-        if (elementId && originalFontSizes.has(elementId)) {
-            const originalSize = originalFontSizes.get(elementId);
-            blankBox.style.setProperty('font-size', `${originalSize}em`, 'important');
-        } else {
-            // 모든 인라인 스타일 제거 (기본값으로 복원)
-            blankBox.removeAttribute('style');
-        }
-        
-        blankBox.removeAttribute('data-styled');
-        
-        // 패턴 데이터 업데이트
-        const patternId = getPatternIdFromElement(activeTextSelection.element);
-        if (patternId) {
-            updatePatternData(patternId);
-        }
-        
-        hideTextEditorControls();
-        return;
-    }
+		const blankBox = activeTextSelection.blankBoxElement;
+		
+		// 원본 크기 저장
+		const elementId = blankBox.getAttribute('data-element-id') || 
+			'blank-box-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+		blankBox.setAttribute('data-element-id', elementId);
+		
+		if (!originalFontSizes.has(elementId) && property === 'font-size') {
+			const currentSize = blankBox.style.fontSize ? 
+				parseFloat(blankBox.style.fontSize.replace('em', '')) : 1.0;
+			originalFontSizes.set(elementId, currentSize);
+		}
+		
+		// 스타일 적용 - 기존 클래스와 속성 유지
+		if (property === 'color') {
+			// 색상만 변경하고 다른 속성들은 유지
+			blankBox.style.setProperty('color', value, 'important');
+			blankBox.setAttribute('data-styled', 'true');
+			
+			// 중요: blank-box의 핵심 속성들 강제 유지
+			if (!blankBox.style.display || blankBox.style.display === 'inline') {
+				blankBox.style.setProperty('display', 'inline-flex', 'important');
+			}
+			if (!blankBox.style.alignItems) {
+				blankBox.style.setProperty('align-items', 'center', 'important');
+			}
+			if (!blankBox.style.justifyContent) {
+				blankBox.style.setProperty('justify-content', 'center', 'important');
+			}
+			
+		} else if (property === 'font-size') {
+			blankBox.style.setProperty('font-size', value, 'important');
+			blankBox.setAttribute('data-styled', 'true');
+		}
+		
+		// 시각적 피드백 제거
+		blankBox.style.outline = '';
+		blankBox.style.outlineOffset = '';
+		
+		// 패턴 데이터 업데이트
+		const patternId = getPatternIdFromElement(activeTextSelection.element);
+		if (patternId) {
+			updatePatternData(patternId);
+		}
+		
+		return;
+	}
     
     // 일반 텍스트 리셋 처리
     try {
@@ -1086,11 +1042,7 @@ function hideTextEditorControls() {
         activeTextSelection.blankBoxElement.style.outlineOffset = '';
     }
     
-    // 모든 컨트롤 숨기기
-    if (textEditorToolbar) {
-        textEditorToolbar.classList.remove('show');
-        textEditorToolbar.style.display = 'none';
-    }
+    // 컨트롤 패널만 숨기기 (툴바는 항상 고정)
     if (colorPalette) {
         colorPalette.classList.remove('show');
         colorPalette.style.display = 'none';
@@ -1118,60 +1070,3 @@ function hideTextEditorControls() {
     // activeTextSelection 초기화 (선택 상태 해제)
     activeTextSelection = null;
 }
-
-// 모바일 디바이스 감지 함수
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (window.innerWidth <= 768);
-}
-
-// 모바일 터치 이벤트 처리 (개선)
-document.addEventListener('touchstart', function(event) {
-    if (!isMobileDevice()) return;
-    
-    const patternDisplay = event.target.closest('.pattern-display');
-    const examplesDisplay = event.target.closest('.examples-display');
-    
-    if (patternDisplay || examplesDisplay) {
-        const currentTime = new Date().getTime();
-        const tapDelay = currentTime - lastTapTime;
-        
-        if (tapDelay < 300 && tapDelay > 50) {
-            // 더블탭 감지
-            event.preventDefault();
-            
-            if (patternDisplay) {
-                const patternId = patternDisplay.dataset.patternId;
-                if (patternId) {
-                    editPattern(parseInt(patternId));
-                }
-            } else if (examplesDisplay) {
-                const card = examplesDisplay.closest('.pattern-card');
-                if (card) {
-                    const patternId = parseInt(card.id.replace('pattern-', ''));
-                    editExamples(patternId);
-                }
-            }
-        }
-        
-        lastTapTime = currentTime;
-    }
-});
-
-// 데스크톱 우클릭은 그대로 유지
-document.addEventListener('contextmenu', function(event) {
-    // 모바일에서는 우클릭 방지
-    if (isMobileDevice()) {
-        event.preventDefault();
-        return;
-    }
-    
-    const selection = window.getSelection();
-    const selectedText = selection.toString().trim();
-    
-    if (selectedText) {
-        handleTextSelectionOnRightClick(event);
-    } else {
-        event.preventDefault();
-    }
-});

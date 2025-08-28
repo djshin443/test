@@ -1,0 +1,576 @@
+/* ===================================
+   ENHANCED THEME SYSTEM WITH DYNAMIC BACKGROUNDS
+   =================================== */
+
+/* Theme Selector */
+.theme-selector-wrapper {
+    position: relative;
+}
+
+.theme-selector {
+    width: 100%;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.theme-selector:hover {
+    border-color: var(--primary);
+}
+
+.theme-selector:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Theme Preview */
+.theme-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: 8px;
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+.theme-preview.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.theme-color-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.theme-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.theme-description {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* Enhanced Background Pattern System */
+.bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.06;
+    pointer-events: none;
+    transition: all 0.6s ease;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+/* Default Theme Background */
+.bg-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 80%, var(--primary) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, var(--accent) 0%, transparent 50%);
+}
+
+/* Spring Theme Backgrounds */
+.theme-spring-blossom .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 15% 85%, #FFB6C1 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, #98FB98 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #FFC0CB 0%, transparent 60%),
+        linear-gradient(45deg, transparent 45%, rgba(255, 182, 193, 0.1) 50%, transparent 55%);
+}
+
+.theme-spring-garden .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 25% 75%, #90EE90 0%, transparent 45%),
+        radial-gradient(circle at 75% 25%, #FFE4B5 0%, transparent 45%),
+        radial-gradient(circle at 60% 80%, #98FB98 0%, transparent 35%),
+        linear-gradient(120deg, transparent 48%, rgba(144, 238, 144, 0.15) 50%, transparent 52%);
+}
+
+.theme-spring-sky .bg-pattern {
+    background-image: 
+        radial-gradient(ellipse at 30% 70%, #87CEEB 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 30%, #FFFFE0 0%, transparent 50%),
+        linear-gradient(60deg, transparent 47%, rgba(135, 206, 235, 0.12) 50%, transparent 53%),
+        radial-gradient(circle at 90% 10%, #B0E0E6 0%, transparent 25%);
+}
+
+/* Summer Theme Backgrounds */
+.theme-summer-ocean .bg-pattern {
+    background-image: 
+        radial-gradient(ellipse at 20% 80%, #40E0D0 0%, transparent 45%),
+        radial-gradient(ellipse at 80% 20%, #FFF8DC 0%, transparent 45%),
+        linear-gradient(30deg, transparent 46%, rgba(64, 224, 208, 0.15) 50%, transparent 54%),
+        radial-gradient(circle at 45% 60%, #AFEEEE 0%, transparent 30%);
+}
+
+.theme-summer-sunset .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 25% 75%, #FFA07A 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, #F0E68C 0%, transparent 50%),
+        linear-gradient(135deg, transparent 45%, rgba(255, 160, 122, 0.15) 50%, transparent 55%),
+        radial-gradient(ellipse at 90% 90%, #FFB07A 0%, transparent 25%);
+}
+
+.theme-summer-tropical .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 30% 70%, #20B2AA 0%, transparent 45%),
+        radial-gradient(circle at 70% 30%, #FFEFD5 0%, transparent 45%),
+        radial-gradient(circle at 85% 15%, #48D1CC 0%, transparent 35%),
+        linear-gradient(90deg, transparent 48%, rgba(32, 178, 170, 0.12) 50%, transparent 52%);
+}
+
+/* Autumn Theme Backgrounds */
+.theme-autumn-leaves .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 80%, #DEB887 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #F4A460 0%, transparent 50%),
+        linear-gradient(45deg, transparent 47%, rgba(222, 184, 135, 0.15) 50%, transparent 53%),
+        radial-gradient(ellipse at 10% 90%, #D2B48C 0%, transparent 30%);
+}
+
+.theme-autumn-harvest .bg-pattern {
+    background-image: 
+        radial-gradient(ellipse at 25% 75%, #CD853F 0%, transparent 45%),
+        radial-gradient(ellipse at 75% 25%, #FFE4B5 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, #DEB887 0%, transparent 35%),
+        linear-gradient(150deg, transparent 46%, rgba(205, 133, 63, 0.12) 50%, transparent 54%);
+}
+
+.theme-autumn-golden .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 30% 70%, #DAA520 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, #F5DEB3 0%, transparent 50%),
+        linear-gradient(75deg, transparent 48%, rgba(218, 165, 32, 0.15) 50%, transparent 52%),
+        radial-gradient(ellipse at 85% 85%, #FFD700 0%, transparent 25%);
+}
+
+/* Winter Theme Backgrounds */
+.theme-winter-snow .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 80%, #B0E0E6 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #E6E6FA 0%, transparent 50%),
+        radial-gradient(circle at 60% 40%, #F0F8FF 0%, transparent 40%),
+        linear-gradient(0deg, transparent 49%, rgba(176, 224, 230, 0.1) 50%, transparent 51%);
+}
+
+.theme-winter-frost .bg-pattern {
+    background-image: 
+        radial-gradient(ellipse at 25% 75%, #AFEEEE 0%, transparent 45%),
+        radial-gradient(ellipse at 75% 25%, #F5F5DC 0%, transparent 45%),
+        radial-gradient(circle at 45% 55%, #E0FFFF 0%, transparent 35%),
+        linear-gradient(30deg, transparent 48.5%, rgba(175, 238, 238, 0.12) 50%, transparent 51.5%);
+}
+
+.theme-winter-crystal .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 30% 70%, #ADD8E6 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, #E6E6FA 0%, transparent 50%),
+        linear-gradient(120deg, transparent 47%, rgba(173, 216, 230, 0.15) 50%, transparent 53%),
+        radial-gradient(ellipse at 90% 10%, #B0C4DE 0%, transparent 30%);
+}
+
+/* Special Theme Backgrounds */
+.theme-rainbow-pastel .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 80%, #FFB3BA 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, #FFDFBA 0%, transparent 40%),
+        radial-gradient(circle at 60% 60%, #FFFFBA 0%, transparent 40%),
+        radial-gradient(circle at 40% 40%, #BAFFC9 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, #BAE1FF 0%, transparent 40%);
+    animation: rainbow-float 8s ease-in-out infinite alternate;
+}
+
+.theme-lavender-dreams .bg-pattern {
+    background-image: 
+        radial-gradient(ellipse at 25% 75%, #E6E6FA 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 25%, #DDA0DD 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #F8F8FF 0%, transparent 60%),
+        linear-gradient(45deg, transparent 48%, rgba(230, 230, 250, 0.15) 50%, transparent 52%);
+}
+
+.theme-mint-fresh .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 30% 70%, #98FB98 0%, transparent 45%),
+        radial-gradient(circle at 70% 30%, #AFEEEE 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 15%, #F0FFF0 0%, transparent 35%),
+        linear-gradient(60deg, transparent 47%, rgba(152, 251, 152, 0.12) 50%, transparent 53%);
+}
+
+.theme-peach-cream .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 25% 75%, #FFEAA7 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, #FFE4E1 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, #FFF5EE 0%, transparent 40%),
+        linear-gradient(135deg, transparent 46%, rgba(255, 234, 167, 0.15) 50%, transparent 54%);
+}
+
+.theme-berry-blush .bg-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 80%, #FFB6C1 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #F0E68C 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 30%, #FFF0F5 0%, transparent 45%),
+        linear-gradient(90deg, transparent 47.5%, rgba(255, 182, 193, 0.15) 50%, transparent 52.5%);
+}
+
+/* Theme Animation */
+body {
+    transition: all 0.4s ease;
+}
+
+.container {
+    transition: all 0.4s ease;
+}
+
+.pattern-card {
+    transition: all 0.4s ease;
+}
+
+/* Rainbow Animation for Rainbow Pastel Theme */
+@keyframes rainbow-float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.06;
+    }
+    25% {
+        transform: translateY(-5px) rotate(1deg);
+        opacity: 0.08;
+    }
+    50% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 0.06;
+    }
+    75% {
+        transform: translateY(-5px) rotate(-1deg);
+        opacity: 0.08;
+    }
+    100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.06;
+    }
+}
+
+/* Random Theme Button */
+.btn-theme-random {
+    background: linear-gradient(135deg, #FFB3BA 0%, #FFDFBA 25%, #FFFFBA 50%, #BAFFC9 75%, #BAE1FF 100%);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    border: none;
+    animation: rainbow-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes rainbow-glow {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 179, 186, 0.5), 0 0 10px rgba(255, 179, 186, 0.3);
+    }
+    25% {
+        box-shadow: 0 0 5px rgba(255, 223, 186, 0.5), 0 0 10px rgba(255, 223, 186, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 5px rgba(255, 255, 186, 0.5), 0 0 10px rgba(255, 255, 186, 0.3);
+    }
+    75% {
+        box-shadow: 0 0 5px rgba(186, 255, 201, 0.5), 0 0 10px rgba(186, 255, 201, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(186, 225, 255, 0.5), 0 0 10px rgba(186, 225, 255, 0.3);
+    }
+}
+
+.btn-theme-random:hover {
+    transform: translateY(-2px);
+    animation: rainbow-glow 1.5s ease-in-out infinite alternate;
+}
+
+/* Theme Variables */
+:root {
+    /* Default */
+    --body-bg: #F1F5F9;
+    --container-bg: white;
+    
+    /* Spring Themes */
+    --spring-blossom-primary: #FFB6C1;
+    --spring-blossom-secondary: #FFE4E6;
+    --spring-blossom-accent: #98FB98;
+    --spring-blossom-body-bg: #FDF2F8;
+    --spring-blossom-container-bg: #FEFCFF;
+    
+    --spring-garden-primary: #90EE90;
+    --spring-garden-secondary: #F0FFF0;
+    --spring-garden-accent: #FFE4B5;
+    --spring-garden-body-bg: #F0FDF4;
+    --spring-garden-container-bg: #FDFFFE;
+    
+    --spring-sky-primary: #87CEEB;
+    --spring-sky-secondary: #F0F8FF;
+    --spring-sky-accent: #FFFFE0;
+    --spring-sky-body-bg: #F0F9FF;
+    --spring-sky-container-bg: #FEFEFF;
+    
+    /* Summer Themes */
+    --summer-ocean-primary: #40E0D0;
+    --summer-ocean-secondary: #E0FFFF;
+    --summer-ocean-accent: #FFF8DC;
+    --summer-ocean-body-bg: #ECFEFF;
+    --summer-ocean-container-bg: #F8FFFF;
+    
+    --summer-sunset-primary: #FFA07A;
+    --summer-sunset-secondary: #FFF5EE;
+    --summer-sunset-accent: #F0E68C;
+    --summer-sunset-body-bg: #FFF7ED;
+    --summer-sunset-container-bg: #FFFEFB;
+    
+    --summer-tropical-primary: #20B2AA;
+    --summer-tropical-secondary: #F0FFFF;
+    --summer-tropical-accent: #FFEFD5;
+    --summer-tropical-body-bg: #F0FDFA;
+    --summer-tropical-container-bg: #FAFFFF;
+    
+    /* Autumn Themes */
+    --autumn-leaves-primary: #DEB887;
+    --autumn-leaves-secondary: #FDF5E6;
+    --autumn-leaves-accent: #F4A460;
+    --autumn-leaves-body-bg: #FFFBEB;
+    --autumn-leaves-container-bg: #FFFEF8;
+    
+    --autumn-harvest-primary: #CD853F;
+    --autumn-harvest-secondary: #FFF8DC;
+    --autumn-harvest-accent: #FFE4B5;
+    --autumn-harvest-body-bg: #FEF3C7;
+    --autumn-harvest-container-bg: #FFFCF0;
+    
+    --autumn-golden-primary: #DAA520;
+    --autumn-golden-secondary: #FFFAF0;
+    --autumn-golden-accent: #F5DEB3;
+    --autumn-golden-body-bg: #FFFBEB;
+    --autumn-golden-container-bg: #FFFEF5;
+    
+    /* Winter Themes */
+    --winter-snow-primary: #B0E0E6;
+    --winter-snow-secondary: #F8F8FF;
+    --winter-snow-accent: #E6E6FA;
+    --winter-snow-body-bg: #F8FAFC;
+    --winter-snow-container-bg: #FDFDFF;
+    
+    --winter-frost-primary: #AFEEEE;
+    --winter-frost-secondary: #F0FFFF;
+    --winter-frost-accent: #F5F5DC;
+    --winter-frost-body-bg: #ECFEFF;
+    --winter-frost-container-bg: #F8FFFF;
+    
+    --winter-crystal-primary: #ADD8E6;
+    --winter-crystal-secondary: #F0F8FF;
+    --winter-crystal-accent: #E6E6FA;
+    --winter-crystal-body-bg: #F0F9FF;
+    --winter-crystal-container-bg: #FAFEFF;
+    
+    /* Special Themes */
+    --rainbow-pastel-primary: #FFB3BA;
+    --rainbow-pastel-secondary: #FFDFBA;
+    --rainbow-pastel-accent: #FFFFBA;
+    --rainbow-pastel-body-bg: #FEF7FF;
+    --rainbow-pastel-container-bg: #FFFEFF;
+    
+    --lavender-dreams-primary: #E6E6FA;
+    --lavender-dreams-secondary: #F8F8FF;
+    --lavender-dreams-accent: #DDA0DD;
+    --lavender-dreams-body-bg: #FAF5FF;
+    --lavender-dreams-container-bg: #FEFAFF;
+    
+    --mint-fresh-primary: #98FB98;
+    --mint-fresh-secondary: #F0FFF0;
+    --mint-fresh-accent: #AFEEEE;
+    --mint-fresh-body-bg: #ECFDF5;
+    --mint-fresh-container-bg: #F8FFFC;
+    
+    --peach-cream-primary: #FFEAA7;
+    --peach-cream-secondary: #FFF5EE;
+    --peach-cream-accent: #FFE4E1;
+    --peach-cream-body-bg: #FFFBEB;
+    --peach-cream-container-bg: #FFFEF6;
+    
+    --berry-blush-primary: #FFB6C1;
+    --berry-blush-secondary: #FFF0F5;
+    --berry-blush-accent: #F0E68C;
+    --berry-blush-body-bg: #FDF2F8;
+    --berry-blush-container-bg: #FEFAFC;
+}
+
+/* Theme Application Classes */
+.theme-spring-blossom {
+    --primary: var(--spring-blossom-primary);
+    --surface: var(--spring-blossom-secondary);
+    --accent: var(--spring-blossom-accent);
+    --body-bg: var(--spring-blossom-body-bg);
+    --container-bg: var(--spring-blossom-container-bg);
+}
+
+.theme-spring-garden {
+    --primary: var(--spring-garden-primary);
+    --surface: var(--spring-garden-secondary);
+    --accent: var(--spring-garden-accent);
+    --body-bg: var(--spring-garden-body-bg);
+    --container-bg: var(--spring-garden-container-bg);
+}
+
+.theme-spring-sky {
+    --primary: var(--spring-sky-primary);
+    --surface: var(--spring-sky-secondary);
+    --accent: var(--spring-sky-accent);
+    --body-bg: var(--spring-sky-body-bg);
+    --container-bg: var(--spring-sky-container-bg);
+}
+
+.theme-summer-ocean {
+    --primary: var(--summer-ocean-primary);
+    --surface: var(--summer-ocean-secondary);
+    --accent: var(--summer-ocean-accent);
+    --body-bg: var(--summer-ocean-body-bg);
+    --container-bg: var(--summer-ocean-container-bg);
+}
+
+.theme-summer-sunset {
+    --primary: var(--summer-sunset-primary);
+    --surface: var(--summer-sunset-secondary);
+    --accent: var(--summer-sunset-accent);
+    --body-bg: var(--summer-sunset-body-bg);
+    --container-bg: var(--summer-sunset-container-bg);
+}
+
+.theme-summer-tropical {
+    --primary: var(--summer-tropical-primary);
+    --surface: var(--summer-tropical-secondary);
+    --accent: var(--summer-tropical-accent);
+    --body-bg: var(--summer-tropical-body-bg);
+    --container-bg: var(--summer-tropical-container-bg);
+}
+
+.theme-autumn-leaves {
+    --primary: var(--autumn-leaves-primary);
+    --surface: var(--autumn-leaves-secondary);
+    --accent: var(--autumn-leaves-accent);
+    --body-bg: var(--autumn-leaves-body-bg);
+    --container-bg: var(--autumn-leaves-container-bg);
+}
+
+.theme-autumn-harvest {
+    --primary: var(--autumn-harvest-primary);
+    --surface: var(--autumn-harvest-secondary);
+    --accent: var(--autumn-harvest-accent);
+    --body-bg: var(--autumn-harvest-body-bg);
+    --container-bg: var(--autumn-harvest-container-bg);
+}
+
+.theme-autumn-golden {
+    --primary: var(--autumn-golden-primary);
+    --surface: var(--autumn-golden-secondary);
+    --accent: var(--autumn-golden-accent);
+    --body-bg: var(--autumn-golden-body-bg);
+    --container-bg: var(--autumn-golden-container-bg);
+}
+
+.theme-winter-snow {
+    --primary: var(--winter-snow-primary);
+    --surface: var(--winter-snow-secondary);
+    --accent: var(--winter-snow-accent);
+    --body-bg: var(--winter-snow-body-bg);
+    --container-bg: var(--winter-snow-container-bg);
+}
+
+.theme-winter-frost {
+    --primary: var(--winter-frost-primary);
+    --surface: var(--winter-frost-secondary);
+    --accent: var(--winter-frost-accent);
+    --body-bg: var(--winter-frost-body-bg);
+    --container-bg: var(--winter-frost-container-bg);
+}
+
+.theme-winter-crystal {
+    --primary: var(--winter-crystal-primary);
+    --surface: var(--winter-crystal-secondary);
+    --accent: var(--winter-crystal-accent);
+    --body-bg: var(--winter-crystal-body-bg);
+    --container-bg: var(--winter-crystal-container-bg);
+}
+
+.theme-rainbow-pastel {
+    --primary: var(--rainbow-pastel-primary);
+    --surface: var(--rainbow-pastel-secondary);
+    --accent: var(--rainbow-pastel-accent);
+    --body-bg: var(--rainbow-pastel-body-bg);
+    --container-bg: var(--rainbow-pastel-container-bg);
+}
+
+.theme-lavender-dreams {
+    --primary: var(--lavender-dreams-primary);
+    --surface: var(--lavender-dreams-secondary);
+    --accent: var(--lavender-dreams-accent);
+    --body-bg: var(--lavender-dreams-body-bg);
+    --container-bg: var(--lavender-dreams-container-bg);
+}
+
+.theme-mint-fresh {
+    --primary: var(--mint-fresh-primary);
+    --surface: var(--mint-fresh-secondary);
+    --accent: var(--mint-fresh-accent);
+    --body-bg: var(--mint-fresh-body-bg);
+    --container-bg: var(--mint-fresh-container-bg);
+}
+
+.theme-peach-cream {
+    --primary: var(--peach-cream-primary);
+    --surface: var(--peach-cream-secondary);
+    --accent: var(--peach-cream-accent);
+    --body-bg: var(--peach-cream-body-bg);
+    --container-bg: var(--peach-cream-container-bg);
+}
+
+.theme-berry-blush {
+    --primary: var(--berry-blush-primary);
+    --surface: var(--berry-blush-secondary);
+    --accent: var(--berry-blush-accent);
+    --body-bg: var(--berry-blush-body-bg);
+    --container-bg: var(--berry-blush-container-bg);
+}
+
+/* Additional Background Effects for Better Visual Appeal */
+.bg-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.05) 50%, transparent 55%),
+        linear-gradient(-45deg, transparent 45%, rgba(255, 255, 255, 0.03) 50%, transparent 55%);
+    pointer-events: none;
+}

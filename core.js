@@ -99,12 +99,13 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
         return escapeHTML(text);
     }
     
-    if (text && text.includes('<span')) {
-        return text;
-    }
-    
     if (!text || text.trim() === '') {
         return '';
+    }
+    
+    // 이미 HTML 콘텐츠가 포함되어 있는 경우 (span 태그나 blank-box 클래스가 있는 경우)
+    if (text && (text.includes('<span') || text.includes('blank-box'))) {
+        return text; // 이미 처리된 HTML은 그대로 반환
     }
     
     let sanitizedText = text;
@@ -128,8 +129,9 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
         sanitizedText = sanitizedText.substring(0, 500);
     }
     
-    return sanitizedText.replace(/\[(\s*)\]/g, function(match, spaces) {
-        const spaceCount = spaces.length;
+    // [] 패턴을 blank-box로 변환하면서 앞뒤 공백도 처리
+    return sanitizedText.replace(/(\s*)\[(\s*)\](\s*)/g, function(match, beforeSpace, insideSpaces, afterSpace) {
+        const spaceCount = insideSpaces.length;
         let sizeClass = '';
         
         if (spaceCount === 0) {
@@ -144,11 +146,13 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
             sizeClass = 'space-5-plus';
         }
         
-        // 선택 가능한 텍스트 노드 포함
-        return `<span class="blank-box ${sizeClass}" data-blank-box="true" data-selectable="true">&nbsp;</span>`;
+        // 앞뒤 공백을 &nbsp;로 변환하여 보존
+        const processedBeforeSpace = beforeSpace.replace(/ /g, '&nbsp;');
+        const processedAfterSpace = afterSpace.replace(/ /g, '&nbsp;');
+        
+        return `${processedBeforeSpace}<span class="blank-box ${sizeClass}" data-blank-box="true" data-selectable="true">&nbsp;</span>${processedAfterSpace}`;
     });
 }
-
 // 텍스트에서 [] 를 네모 박스로 변환 (기존 함수 - 호환성 유지)
 function processBlankBoxes(text, isTitle = false) {
     return processBlankBoxesWithHTML(text, isTitle);
@@ -246,9 +250,29 @@ function createPatternCard(pattern, number) {
     card.className = 'pattern-card';
     card.id = `pattern-${pattern.id}`;
     
-    // HTML 컨텐츠가 있으면 우선 사용, 없으면 일반 텍스트 처리
-    const processedPattern = pattern.htmlContent || (pattern.pattern ? processBlankBoxesWithHTML(pattern.pattern) : '');
-    const processedExamples = pattern.examplesHtmlContent || (pattern.examples ? processBlankBoxesWithHTML(pattern.examples) : '');
+    let processedPattern = '';
+    let processedExamples = '';
+    
+    // HTML 콘텐츠가 있고 복잡한 구조가 아닌 경우에만 사용
+    if (pattern.htmlContent && !isComplexHTML(pattern.htmlContent)) {
+        processedPattern = pattern.htmlContent;
+    } else if (pattern.pattern) {
+        processedPattern = processBlankBoxesWithHTML(pattern.pattern);
+        // 복잡한 HTML이 있었다면 초기화
+        if (pattern.htmlContent && isComplexHTML(pattern.htmlContent)) {
+            pattern.htmlContent = null;
+        }
+    }
+    
+    if (pattern.examplesHtmlContent && !isComplexHTML(pattern.examplesHtmlContent)) {
+        processedExamples = pattern.examplesHtmlContent;
+    } else if (pattern.examples) {
+        processedExamples = processBlankBoxesWithHTML(pattern.examples);
+        // 복잡한 HTML이 있었다면 초기화
+        if (pattern.examplesHtmlContent && isComplexHTML(pattern.examplesHtmlContent)) {
+            pattern.examplesHtmlContent = null;
+        }
+    }
     
     card.innerHTML = `
         <button class="pattern-delete-btn" onclick="deletePattern(${pattern.id})" title="Delete pattern">Del</button>
@@ -300,6 +324,24 @@ function createPatternCard(pattern, number) {
     `;
     
     return card;
+}
+
+// 복잡한 HTML 구조인지 판단하는 헬퍼 함수
+function isComplexHTML(htmlContent) {
+    if (!htmlContent) return false;
+    
+    // 복잡한 구조 판단 기준:
+    // 1. 중첩된 span이 많은 경우 (5개 이상)
+    // 2. 불필요한 &nbsp;가 많은 경우
+    // 3. <br> 태그가 있는 경우
+    // 4. 빈 span이 많은 경우
+    
+    const spanCount = (htmlContent.match(/<span/g) || []).length;
+    const hasBreaks = htmlContent.includes('<br>');
+    const nbspCount = (htmlContent.match(/&nbsp;/g) || []).length;
+    const emptySpanCount = (htmlContent.match(/<span[^>]*><\/span>/g) || []).length;
+    
+    return spanCount > 5 || hasBreaks || nbspCount > 10 || emptySpanCount > 2;
 }
 
 // 패턴 편집

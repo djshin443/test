@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="footer.css">
 <link rel="stylesheet" href="modals.css">
 <link rel="stylesheet" href="text-editor.css">
+<link rel="stylesheet" href="theme-system.css">
 <link rel="stylesheet" href="responsive.css">
 
 
@@ -69,6 +70,36 @@
                         <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
                     </svg>
                     Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- 테마 선택 섹션 -->
+        <div class="control-section">
+            <div class="control-section-title">Theme</div>
+            <div class="theme-selector-wrapper">
+                <select class="theme-selector" id="theme-selector">
+                    <option value="">Choose a theme...</option>
+                </select>
+                <div class="theme-preview" id="theme-preview">
+                    <div class="theme-color-dots"></div>
+                    <div class="theme-description"></div>
+                </div>
+            </div>
+            <div class="btn-group" style="margin-top: 12px;">
+                <button class="btn btn-outline" onclick="applyRandomTheme()">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+                    </svg>
+                    Random Theme
+                </button>
+                <button class="btn btn-outline" onclick="applySeasonalTheme()">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868L7.5 9.5H7v-6a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    Seasonal Theme
                 </button>
             </div>
         </div>
@@ -176,6 +207,7 @@
 <script src="core.js"></script>
 <script src="calendar.js"></script>  
 <script src="text-editor.js"></script>
+<script src="theme-system.js"></script>  <!-- 새로 추가됨 -->
 <script src="save-modal.js"></script>
 
 </body>

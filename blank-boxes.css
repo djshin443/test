@@ -1,48 +1,51 @@
 /* ===================================
-   BLANK BOXES ([] CONVERSION) - 비례 크기 조절 버전
+   BLANK BOXES ([] CONVERSION) - 완전 정리된 버전
    =================================== */
 .blank-box {
-    display: inline-block;
-    /* 높이를 em 단위로 설정하되 세로 비율 제한 */
-    height: 1.2em;
-    min-height: 1.2em;
-    max-height: 1.2em;
-    /* 테두리도 em 단위 */
-    border: 0.08em solid var(--primary);
-    border-radius: 0.25em;
-    /* 마진도 em 단위로 비례 조정 */
-    margin: 0 0.15em;
-    /* baseline 정렬 */
-    vertical-align: baseline;
-    background: white;
-    position: relative;
-    /* 텍스트 선택 활성화 */
-    user-select: text;
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    /* overflow 제어 */
-    overflow: hidden;
-    white-space: nowrap;
-    /* 기본 텍스트 색상 */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 1.2em !important;
+    min-height: 1.2em !important;
+    max-height: 1.2em !important;
+    border: 0.08em solid var(--primary) !important;
+    border-radius: 0.25em !important;
+    background: white !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    vertical-align: baseline !important;
+    position: relative !important;
+    z-index: 1 !important;
+    cursor: pointer !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    box-sizing: border-box !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    margin: 0 0.15em !important;
+    padding: 0 0.1em !important;
+    /* 기본 색상: 스타일 없을 때는 보라색, 있을 때는 지정된 색상 */
     color: var(--primary);
-    /* flexbox 중앙 정렬 */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    /* 폰트 크기 상속 */
-    font-size: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    /* 라인 높이 고정으로 세로 늘어남 방지 */
-    line-height: 1;
-    /* 패딩도 em 단위로 비례 */
-    padding: 0 0.1em;
-    box-sizing: border-box;
-    /* 미세한 baseline 조정 */
-    top: -0.05em;
+}
+
+/* 스타일이 적용된 blank-box는 인라인 색상 사용 */
+.blank-box[data-styled="true"] {
+    color: inherit !important;
+}
+
+/* 각 크기별 가로 크기 */
+.blank-box.space-1 { width: 2.5em !important; }
+.blank-box.space-2 { width: 3.5em !important; }
+.blank-box.space-3 { width: 5em !important; }
+.blank-box.space-4 { width: 6.5em !important; }
+.blank-box.space-5-plus { width: 8em !important; }
+
+/* 폰트 크기 변경된 blank-box */
+.blank-box[style*="font-size"] {
+    font-size: inherit !important; /* 부모 폰트 크기 상속 */
 }
 
 /* span 내부의 blank-box 정렬 */
@@ -60,87 +63,26 @@ span .blank-box {
     top: 0;
 }
 
-/* 빈 박스 내부 텍스트 스타일 */
-.blank-box * {
-    user-select: text;
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-}
-
-/* 인라인 스타일 우선순위 보장 */
-.blank-box[style*="color"] {
-    color: inherit !important;
-}
-
-/* 핵심: 폰트 크기가 적용된 blank-box의 비례 조절 */
-.blank-box[style*="font-size"] {
-    /* 높이를 고정 비율로 유지 - 폰트 크기에 비례하되 세로로만 늘어나지 않게 */
-    height: 1.2em !important;
-    min-height: 1.2em !important;
-    max-height: 1.2em !important;
-    /* line-height를 1로 고정하여 내부 컨텐츠가 세로를 늘리지 못하게 */
-    line-height: 1 !important;
-    /* flexbox로 정확한 중앙 정렬 */
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-    /* 내부 텍스트가 박스 크기에 영향주지 않게 */
-    font-size: 0 !important;
-}
-
-/* data-styled가 있는 경우도 동일한 처리 */
-.blank-box[data-styled="true"] {
-    height: 1.2em !important;
-    min-height: 1.2em !important;
-    max-height: 1.2em !important;
-    line-height: 1 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-    font-size: 0 !important;
-}
-
-/* 가로 크기는 em 단위로 폰트에 비례하여 조절 */
-.blank-box.space-1 {
-    width: 2.5em; /* [] */
-}
-
-.blank-box.space-2 {
-    width: 3.5em; /* [ ] */
-}
-
-.blank-box.space-3 {
-    width: 5em; /* [   ] */
-}
-
-.blank-box.space-4 {
-    width: 6.5em; /* [     ] */
-}
-
-.blank-box.space-5-plus {
-    width: 8em; /* [       ] 이상 */
-}
-
 /* Hover 효과 */
 .blank-box:hover {
     border-color: var(--primary-dark);
     box-shadow: 0 0 0 0.1em rgba(99, 102, 241, 0.1);
     transform: none;
+    z-index: 2;
 }
 
 /* 선택된 상태 */
 .blank-box[data-selected="true"] {
     outline: 0.1em solid var(--primary);
     outline-offset: 0.1em;
+    z-index: 2;
 }
 
 /* 부모 요소별 정확한 정렬 */
 .pattern-display .blank-box,
 .examples-display .blank-box {
     vertical-align: baseline;
+    z-index: 1;
 }
 
 /* 텍스트와 blank-box 정렬 */
@@ -153,16 +95,19 @@ span .blank-box {
 .examples-display span {
     vertical-align: baseline;
     line-height: 1.3;
+    z-index: 0;
 }
 
 .pattern-display span span,
 .examples-display span span {
     vertical-align: baseline;
     line-height: inherit;
+    z-index: 0;
 }
 
 /* 최종 보정 */
 span[style] .blank-box {
     vertical-align: baseline !important;
     top: 0 !important;
+    z-index: 1 !important;
 }
