@@ -496,6 +496,9 @@ function changeTextColor(color) {
 function changeTextFontSize(size) {
     if (!activeTextSelection) return;
     
+    // 기준 폰트 크기 설정 (패턴 디스플레이의 기본 크기)
+    const BASE_FONT_SIZE = 18; // px 단위의 기준 크기
+    
     // blank-box 처리
     if (activeTextSelection.isBlankBox && activeTextSelection.blankBoxElement) {
         const blankBox = activeTextSelection.blankBoxElement;
@@ -507,11 +510,13 @@ function changeTextFontSize(size) {
         
         if (!originalFontSizes.has(elementId)) {
             const currentSize = blankBox.style.fontSize ? 
-                parseFloat(blankBox.style.fontSize.replace('em', '')) : 1.0;
+                parseFloat(blankBox.style.fontSize.replace('px', '')) / BASE_FONT_SIZE : 1.0;
             originalFontSizes.set(elementId, currentSize);
         }
         
-        blankBox.style.setProperty('font-size', `${size}em`, 'important');
+        // px 단위로 절대 크기 설정
+        const pixelSize = BASE_FONT_SIZE * size;
+        blankBox.style.setProperty('font-size', `${pixelSize}px`, 'important');
         blankBox.setAttribute('data-styled', 'true');
         
         // 패턴 데이터 업데이트
@@ -527,7 +532,9 @@ function changeTextFontSize(size) {
     selection.removeAllRanges();
     selection.addRange(activeTextSelection.range);
     
-    applyStyleToSelection('font-size', `${size}em`);
+    // px 단위로 절대 크기 설정
+    const pixelSize = BASE_FONT_SIZE * size;
+    applyStyleToSelection('font-size', `${pixelSize}px`);
 }
 
 // 새로운 헬퍼 함수: 선택된 HTML 가져오기
@@ -1069,4 +1076,5 @@ function hideTextEditorControls() {
     
     // activeTextSelection 초기화 (선택 상태 해제)
     activeTextSelection = null;
+
 }
