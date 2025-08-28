@@ -13,8 +13,8 @@
     z-index: 1;
     overflow: visible;
     max-height: calc(100% - 280px); /* 여백 조정 */
-    /* 패턴이 하나일 때 중앙 정렬 */
-    align-content: center;
+    /* 그리드 아이템들을 균등하게 배치 */
+    grid-auto-rows: 1fr;
 }
 
 /* Pattern Cards Base */
