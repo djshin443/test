@@ -3,13 +3,13 @@
    =================================== */
 .blank-box {
     display: inline-flex;
-    /* 높이는 유지하고 가로를 더 넓게 */
-    height: 0.9em;
+    /* 높이를 텍스트와 비슷하게 설정 */
+    height: 1.4em;
     /* 테두리도 em 단위로 설정하여 비례 조절 */
-    border: 0.08em solid var(--primary);
-    border-radius: 0.2em;
+    border: 0.1em solid var(--primary);
+    border-radius: 0.3em;
     /* 마진도 em 단위로 */
-    margin: 0 0.2em;
+    margin: 0 0.3em;
     vertical-align: middle;
     background: white;
     position: relative;
@@ -35,9 +35,9 @@
     /* 추가: 부드러운 변경 */
     transition: all 0.2s ease;
     /* 라인 높이 설정으로 정렬 개선 */
-    line-height: 0.7;
-    /* 패딩을 좌우로 더 늘려서 가로로 더 긴 느낌 */
-    padding: 0 1.2em;
+    line-height: 1;
+    /* 패딩 조정 - 상하 좌우 균형 */
+    padding: 0.2em 0.8em;
     box-sizing: border-box;
 }
 
@@ -46,7 +46,6 @@ span .blank-box {
     vertical-align: baseline;
     margin-bottom: -0.15em; /* 미세 조정 */
 }
-
 /* 빈 박스 내부 텍스트 스타일 */
 .blank-box * {
     user-select: text;
