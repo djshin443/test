@@ -190,3 +190,15 @@
     padding: 6px 10px; /* empty 상태일 때 더 작은 패딩 */
     min-height: 35px; /* empty 상태일 때 더 작은 높이 */
 }
+
+/* 스타일이 적용된 span 요소들의 정렬 보정 */  /* 새로 추가된 블록 */
+.pattern-display > span {
+    display: inline-flex;
+    align-items: baseline;
+    line-height: 1.3;
+}
+
+.pattern-display span[style*="font-size"] {    /* 새로 추가된 블록 */
+    vertical-align: baseline;
+    display: inline;
+}
