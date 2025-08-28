@@ -42,6 +42,12 @@
     box-sizing: border-box;
 }
 
+/* blank-box가 span 내부에 있을 때 정렬 보정 */  /* 새로 추가된 블록 */
+span .blank-box {
+    vertical-align: baseline;
+    margin-bottom: -0.15em; /* 미세 조정 */
+}
+
 /* 빈 박스 내부 텍스트 스타일 */
 .blank-box * {
     user-select: text;
