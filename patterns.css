@@ -13,6 +13,8 @@
     z-index: 1;
     overflow: visible;
     max-height: calc(100% - 280px); /* 여백 조정 */
+    /* 패턴이 하나일 때 중앙 정렬 */
+    align-content: center;
 }
 
 /* Pattern Cards Base */
