@@ -1577,20 +1577,13 @@ function clearSelection() {
 function preserveSpaces(text) {
     if (!text) return '';
     
-    // 각 문자를 확인하며 처리
     let result = '';
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
-        const nextChar = text[i + 1];
         
         if (char === ' ') {
-            // 연속된 공백이거나, 문장 시작/끝의 공백
-            if (i === 0 || i === text.length - 1 || nextChar === ' ') {
-                result += '&nbsp;';
-            } else {
-                // 단어 사이의 단일 공백도 보존
-                result += '&nbsp;';
-            }
+            // 모든 공백을 무조건 &nbsp;로 변환
+            result += '&nbsp;';
         } else if (char === '\n') {
             result += '<br>';
         } else if (char === '\t') {
