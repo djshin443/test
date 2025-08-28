@@ -3,13 +3,13 @@
    =================================== */
 .blank-box {
     display: inline-flex;
-    /* 폰트 크기에 비례하여 높이 설정 */
-    height: 1.6em;
+    /* 높이를 줄여서 더 자연스러운 비율로 */
+    height: 1.2em;
     /* 테두리도 em 단위로 설정하여 비례 조절 */
-    border: 0.125em solid var(--primary);
-    border-radius: 0.375em;
+    border: 0.08em solid var(--primary);
+    border-radius: 0.25em;
     /* 마진도 em 단위로 */
-    margin: 0 0.25em;
+    margin: 0 0.2em;
     vertical-align: middle;
     background: white;
     position: relative;
@@ -36,8 +36,8 @@
     transition: all 0.2s ease;
     /* 라인 높이 설정으로 정렬 개선 */
     line-height: 1;
-    /* 패딩 추가로 내부 여백 확보 */
-    padding: 0.2em 0.4em;
+    /* 패딩을 조정하여 더 넓은 느낌 */
+    padding: 0.1em 0.5em;
     box-sizing: border-box;
 }
 
