@@ -1,16 +1,19 @@
 /* ===================================
-   BLANK BOXES ([] CONVERSION)
+   BLANK BOXES ([] CONVERSION) - 비례 크기 조절 버전
    =================================== */
 .blank-box {
     display: inline-block;
-    /* 높이와 가로 모두 em 단위로 설정하여 폰트 크기에 비례하도록 */
+    /* 높이를 em 단위로 설정하되 세로 비율 제한 */
     height: 1.2em;
-    /* 테두리도 em 단위로 설정하여 비례 조절 */
+    min-height: 1.2em;
+    max-height: 1.2em;
+    /* 테두리도 em 단위 */
     border: 0.08em solid var(--primary);
     border-radius: 0.25em;
-    /* 마진도 em 단위로 */
-    margin: 0 0.2em;
-    vertical-align: middle;
+    /* 마진도 em 단위로 비례 조정 */
+    margin: 0 0.15em;
+    /* baseline 정렬 */
+    vertical-align: baseline;
     background: white;
     position: relative;
     /* 텍스트 선택 활성화 */
@@ -18,34 +21,43 @@
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
-    /* 텍스트가 들어갈 수 있도록 설정 */
-    overflow: visible;
+    /* overflow 제어 */
+    overflow: hidden;
     white-space: nowrap;
-    /* 기본 텍스트 색상을 보라색으로 설정 */
+    /* 기본 텍스트 색상 */
     color: var(--primary);
-    /* 텍스트 정렬 - inline-flex로 변경 */
+    /* flexbox 중앙 정렬 */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    /* 폰트 크기 상속받기 */
+    /* 폰트 크기 상속 */
     font-size: inherit;
     font-weight: 600;
-    /* 추가: 클릭 가능함을 표시 */
     cursor: pointer;
-    /* 추가: 부드러운 변경 */
     transition: all 0.2s ease;
-    /* 라인 높이 설정으로 정렬 개선 */
+    /* 라인 높이 고정으로 세로 늘어남 방지 */
     line-height: 1;
-    /* 패딩 추가로 내부 여백 확보 - 좌우를 더 넓게 */
-    padding: 0.1em 0.3em;
+    /* 패딩도 em 단위로 비례 */
+    padding: 0 0.1em;
     box-sizing: border-box;
+    /* 미세한 baseline 조정 */
+    top: -0.05em;
 }
 
-/* blank-box가 span 내부에 있을 때 정렬 보정 */
+/* span 내부의 blank-box 정렬 */
 span .blank-box {
     vertical-align: baseline;
-    margin-bottom: -0.15em; /* 미세 조정 */
+    top: 0;
+    margin-bottom: 0;
+}
+
+/* 스타일이 적용된 span 내부의 blank-box */
+.pattern-display span .blank-box,
+.examples-display span .blank-box {
+    vertical-align: baseline;
+    line-height: 1;
+    top: 0;
 }
 
 /* 빈 박스 내부 텍스트 스타일 */
@@ -56,58 +68,101 @@ span .blank-box {
     -ms-user-select: text;
 }
 
-/* 인라인 스타일이 적용된 경우 우선순위 보장 */
+/* 인라인 스타일 우선순위 보장 */
 .blank-box[style*="color"] {
     color: inherit !important;
 }
 
+/* 핵심: 폰트 크기가 적용된 blank-box의 비례 조절 */
 .blank-box[style*="font-size"] {
-    font-size: inherit !important;
+    /* 높이를 고정 비율로 유지 - 폰트 크기에 비례하되 세로로만 늘어나지 않게 */
+    height: 1.2em !important;
+    min-height: 1.2em !important;
+    max-height: 1.2em !important;
+    /* line-height를 1로 고정하여 내부 컨텐츠가 세로를 늘리지 못하게 */
+    line-height: 1 !important;
+    /* flexbox로 정확한 중앙 정렬 */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    /* 내부 텍스트가 박스 크기에 영향주지 않게 */
+    font-size: 0 !important;
 }
 
-/* Blank Box Size Variants - 모두 em 단위로 변경 */
+/* data-styled가 있는 경우도 동일한 처리 */
+.blank-box[data-styled="true"] {
+    height: 1.2em !important;
+    min-height: 1.2em !important;
+    max-height: 1.2em !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    font-size: 0 !important;
+}
+
+/* 가로 크기는 em 단위로 폰트에 비례하여 조절 */
 .blank-box.space-1 {
-    width: 3em; /* [] */
+    width: 2.5em; /* [] */
 }
 
 .blank-box.space-2 {
-    width: 4.5em; /* [ ] */
+    width: 3.5em; /* [ ] */
 }
 
 .blank-box.space-3 {
-    width: 6.5em; /* [   ] */
+    width: 5em; /* [   ] */
 }
 
 .blank-box.space-4 {
-    width: 8em; /* [     ] */
+    width: 6.5em; /* [     ] */
 }
 
 .blank-box.space-5-plus {
-    width: 10em; /* [       ] 이상 */
+    width: 8em; /* [       ] 이상 */
 }
 
-/* Hover 효과 (선택 가능함을 시각적으로 표시) */
+/* Hover 효과 */
 .blank-box:hover {
     border-color: var(--primary-dark);
-    box-shadow: 0 0 0 0.125em rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 0.1em rgba(99, 102, 241, 0.1);
+    transform: none;
 }
 
-/* 선택된 상태 (우클릭 시) */
+/* 선택된 상태 */
 .blank-box[data-selected="true"] {
-    outline: 0.125em solid var(--primary);
-    outline-offset: 0.125em;
+    outline: 0.1em solid var(--primary);
+    outline-offset: 0.1em;
 }
 
-/* 부모 요소의 폰트 크기가 변경될 때 자동으로 조절되도록 */
+/* 부모 요소별 정확한 정렬 */
 .pattern-display .blank-box,
 .examples-display .blank-box {
-    /* 부모의 폰트 크기를 상속받아 자동으로 크기 조절 */
-    font-size: inherit;
+    vertical-align: baseline;
 }
 
-/* 스타일이 적용된 blank-box의 크기 유지 */
-.blank-box[data-styled="true"] {
-    /* 폰트 크기가 변경되어도 em 단위로 설정된 너비/높이가 자동 조절됨 */
-    /* 높이와 가로 비율을 유지하면서 크기 조절 */
-    height: 1.2em;
+/* 텍스트와 blank-box 정렬 */
+.pattern-display,
+.examples-display {
+    line-height: 1.3;
+}
+
+.pattern-display span,
+.examples-display span {
+    vertical-align: baseline;
+    line-height: 1.3;
+}
+
+.pattern-display span span,
+.examples-display span span {
+    vertical-align: baseline;
+    line-height: inherit;
+}
+
+/* 최종 보정 */
+span[style] .blank-box {
+    vertical-align: baseline !important;
+    top: 0 !important;
 }
