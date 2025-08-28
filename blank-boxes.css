@@ -3,11 +3,11 @@
    =================================== */
 .blank-box {
     display: inline-flex;
-    /* 높이를 줄여서 더 자연스러운 비율로 */
-    height: 1.2em;
+    /* 높이를 더 줄여서 가로로 긴 형태로 */
+    height: 0.9em;
     /* 테두리도 em 단위로 설정하여 비례 조절 */
     border: 0.08em solid var(--primary);
-    border-radius: 0.25em;
+    border-radius: 0.2em;
     /* 마진도 em 단위로 */
     margin: 0 0.2em;
     vertical-align: middle;
@@ -35,9 +35,9 @@
     /* 추가: 부드러운 변경 */
     transition: all 0.2s ease;
     /* 라인 높이 설정으로 정렬 개선 */
-    line-height: 1;
-    /* 패딩을 조정하여 더 넓은 느낌 */
-    padding: 0.1em 0.5em;
+    line-height: 0.7;
+    /* 패딩을 좌우로 더 늘려서 가로로 긴 느낌 */
+    padding: 0 0.8em;
     box-sizing: border-box;
 }
 
