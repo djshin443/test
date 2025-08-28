@@ -226,27 +226,10 @@ function renderPatterns() {
             <div style="font-size: 0.875rem; margin-top: 8px;">Click "Add New Pattern" to get started</div>
         `;
         grid.appendChild(emptyState);
-        
-        // 빈 상태일 때도 중앙 정렬 유지
-        grid.style.alignContent = 'center';
         return;
     }
     
-    // 패턴 개수에 따른 그리드 정렬 설정
-    if (patterns.length === 1) {
-        // 패턴이 하나일 때: 중앙 정렬
-        grid.style.alignContent = 'center';
-        grid.style.justifyContent = 'center';
-    } else if (patterns.length === 2) {
-        // 패턴이 둘일 때: 중앙 정렬
-        grid.style.alignContent = 'center';
-        grid.style.justifyContent = 'stretch';
-    } else {
-        // 패턴이 셋일 때: 상단 정렬 (공간 배분)
-        grid.style.alignContent = 'start';
-        grid.style.justifyContent = 'stretch';
-    }
-    
+    // 그리드는 항상 균등 배치 (grid-auto-rows: 1fr 적용됨)
     patterns.forEach((pattern, index) => {
         const card = createPatternCard(pattern, index + 1);
         grid.appendChild(card);
