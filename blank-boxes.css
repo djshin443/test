@@ -3,7 +3,7 @@
    =================================== */
 .blank-box {
     display: inline-flex;
-    /* 높이를 더 줄여서 가로로 긴 형태로 */
+    /* 높이는 유지하고 가로를 더 넓게 */
     height: 0.9em;
     /* 테두리도 em 단위로 설정하여 비례 조절 */
     border: 0.08em solid var(--primary);
@@ -36,8 +36,8 @@
     transition: all 0.2s ease;
     /* 라인 높이 설정으로 정렬 개선 */
     line-height: 0.7;
-    /* 패딩을 좌우로 더 늘려서 가로로 긴 느낌 */
-    padding: 0 0.8em;
+    /* 패딩을 좌우로 더 늘려서 가로로 더 긴 느낌 */
+    padding: 0 1.2em;
     box-sizing: border-box;
 }
 
