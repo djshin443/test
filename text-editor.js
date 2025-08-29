@@ -1078,3 +1078,4 @@ function hideTextEditorControls() {
     activeTextSelection = null;
 
 }
+
