@@ -322,18 +322,24 @@ body {
     --spring-blossom-accent: #98FB98;
     --spring-blossom-body-bg: #FDF2F8;
     --spring-blossom-container-bg: #FEFCFF;
+    --spring-blossom-text: #2d1b69;
+    --spring-blossom-text-secondary: #4c1d95;
     
     --spring-garden-primary: #90EE90;
     --spring-garden-secondary: #F0FFF0;
     --spring-garden-accent: #FFE4B5;
     --spring-garden-body-bg: #F0FDF4;
     --spring-garden-container-bg: #FDFFFE;
+    --spring-garden-text: #1f2937;
+    --spring-garden-text-secondary: #374151;
     
     --spring-sky-primary: #87CEEB;
     --spring-sky-secondary: #F0F8FF;
     --spring-sky-accent: #FFFFE0;
     --spring-sky-body-bg: #F0F9FF;
     --spring-sky-container-bg: #FEFEFF;
+    --spring-sky-text: #1e3a8a;
+    --spring-sky-text-secondary: #3730a3;
     
     /* Summer Themes */
     --summer-ocean-primary: #40E0D0;
@@ -341,18 +347,24 @@ body {
     --summer-ocean-accent: #FFF8DC;
     --summer-ocean-body-bg: #ECFEFF;
     --summer-ocean-container-bg: #F8FFFF;
+    --summer-ocean-text: #0f766e;
+    --summer-ocean-text-secondary: #134e4a;
     
     --summer-sunset-primary: #FFA07A;
     --summer-sunset-secondary: #FFF5EE;
     --summer-sunset-accent: #F0E68C;
     --summer-sunset-body-bg: #FFF7ED;
     --summer-sunset-container-bg: #FFFEFB;
+    --summer-sunset-text: #9a3412;
+    --summer-sunset-text-secondary: #c2410c;
     
     --summer-tropical-primary: #20B2AA;
     --summer-tropical-secondary: #F0FFFF;
     --summer-tropical-accent: #FFEFD5;
     --summer-tropical-body-bg: #F0FDFA;
     --summer-tropical-container-bg: #FAFFFF;
+    --summer-tropical-text: #0f766e;
+    --summer-tropical-text-secondary: #115e59;
     
     /* Autumn Themes */
     --autumn-leaves-primary: #DEB887;
@@ -360,18 +372,24 @@ body {
     --autumn-leaves-accent: #F4A460;
     --autumn-leaves-body-bg: #FFFBEB;
     --autumn-leaves-container-bg: #FFFEF8;
+    --autumn-leaves-text: #92400e;
+    --autumn-leaves-text-secondary: #a16207;
     
     --autumn-harvest-primary: #CD853F;
     --autumn-harvest-secondary: #FFF8DC;
     --autumn-harvest-accent: #FFE4B5;
     --autumn-harvest-body-bg: #FEF3C7;
     --autumn-harvest-container-bg: #FFFCF0;
+    --autumn-harvest-text: #92400e;
+    --autumn-harvest-text-secondary: #a16207;
     
     --autumn-golden-primary: #DAA520;
     --autumn-golden-secondary: #FFFAF0;
     --autumn-golden-accent: #F5DEB3;
     --autumn-golden-body-bg: #FFFBEB;
     --autumn-golden-container-bg: #FFFEF5;
+    --autumn-golden-text: #a16207;
+    --autumn-golden-text-secondary: #d97706;
     
     /* Winter Themes */
     --winter-snow-primary: #B0E0E6;
@@ -379,18 +397,24 @@ body {
     --winter-snow-accent: #E6E6FA;
     --winter-snow-body-bg: #F8FAFC;
     --winter-snow-container-bg: #FDFDFF;
+    --winter-snow-text: #1e3a8a;
+    --winter-snow-text-secondary: #3730a3;
     
     --winter-frost-primary: #AFEEEE;
     --winter-frost-secondary: #F0FFFF;
     --winter-frost-accent: #F5F5DC;
     --winter-frost-body-bg: #ECFEFF;
     --winter-frost-container-bg: #F8FFFF;
+    --winter-frost-text: #0f766e;
+    --winter-frost-text-secondary: #115e59;
     
     --winter-crystal-primary: #ADD8E6;
     --winter-crystal-secondary: #F0F8FF;
     --winter-crystal-accent: #E6E6FA;
     --winter-crystal-body-bg: #F0F9FF;
     --winter-crystal-container-bg: #FAFEFF;
+    --winter-crystal-text: #1e40af;
+    --winter-crystal-text-secondary: #3730a3;
     
     /* Special Themes */
     --rainbow-pastel-primary: #FFB3BA;
@@ -398,39 +422,51 @@ body {
     --rainbow-pastel-accent: #FFFFBA;
     --rainbow-pastel-body-bg: #FEF7FF;
     --rainbow-pastel-container-bg: #FFFEFF;
+    --rainbow-pastel-text: #7c2d12;
+    --rainbow-pastel-text-secondary: #9a3412;
     
     --lavender-dreams-primary: #E6E6FA;
     --lavender-dreams-secondary: #F8F8FF;
     --lavender-dreams-accent: #DDA0DD;
     --lavender-dreams-body-bg: #FAF5FF;
     --lavender-dreams-container-bg: #FEFAFF;
+    --lavender-dreams-text: #581c87;
+    --lavender-dreams-text-secondary: #6b21a8;
     
     --mint-fresh-primary: #98FB98;
     --mint-fresh-secondary: #F0FFF0;
     --mint-fresh-accent: #AFEEEE;
     --mint-fresh-body-bg: #ECFDF5;
     --mint-fresh-container-bg: #F8FFFC;
+    --mint-fresh-text: #14532d;
+    --mint-fresh-text-secondary: #166534;
     
     --peach-cream-primary: #FFEAA7;
     --peach-cream-secondary: #FFF5EE;
     --peach-cream-accent: #FFE4E1;
     --peach-cream-body-bg: #FFFBEB;
     --peach-cream-container-bg: #FFFEF6;
+    --peach-cream-text: #a16207;
+    --peach-cream-text-secondary: #d97706;
     
     --berry-blush-primary: #FFB6C1;
     --berry-blush-secondary: #FFF0F5;
     --berry-blush-accent: #F0E68C;
     --berry-blush-body-bg: #FDF2F8;
     --berry-blush-container-bg: #FEFAFC;
+    --berry-blush-text: #be185d;
+    --berry-blush-text-secondary: #db2777;
 }
 
-/* Theme Application Classes */
+/* Theme Application Classes with Text Colors */
 .theme-spring-blossom {
     --primary: var(--spring-blossom-primary);
     --surface: var(--spring-blossom-secondary);
     --accent: var(--spring-blossom-accent);
     --body-bg: var(--spring-blossom-body-bg);
     --container-bg: var(--spring-blossom-container-bg);
+    --text: var(--spring-blossom-text);
+    --text-secondary: var(--spring-blossom-text-secondary);
 }
 
 .theme-spring-garden {
@@ -439,6 +475,8 @@ body {
     --accent: var(--spring-garden-accent);
     --body-bg: var(--spring-garden-body-bg);
     --container-bg: var(--spring-garden-container-bg);
+    --text: var(--spring-garden-text);
+    --text-secondary: var(--spring-garden-text-secondary);
 }
 
 .theme-spring-sky {
@@ -447,6 +485,8 @@ body {
     --accent: var(--spring-sky-accent);
     --body-bg: var(--spring-sky-body-bg);
     --container-bg: var(--spring-sky-container-bg);
+    --text: var(--spring-sky-text);
+    --text-secondary: var(--spring-sky-text-secondary);
 }
 
 .theme-summer-ocean {
@@ -455,6 +495,8 @@ body {
     --accent: var(--summer-ocean-accent);
     --body-bg: var(--summer-ocean-body-bg);
     --container-bg: var(--summer-ocean-container-bg);
+    --text: var(--summer-ocean-text);
+    --text-secondary: var(--summer-ocean-text-secondary);
 }
 
 .theme-summer-sunset {
@@ -463,6 +505,8 @@ body {
     --accent: var(--summer-sunset-accent);
     --body-bg: var(--summer-sunset-body-bg);
     --container-bg: var(--summer-sunset-container-bg);
+    --text: var(--summer-sunset-text);
+    --text-secondary: var(--summer-sunset-text-secondary);
 }
 
 .theme-summer-tropical {
@@ -471,6 +515,8 @@ body {
     --accent: var(--summer-tropical-accent);
     --body-bg: var(--summer-tropical-body-bg);
     --container-bg: var(--summer-tropical-container-bg);
+    --text: var(--summer-tropical-text);
+    --text-secondary: var(--summer-tropical-text-secondary);
 }
 
 .theme-autumn-leaves {
@@ -479,6 +525,8 @@ body {
     --accent: var(--autumn-leaves-accent);
     --body-bg: var(--autumn-leaves-body-bg);
     --container-bg: var(--autumn-leaves-container-bg);
+    --text: var(--autumn-leaves-text);
+    --text-secondary: var(--autumn-leaves-text-secondary);
 }
 
 .theme-autumn-harvest {
@@ -487,6 +535,8 @@ body {
     --accent: var(--autumn-harvest-accent);
     --body-bg: var(--autumn-harvest-body-bg);
     --container-bg: var(--autumn-harvest-container-bg);
+    --text: var(--autumn-harvest-text);
+    --text-secondary: var(--autumn-harvest-text-secondary);
 }
 
 .theme-autumn-golden {
@@ -495,6 +545,8 @@ body {
     --accent: var(--autumn-golden-accent);
     --body-bg: var(--autumn-golden-body-bg);
     --container-bg: var(--autumn-golden-container-bg);
+    --text: var(--autumn-golden-text);
+    --text-secondary: var(--autumn-golden-text-secondary);
 }
 
 .theme-winter-snow {
@@ -503,6 +555,8 @@ body {
     --accent: var(--winter-snow-accent);
     --body-bg: var(--winter-snow-body-bg);
     --container-bg: var(--winter-snow-container-bg);
+    --text: var(--winter-snow-text);
+    --text-secondary: var(--winter-snow-text-secondary);
 }
 
 .theme-winter-frost {
@@ -511,6 +565,8 @@ body {
     --accent: var(--winter-frost-accent);
     --body-bg: var(--winter-frost-body-bg);
     --container-bg: var(--winter-frost-container-bg);
+    --text: var(--winter-frost-text);
+    --text-secondary: var(--winter-frost-text-secondary);
 }
 
 .theme-winter-crystal {
@@ -519,6 +575,8 @@ body {
     --accent: var(--winter-crystal-accent);
     --body-bg: var(--winter-crystal-body-bg);
     --container-bg: var(--winter-crystal-container-bg);
+    --text: var(--winter-crystal-text);
+    --text-secondary: var(--winter-crystal-text-secondary);
 }
 
 .theme-rainbow-pastel {
@@ -527,6 +585,8 @@ body {
     --accent: var(--rainbow-pastel-accent);
     --body-bg: var(--rainbow-pastel-body-bg);
     --container-bg: var(--rainbow-pastel-container-bg);
+    --text: var(--rainbow-pastel-text);
+    --text-secondary: var(--rainbow-pastel-text-secondary);
 }
 
 .theme-lavender-dreams {
@@ -535,6 +595,8 @@ body {
     --accent: var(--lavender-dreams-accent);
     --body-bg: var(--lavender-dreams-body-bg);
     --container-bg: var(--lavender-dreams-container-bg);
+    --text: var(--lavender-dreams-text);
+    --text-secondary: var(--lavender-dreams-text-secondary);
 }
 
 .theme-mint-fresh {
@@ -543,6 +605,8 @@ body {
     --accent: var(--mint-fresh-accent);
     --body-bg: var(--mint-fresh-body-bg);
     --container-bg: var(--mint-fresh-container-bg);
+    --text: var(--mint-fresh-text);
+    --text-secondary: var(--mint-fresh-text-secondary);
 }
 
 .theme-peach-cream {
@@ -551,6 +615,8 @@ body {
     --accent: var(--peach-cream-accent);
     --body-bg: var(--peach-cream-body-bg);
     --container-bg: var(--peach-cream-container-bg);
+    --text: var(--peach-cream-text);
+    --text-secondary: var(--peach-cream-text-secondary);
 }
 
 .theme-berry-blush {
@@ -559,6 +625,39 @@ body {
     --accent: var(--berry-blush-accent);
     --body-bg: var(--berry-blush-body-bg);
     --container-bg: var(--berry-blush-container-bg);
+    --text: var(--berry-blush-text);
+    --text-secondary: var(--berry-blush-text-secondary);
+}
+
+/* Text Color Applications - 메인 타이틀과 푸터 텍스트가 테마에 따라 변경됩니다 */
+.main-title {
+    color: var(--text) !important;
+    transition: color 0.4s ease;
+}
+
+.footer-text {
+    color: var(--text) !important;
+    transition: color 0.4s ease;
+}
+
+.footer-logo {
+    color: var(--text) !important;
+    font-weight: 700;
+    transition: color 0.4s ease;
+}
+
+.subtitle {
+    color: var(--text-secondary) !important;
+    transition: color 0.4s ease;
+}
+
+/* Additional text elements that should change with theme */
+.header h1,
+.header p,
+.pattern-card,
+.control-title,
+.control-subtitle {
+    transition: color 0.4s ease;
 }
 
 /* Additional Background Effects for Better Visual Appeal */
