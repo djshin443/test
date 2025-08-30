@@ -580,3 +580,73 @@
     }
 
 }
+
+/* Text Selection Styles */
+.pattern-display.editing-mode {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+/* 커스텀 텍스트 선택 스타일 - 깔끔한 드래그 모양 */
+.pattern-display::selection,
+.examples-display::selection,
+.pattern-display *::selection,
+.examples-display *::selection {
+    background: rgba(99, 102, 241, 0.2);
+    color: inherit;
+}
+
+.pattern-display::-moz-selection,
+.examples-display::-moz-selection,
+.pattern-display *::-moz-selection,
+.examples-display *::-moz-selection {
+    background: rgba(99, 102, 241, 0.2);
+    color: inherit;
+}
+
+/* 블랭크박스 전용 선택 스타일 */
+.blank-box::selection,
+.blank-box::-moz-selection {
+    background: rgba(99, 102, 241, 0.3);
+    color: white;
+}
+
+/* 드래그 중 커서 스타일 */
+.pattern-display.dragging,
+.examples-display.dragging {
+    cursor: text !important;
+}
+
+/* 드래그 가능한 영역 표시 */
+.pattern-display,
+.examples-display {
+    position: relative;
+}
+
+.pattern-display:hover::before,
+.examples-display:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px dashed rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pattern-display:hover:not(.editing)::before,
+.examples-display:hover:not(.editing)::before {
+    opacity: 1;
+}
+
+/* 텍스트 선택 시작 시 시각적 피드백 */
+.selecting-text {
+    background: rgba(99, 102, 241, 0.05) !important;
+    transition: background 0.1s ease;
+}

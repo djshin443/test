@@ -40,17 +40,6 @@
     border-radius: 2px;
 }
 
-.date-badge {
-    background: var(--surface);
-    padding: 10px 20px;
-    border-radius: 100px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    border: 2px solid var(--border);
-    flex: 0 0 auto;
-    margin-left: auto;
-}
 
 .main-title {
     font-family: 'Poppins', sans-serif;

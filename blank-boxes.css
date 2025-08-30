@@ -1,6 +1,24 @@
 /* ===================================
    BLANK BOXES ([] CONVERSION) - 완전 정리된 버전
    =================================== */
+/* 블랭크박스 내부의 선택 가능한 텍스트 */
+.blank-text {
+    opacity: 0 !important;
+    font-size: 1px !important;
+    color: transparent !important;
+    pointer-events: none !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 .blank-box {
     display: inline-flex !important;
     align-items: center !important;
@@ -17,7 +35,7 @@
     vertical-align: baseline !important;
     position: relative !important;
     z-index: 1 !important;
-    cursor: pointer !important;
+    cursor: text !important;
     user-select: text !important;
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
@@ -27,8 +45,33 @@
     transition: all 0.2s ease !important;
     margin: 0 0.15em !important;
     padding: 0 0.1em !important;
-    /* 기본 색상: 스타일 없을 때는 보라색, 있을 때는 지정된 색상 */
     color: var(--primary);
+}
+
+/* 드래그 선택 시 블랭크박스 스타일 */
+.blank-box::selection {
+    background: rgba(99, 102, 241, 0.4) !important;
+    color: white !important;
+}
+
+.blank-box::-moz-selection {
+    background: rgba(99, 102, 241, 0.4) !important;
+    color: white !important;
+}
+
+/* 드래그 중 블랭크박스 향상된 시각적 피드백 */
+.blank-box.selecting {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.1em rgba(99, 102, 241, 0.3) !important;
+}
+
+/* 블랭크박스가 선택 범위에 포함될 때 */
+.blank-box.in-selection {
+    outline: 2px solid rgba(99, 102, 241, 0.6) !important;
+    outline-offset: 1px !important;
+    background: rgba(99, 102, 241, 0.15) !important;
+    z-index: 2 !important;
 }
 
 /* 스타일이 적용된 blank-box는 인라인 색상 사용 */
@@ -63,12 +106,19 @@ span .blank-box {
     top: 0;
 }
 
-/* Hover 효과 */
+/* Hover 효과 - 클릭 가능함을 명확히 표시 */
 .blank-box:hover {
     border-color: var(--primary-dark);
-    box-shadow: 0 0 0 0.1em rgba(99, 102, 241, 0.1);
-    transform: none;
+    box-shadow: 0 0 0 0.1em rgba(99, 102, 241, 0.2);
+    transform: scale(1.05);
     z-index: 2;
+    cursor: pointer;
+}
+
+/* 클릭된 블랭크박스 강조 */
+.blank-box:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 0 0.15em rgba(99, 102, 241, 0.4);
 }
 
 /* 선택된 상태 */

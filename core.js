@@ -76,22 +76,6 @@ function validateDateFormat(dateStr) {
     return !isNaN(date.getTime());
 }
 
-// 날짜 업데이트 - 주간으로 변경
-function updateDate() {
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Sun 시작
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-    const options = { month: 'short', day: 'numeric' };
-    const startStr = startOfWeek.toLocaleDateString('en-US', options);
-    const endStr = endOfWeek.toLocaleDateString('en-US', options);
-    const year = now.getFullYear();
-
-    const badge = document.getElementById('date-badge');
-    if (badge) badge.textContent = `${startStr} - ${endStr}, ${year}`;
-}
 
 // 텍스트에서 [] 를 네모 박스로 변환 (HTML 컨텐츠 지원)
 function processBlankBoxesWithHTML(text, isTitle = false) {
@@ -129,8 +113,13 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
         sanitizedText = sanitizedText.substring(0, 500);
     }
     
-    // [] 패턴을 blank-box로 변환하면서 앞뒤 공백도 처리
-    return sanitizedText.replace(/(\s*)\[(\s*)\](\s*)/g, function(match, beforeSpace, insideSpaces, afterSpace) {
+    // 먼저 [] 패턴을 찾아서 임시 마커로 치환
+    let processedText = sanitizedText;
+    const bracketMatches = [];
+    let matchIndex = 0;
+    
+    // [] 패턴을 먼저 찾아서 보호
+    processedText = processedText.replace(/\[(\s*)\]/g, function(match, insideSpaces) {
         const spaceCount = insideSpaces.length;
         let sizeClass = '';
         
@@ -146,13 +135,23 @@ function processBlankBoxesWithHTML(text, isTitle = false) {
             sizeClass = 'space-5-plus';
         }
         
-        // 앞뒤 공백을 &nbsp;로 변환하여 보존
-        const processedBeforeSpace = beforeSpace.replace(/ /g, '&nbsp;');
-        const processedAfterSpace = afterSpace.replace(/ /g, '&nbsp;');
-        
-        return `${processedBeforeSpace}<span class="blank-box ${sizeClass}" data-blank-box="true" data-selectable="true">&nbsp;</span>${processedAfterSpace}`;
+        const marker = `__BLANK_BOX_${matchIndex}__`;
+        bracketMatches[matchIndex] = `<span class="blank-box ${sizeClass}" data-blank-box="true" data-selectable="true"><span class="blank-text">____</span></span>`;
+        matchIndex++;
+        return marker;
     });
+    
+    // 이제 나머지 공백을 &nbsp;로 변환
+    processedText = processedText.replace(/ /g, '&nbsp;');
+    
+    // 마커를 실제 blank-box로 치환
+    bracketMatches.forEach((replacement, index) => {
+        processedText = processedText.replace(`__BLANK_BOX_${index}__`, replacement);
+    });
+    
+    return processedText;
 }
+
 // 텍스트에서 [] 를 네모 박스로 변환 (기존 함수 - 호환성 유지)
 function processBlankBoxes(text, isTitle = false) {
     return processBlankBoxesWithHTML(text, isTitle);
@@ -255,8 +254,10 @@ function createPatternCard(pattern, number) {
     
     // HTML 콘텐츠가 있고 복잡한 구조가 아닌 경우에만 사용
     if (pattern.htmlContent && !isComplexHTML(pattern.htmlContent)) {
+		console.log('기존 HTML 사용:', pattern.htmlContent);
         processedPattern = pattern.htmlContent;
     } else if (pattern.pattern) {
+		console.log('새로 처리:', pattern.pattern);
         processedPattern = processBlankBoxesWithHTML(pattern.pattern);
         // 복잡한 HTML이 있었다면 초기화
         if (pattern.htmlContent && isComplexHTML(pattern.htmlContent)) {
@@ -330,18 +331,24 @@ function createPatternCard(pattern, number) {
 function isComplexHTML(htmlContent) {
     if (!htmlContent) return false;
     
-    // 복잡한 구조 판단 기준:
-    // 1. 중첩된 span이 많은 경우 (5개 이상)
-    // 2. 불필요한 &nbsp;가 많은 경우
-    // 3. <br> 태그가 있는 경우
-    // 4. 빈 span이 많은 경우
+    // 블랭크박스가 포함되어 있어도 스타일이 있으면 보존
+    // data-styled 속성이나 style 속성이 있는 블랭크박스는 복잡한 HTML이 아님
+    if (htmlContent.includes('data-styled="true"') || 
+        htmlContent.includes('style=') && htmlContent.includes('blank-box')) {
+        return false; // 스타일이 적용된 블랭크박스는 보존
+    }
+    
+    // 스타일이 없는 일반 블랭크박스만 있는 경우
+    if (htmlContent.includes('blank-box') && !htmlContent.includes('style=')) {
+        return true; // 재처리 필요
+    }
     
     const spanCount = (htmlContent.match(/<span/g) || []).length;
     const hasBreaks = htmlContent.includes('<br>');
     const nbspCount = (htmlContent.match(/&nbsp;/g) || []).length;
     const emptySpanCount = (htmlContent.match(/<span[^>]*><\/span>/g) || []).length;
     
-    return spanCount > 5 || hasBreaks || nbspCount > 10 || emptySpanCount > 2;
+    return spanCount > 3 || hasBreaks || nbspCount > 5 || emptySpanCount > 1;
 }
 
 // 패턴 편집
@@ -376,9 +383,11 @@ function savePattern(id) {
     const pattern = patterns.find(p => p.id === id);
     
     if (pattern) {
-        pattern.pattern = input.value.trim();
-        // HTML 컨텐츠 초기화 (새로운 텍스트 입력 시)
-        pattern.htmlContent = null;
+        // 텍스트가 실제로 변경된 경우에만 htmlContent 초기화
+        if (pattern.pattern !== input.value.trim()) {
+            pattern.pattern = input.value.trim();
+            pattern.htmlContent = null; // HTML 컨텐츠 초기화
+        }
         
         adjustCardSize(pattern.id);
         renderPatterns();
@@ -665,8 +674,6 @@ async function saveAs(format) {
     }
 }
 
-// 초기화
-updateDate();
 renderPatterns();
 
 // 첫 패턴 자동 추가
