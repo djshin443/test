@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);  /* 파스텔 그라데이션 배경 */
+            background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);
             min-height: 100vh;
             padding: 20px;
         }
@@ -24,7 +24,7 @@
         }
 
         .controls {
-            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            background: rgba(255, 255, 255, 0.25);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
@@ -80,7 +80,7 @@
 
         #timetable-wrapper {
             position: relative;
-            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
@@ -107,20 +107,20 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.3);  /* 30% 흰색 오버레이로 배경 이미지 투명하게 */
+            background: rgba(255, 255, 255, 0.3);
             z-index: 0;
         }
 
         h1 {
             text-align: center;
-            color: #1a1a1a;  /* 매우 진한 제목 */
+            color: #1a1a1a;
             margin-bottom: 30px;
             font-size: 34px;
-            font-weight: 800;  /* 매우 굵게 */
+            font-weight: 800;
             position: relative;
             z-index: 1;
             text-shadow: 2px 2px 5px rgba(255,255,255,0.95), -1px -1px 3px rgba(255,255,255,0.8);
-            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            background: rgba(255, 255, 255, 0.25);
             padding: 10px 20px;
             border-radius: 15px;
             display: inline-block;
@@ -140,14 +140,14 @@
             border-spacing: 0;
             position: relative;
             z-index: 1;
-            background: transparent !important;  /* 테이블 자체도 완전 투명 */
+            background: transparent !important;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         th {
-            background: rgba(212, 181, 255, 0.25);  /* 25% 불투명도 */
+            background: rgba(212, 181, 255, 0.25);
             color: #000000;
             padding: 15px;
             font-weight: 900;
@@ -161,30 +161,30 @@
 
         th:first-child {
             width: 100px;
-            background: rgba(255, 184, 209, 0.25);  /* 25% 불투명도 */
+            background: rgba(255, 184, 209, 0.25);
             color: #000000;
         }
 
         td {
             padding: 12px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);  /* 매우 투명한 테두리 */
+            border: 1px solid rgba(255, 255, 255, 0.15);
             position: relative;
             height: 80px;
             vertical-align: middle;
-            background: transparent;  /* 기본 투명 */
+            background: transparent;
         }
 
         .time-cell {
-            background: rgba(255, 230, 243, 0.25);  /* 25% 불투명도 */
+            background: rgba(255, 230, 243, 0.25);
             font-weight: 900;
-            color: #000000;  /* 진한 검정색 */
+            color: #000000;
             font-size: 14px;
-            text-shadow: none;  /* 텍스트 그림자 제거 */
+            text-shadow: none;
         }
 
         .class-cell {
-            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            background: rgba(255, 255, 255, 0.25);
             transition: all 0.3s;
         }
 
@@ -192,7 +192,7 @@
             transform: scale(1.02);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             z-index: 10;
-            background: rgba(255, 255, 255, 0.2) !important;  /* 호버 시에도 투명 유지 */
+            background: rgba(255, 255, 255, 0.2) !important;
         }
 
         .class-item {
@@ -205,17 +205,15 @@
             min-width: 90%;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(0.5px);  /* 살짝 블러 효과 */
+            backdrop-filter: blur(0.5px);
         }
 
-        /* 호버 애니메이션 효과 제거 */
         .class-item::before {
-            display: none;  /* 애니메이션 효과 제거 */
+            display: none;
         }
 
-        /* 과목별 색상 - 케이팝 데몬헌터스 파스텔 테마 */
         .subject-늘봄 {
-            background: rgba(255, 212, 229, 0.4);  /* 40% 불투명도 */
+            background: rgba(255, 212, 229, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -223,7 +221,7 @@
         }
 
         .subject-방송댄스 {
-            background: rgba(229, 204, 255, 0.4);  /* 40% 불투명도 */
+            background: rgba(229, 204, 255, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -231,7 +229,7 @@
         }
 
         .subject-창의과학 {
-            background: rgba(204, 229, 255, 0.4);  /* 40% 불투명도 */
+            background: rgba(204, 229, 255, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -239,7 +237,7 @@
         }
 
         .subject-영어 {
-            background: rgba(255, 224, 240, 0.4);  /* 40% 불투명도 */
+            background: rgba(255, 224, 240, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -247,7 +245,7 @@
         }
 
         .subject-피아노 {
-            background: rgba(240, 224, 255, 0.4);  /* 40% 불투명도 */
+            background: rgba(240, 224, 255, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -255,7 +253,7 @@
         }
 
         .subject-미술 {
-            background: rgba(224, 240, 255, 0.4);  /* 40% 불투명도 */
+            background: rgba(224, 240, 255, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -263,7 +261,7 @@
         }
 
         .subject-논술 {
-            background: rgba(255, 192, 217, 0.4);  /* 40% 불투명도 */
+            background: rgba(255, 192, 217, 0.4);
             color: #000000;
             font-weight: 800;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
@@ -271,10 +269,9 @@
         }
 
         .empty-cell {
-            background: rgba(248, 249, 250, 0.25);  /* 25% 불투명도 */
+            background: rgba(248, 249, 250, 0.25);
         }
 
-        /* 애니메이션 */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -288,6 +285,302 @@
 
         .class-item {
             animation: fadeIn 0.5s ease-out;
+        }
+
+        /* 저장 모달 스타일 */
+        .save-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-modal {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+            margin: 20px;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .save-modal-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .save-modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .save-modal-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .save-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .save-option {
+            background: #F8FAFC;
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 24px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .save-option:hover {
+            border-color: #5B21B6;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .save-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .save-option-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .save-option-desc {
+            font-size: 0.813rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .save-modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-modal-cancel {
+            background: white;
+            color: #6b7280;
+            border: 2px solid #E2E8F0;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #F8FAFC;
+            border-color: #6b7280;
+        }
+
+        /* 로딩 스피너 애니메이션 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 모바일 최적화 - 480px 이하 */
+        @media (max-width: 480px) {
+            body {
+                padding: 2px;
+            }
+            
+            .container {
+                border-radius: 10px;
+                max-width: 100%;
+                margin: 0;
+            }
+            
+            .header {
+                padding: 10px 8px;
+            }
+            
+            .logo-zenith {
+                font-size: 1.6rem;
+                letter-spacing: 1px;
+            }
+            
+            .logo-english {
+                font-size: 1.2rem;
+                letter-spacing: 1px;
+            }
+            
+            .logo-star {
+                font-size: 1rem;
+            }
+            
+            .subtitle {
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+            
+            .season-indicator {
+                font-size: 1.2rem;
+                top: 6px;
+                right: 8px;
+            }
+            
+            .header-decoration {
+                font-size: 0.9rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 8px;
+                padding: 8px 12px;
+            }
+            
+            .date-selector {
+                width: 100%;
+                justify-content: center;
+                gap: 6px;
+            }
+            
+            select {
+                padding: 5px 20px 5px 8px;
+                font-size: 0.75rem;
+                min-width: 60px;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            
+            .btn {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+                gap: 3px;
+                flex: 1;
+                min-width: 80px;
+            }
+            
+            .calendar {
+                padding: 6px;
+            }
+            
+            .month-year-display {
+                font-size: 1rem;
+                margin-bottom: 8px;
+                gap: 6px;
+            }
+            
+            .month-decoration {
+                font-size: 0.9rem;
+            }
+            
+            .weekday {
+                padding: 6px 1px;
+                font-size: 0.65rem;
+            }
+            
+            .day {
+                min-height: 80px;
+                padding: 2px;
+            }
+            
+            .day-number {
+                font-size: 0.75rem;
+                margin-bottom: 2px;
+            }
+            
+            .events {
+                font-size: 0.55rem;
+                gap: 1px;
+                min-height: 35px;
+            }
+            
+            .event {
+                font-size: 0.55rem;
+                padding: 1px 2px;
+                min-height: 12px;
+                line-height: 1;
+            }
+            
+            .add-event-btn,
+            .clear-day-btn {
+                font-size: 0.45rem;
+                padding: 1px;
+                min-height: 12px;
+            }
+            
+            .modal-content {
+                margin: 20px 5px;
+                padding: 15px;
+                max-width: none;
+            }
+            
+            .modal h3 {
+                font-size: 1rem;
+            }
+            
+            .modal input {
+                font-size: 0.75rem;
+                padding: 6px;
+            }
+            
+            .footer {
+                padding: 8px;
+                font-size: 0.65rem;
+            }
+            
+            .save-options {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .save-modal {
+                padding: 20px 15px;
+                margin: 10px;
+            }
         }
 
         /* 반응형 */
@@ -315,8 +608,8 @@
             </label>
             <input type="file" id="bgInput" accept="image/*">
             
-            <button class="btn btn-save" onclick="saveAsImage()">
-                💾 JPG로 저장
+            <button class="btn btn-save" onclick="showSaveOptions()">
+                📄 JPG로 저장
             </button>
             
             <button class="btn btn-reset" onclick="resetBackground()">
@@ -433,6 +726,9 @@
         </div>
     </div>
 
+    <!-- 저장 옵션 선택 모달 -->
+    <div class="save-modal-overlay" id="save-modal-overlay"></div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         // 배경 이미지 업로드
@@ -457,148 +753,320 @@
             document.getElementById('bgInput').value = '';
         }
 
-        // JPG로 저장 (전체 시간표 완전 캡처)
-        function saveAsImage() {
-            const element = document.getElementById('timetable-wrapper');
-            
-            // 페이지 최상단으로 스크롤
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
-            
-            // DOM이 안정화될 때까지 대기
-            setTimeout(() => {
-                // 요소의 실제 크기 측정
-                const rect = element.getBoundingClientRect();
-                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-                
-                html2canvas(document.body, {
-                    scale: 1.2,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    letterRendering: true,
-                    foreignObjectRendering: true,
-                    imageTimeout: 30000,
-                    x: rect.left + scrollX - 10,  // 약간의 여백 포함
-                    y: rect.top + scrollY - 10,   // 약간의 여백 포함
-                    width: rect.width + 20,       // 여백 포함한 폭
-                    height: rect.height + 20,     // 여백 포함한 높이
-                    onclone: function(clonedDoc) {
-                        // 복제 문서에서 필요 없는 요소들 숨기기
-                        const controls = clonedDoc.querySelector('.controls');
-                        if (controls) {
-                            controls.style.display = 'none';
-                        }
+        // 저장 옵션 모달 표시
+        function showSaveOptions() {
+            const modal = document.getElementById('save-modal-overlay');
+            modal.innerHTML = `
+                <div class="save-modal">
+                    <div class="save-modal-header">
+                        <h3 class="save-modal-title">시간표 저장 옵션</h3>
+                        <p class="save-modal-subtitle">저장할 형식을 선택하세요</p>
+                    </div>
+                    
+                    <div class="save-options">
+                        <div class="save-option landscape" onclick="saveAsJPG('landscape')" style="cursor: pointer;">
+                            <div class="save-option-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">📄</div>
+                            <div class="save-option-title">가로 A4</div>
+                            <div class="save-option-desc">A4 가로 용지에 최적화된 시간표</div>
+                        </div>
                         
-                        // body 스타일 초기화
-                        clonedDoc.body.style.cssText = `
+                        <div class="save-option portrait" onclick="saveAsJPG('portrait')" style="cursor: pointer;">
+                            <div class="save-option-icon" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">📋</div>
+                            <div class="save-option-title">세로 A4</div>
+                            <div class="save-option-desc">A4 세로 용지에 최적화된 시간표</div>
+                        </div>
+                    </div>
+                    
+                    <div class="save-modal-actions">
+                        <button class="btn-modal-cancel" onclick="closeSaveModal()">취소</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        // 저장 옵션 모달 닫기
+        function closeSaveModal() {
+            const modal = document.getElementById('save-modal-overlay');
+            modal.style.display = 'none';
+        }
+
+        // JPG 저장 함수 (PC/모바일 동일 비율 보장)
+        async function saveAsJPG(orientation) {
+            closeSaveModal();
+            
+            const element = document.getElementById('timetable-wrapper');
+            const today = new Date();
+            const filename = `나의_시간표_${orientation === 'landscape' ? '가로' : '세로'}_${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
+            
+            // 로딩 표시
+            showLoadingOverlay(`${orientation === 'landscape' ? '가로' : '세로'} A4 JPG 생성 중...`);
+            
+            try {
+                // 모든 관련 요소들 저장
+                const controls = document.querySelector('.controls');
+                const addButtons = document.querySelectorAll('.add-event-btn, .clear-day-btn');
+                const container = document.querySelector('.container');
+                const body = document.body;
+                
+                // 원본 스타일 완전 저장
+                const originalStyles = {
+                    controlsDisplay: controls ? controls.style.display : '',
+                    elementWidth: element.style.width,
+                    elementHeight: element.style.height,
+                    elementMaxWidth: element.style.maxWidth,
+                    elementMinWidth: element.style.minWidth,
+                    elementTransform: element.style.transform,
+                    elementPosition: element.style.position,
+                    elementLeft: element.style.left,
+                    elementTop: element.style.top,
+                    bodyPadding: body.style.padding,
+                    bodyMargin: body.style.margin,
+                    bodyOverflow: body.style.overflow,
+                    containerMaxWidth: container ? container.style.maxWidth : '',
+                    containerWidth: container ? container.style.width : '',
+                    buttonDisplays: []
+                };
+                
+                // 버튼들 숨기기
+                if (controls) controls.style.display = 'none';
+                addButtons.forEach((btn, index) => {
+                    originalStyles.buttonDisplays[index] = btn.style.display;
+                    btn.style.display = 'none';
+                });
+                
+                // 스크롤 방지 및 환경 최적화
+                body.style.overflow = 'hidden';
+                body.style.padding = '0';
+                body.style.margin = '0';
+                
+                // 컨테이너 최적화
+                if (container) {
+                    container.style.maxWidth = 'none';
+                    container.style.width = '100%';
+                    container.style.margin = '0';
+                    container.style.padding = '0';
+                }
+                
+                // 선택 방지 스타일
+                const style = document.createElement('style');
+                style.textContent = `
+                    * {
+                        -webkit-user-select: none !important;
+                        -moz-user-select: none !important;
+                        -ms-user-select: none !important;
+                        user-select: none !important;
+                        -webkit-touch-callout: none !important;
+                        -webkit-tap-highlight-color: transparent !important;
+                    }
+                    ::selection, ::-moz-selection { background: transparent !important; }
+                    body { margin: 0 !important; padding: 0 !important; }
+                `;
+                document.head.appendChild(style);
+                
+                // A4 크기 설정 (고정값, PC/모바일 동일)
+                const A4_SIZES = {
+                    landscape: { width: 1123, height: 794 },  // 가로 A4
+                    portrait: { width: 794, height: 1123 }    // 세로 A4
+                };
+                
+                const targetSize = A4_SIZES[orientation];
+                
+                // 시간표 wrapper를 A4 크기로 강제 설정
+                element.style.width = `${targetSize.width}px`;
+                element.style.height = `${targetSize.height}px`;
+                element.style.maxWidth = `${targetSize.width}px`;
+                element.style.minWidth = `${targetSize.width}px`;
+                element.style.transform = 'none';
+                element.style.position = 'relative';
+                element.style.left = '0';
+                element.style.top = '0';
+                element.style.margin = '0 auto';
+                
+                // 뷰포트 메타태그 임시 조정
+                const viewport = document.querySelector('meta[name="viewport"]');
+                const originalViewport = viewport ? viewport.content : '';
+                if (viewport) {
+                    viewport.content = `width=${targetSize.width}, initial-scale=1.0, user-scalable=no`;
+                }
+                
+                // 렌더링 대기 (PC/모바일 구분)
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const waitTime = isMobile ? 1500 : 1000;
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+                
+                // 캔버스 캡처 설정
+                const canvasOptions = {
+                    scale: 2,  // 모든 환경에서 동일한 고해상도
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    width: targetSize.width,
+                    height: targetSize.height,
+                    windowWidth: targetSize.width,
+                    windowHeight: targetSize.height,
+                    scrollY: 0,
+                    scrollX: 0,
+                    x: 0,
+                    y: 0,
+                    letterRendering: true,
+                    allowTaint: false,
+                    foreignObjectRendering: true,
+                    removeContainer: false,
+                    imageTimeout: 30000,
+                    onclone: function(clonedDoc) {
+                        // 복제된 문서 최적화
+                        const clonedBody = clonedDoc.body;
+                        clonedBody.style.cssText = `
                             margin: 0 !important;
                             padding: 0 !important;
-                            overflow: visible !important;
+                            overflow: hidden !important;
+                            width: ${targetSize.width}px !important;
+                            height: ${targetSize.height}px !important;
                         `;
                         
-                        // 시간표 wrapper만 보이도록 다른 요소들 숨기기
-                        const allElements = clonedDoc.body.children;
-                        for (let i = 0; i < allElements.length; i++) {
-                            const child = allElements[i];
-                            if (!child.classList.contains('container') && child.id !== 'timetable-wrapper') {
-                                child.style.display = 'none';
-                            }
-                        }
-                        
-                        const clonedWrapper = clonedDoc.getElementById('timetable-wrapper');
-                        const clonedContainer = clonedDoc.getElementById('timetable-container');
-                        
-                        if (clonedWrapper) {
-                            clonedWrapper.style.cssText = `
+                        const clonedElement = clonedDoc.getElementById('timetable-wrapper');
+                        if (clonedElement) {
+                            clonedElement.style.cssText = `
+                                width: ${targetSize.width}px !important;
+                                height: ${targetSize.height}px !important;
+                                max-width: ${targetSize.width}px !important;
+                                min-width: ${targetSize.width}px !important;
+                                transform: none !important;
                                 position: relative !important;
-                                background: rgba(255, 255, 255, 0.25) !important;
-                                border-radius: 20px !important;
-                                overflow: visible !important;
-                                box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
-                                max-width: 1200px !important;
-                                margin: 0 auto !important;
-                                padding: 30px !important;
-                                box-sizing: border-box !important;
+                                left: 0 !important;
+                                top: 0 !important;
+                                margin: 0 !important;
                             `;
                         }
                         
-                        if (clonedContainer) {
-                            const originalContainer = document.getElementById('timetable-container');
-                            const originalBgImage = originalContainer.style.backgroundImage;
-                            const hasClass = originalContainer.classList.contains('has-bg');
-                            
-                            clonedContainer.style.cssText = `
-                                position: relative !important;
-                                padding: 30px !important;
-                                background-size: cover !important;
-                                background-position: center !important;
-                                background-repeat: no-repeat !important;
-                                min-height: 600px !important;
-                                width: 100% !important;
-                            `;
-                            
-                            if (originalBgImage && originalBgImage !== 'none') {
-                                clonedContainer.style.backgroundImage = originalBgImage;
-                                
-                                if (hasClass) {
-                                    const overlay = clonedDoc.createElement('div');
-                                    overlay.style.cssText = `
-                                        position: absolute !important;
-                                        top: 0 !important;
-                                        left: 0 !important;
-                                        right: 0 !important;
-                                        bottom: 0 !important;
-                                        background: rgba(255, 255, 255, 0.3) !important;
-                                        z-index: 0 !important;
-                                    `;
-                                    clonedContainer.insertBefore(overlay, clonedContainer.firstChild);
-                                }
-                            }
-                        }
+                        // 모든 텍스트 최적화
+                        const allElements = clonedDoc.querySelectorAll('*');
+                        allElements.forEach(el => {
+                            el.style.webkitFontSmoothing = 'antialiased';
+                            el.style.mozOsxFontSmoothing = 'grayscale';
+                        });
                         
-                        // z-index 설정
-                        const title = clonedDoc.querySelector('h1');
-                        const table = clonedDoc.querySelector('table');
-                        if (title) title.style.zIndex = '10';
-                        if (table) table.style.zIndex = '5';
+                        // 시간 셀 강조
+                        const timeCells = clonedDoc.querySelectorAll('.time-cell');
+                        timeCells.forEach(cell => {
+                            cell.style.color = '#000000';
+                            cell.style.fontWeight = '900';
+                        });
                     }
-                }).then(canvas => {
-                    // JPG로 변환 및 다운로드
-                    canvas.toBlob(function(blob) {
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.download = '나의_시간표_' + new Date().toLocaleDateString('ko-KR').replace(/\./g, '') + '.jpg';
-                        link.href = url;
-                        link.click();
-                        URL.revokeObjectURL(url);
-                    }, 'image/jpeg', 0.92);
-                    
-                }).catch(error => {
-                    console.error('캔버스 생성 오류:', error);
-                    
-                    // 대안: 더 간단한 방법으로 재시도
-                    html2canvas(element, {
-                        scale: 1,
-                        backgroundColor: '#ffffff',
-                        logging: true
-                    }).then(canvas => {
-                        canvas.toBlob(function(blob) {
-                            const url = URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.download = '나의_시간표_backup_' + Date.now() + '.jpg';
-                            link.href = url;
-                            link.click();
-                            URL.revokeObjectURL(url);
-                        }, 'image/jpeg', 0.9);
-                    }).catch(err => {
-                        alert('이미지 저장에 실패했습니다. 페이지를 새로고침 후 다시 시도해주세요.');
-                    });
+                };
+                
+                // html2canvas로 캡처
+                const canvas = await html2canvas(element, canvasOptions);
+                
+                // 뷰포트 복원
+                if (viewport) viewport.content = originalViewport;
+                
+                // JPG 다운로드
+                const link = document.createElement('a');
+                link.download = `${filename}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // 모든 스타일 완전 복원
+                element.style.width = originalStyles.elementWidth;
+                element.style.height = originalStyles.elementHeight;
+                element.style.maxWidth = originalStyles.elementMaxWidth;
+                element.style.minWidth = originalStyles.elementMinWidth;
+                element.style.transform = originalStyles.elementTransform;
+                element.style.position = originalStyles.elementPosition;
+                element.style.left = originalStyles.elementLeft;
+                element.style.top = originalStyles.elementTop;
+                
+                body.style.padding = originalStyles.bodyPadding;
+                body.style.margin = originalStyles.bodyMargin;
+                body.style.overflow = originalStyles.bodyOverflow;
+                
+                if (container) {
+                    container.style.maxWidth = originalStyles.containerMaxWidth;
+                    container.style.width = originalStyles.containerWidth;
+                }
+                
+                if (controls) controls.style.display = originalStyles.controlsDisplay;
+                addButtons.forEach((btn, index) => {
+                    btn.style.display = originalStyles.buttonDisplays[index] || '';
                 });
-            }, 800);
+                
+                style.remove();
+                hideLoadingOverlay();
+                
+                console.log(`${orientation} A4 JPG 저장 완료 (PC/모바일 동일 비율):`, filename);
+                
+            } catch (error) {
+                console.error('JPG 생성 오류:', error);
+                hideLoadingOverlay();
+                alert('이미지 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            }
         }
+
+        // 로딩 오버레이 표시/숨김
+        function showLoadingOverlay(message) {
+            let overlay = document.getElementById('loading-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'loading-overlay';
+                overlay.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text" id="loading-text"></div>
+                `;
+                overlay.style.cssText = `
+                    display: flex;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    z-index: 2000;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    gap: 15px;
+                `;
+                
+                const spinner = overlay.querySelector('.loading-spinner');
+                spinner.style.cssText = `
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #5B21B6;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                `;
+                
+                const text = overlay.querySelector('.loading-text');
+                text.style.cssText = `
+                    color: white;
+                    font-size: 1rem;
+                `;
+                
+                document.body.appendChild(overlay);
+            }
+            
+            document.getElementById('loading-text').textContent = message;
+            overlay.style.display = 'flex';
+        }
+
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('save-modal-overlay').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeSaveModal();
+            }
+        });
     </script>
 </body>
 </html>
