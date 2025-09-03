@@ -834,8 +834,13 @@
                 element.style.background = 'transparent';
                 element.style.borderRadius = '0';
                 
-                // container 여백 최소화
+                // container 여백 최소화 및 배경 설정 제거
                 originalContainer.style.padding = '20px';
+                
+                // 저장할 때는 배경 이미지를 임시로 제거하여 반복 방지
+                const tempBgImage = originalContainer.style.backgroundImage;
+                originalContainer.style.backgroundImage = 'none';
+                originalContainer.style.background = 'transparent';
                 
                 // 테이블 모서리를 사각형으로 변경
                 const table = document.querySelector('table');
@@ -993,6 +998,10 @@
                 element.style.background = originalStyles.elementBackground;
                 element.style.borderRadius = originalStyles.elementBorderRadius;
                 originalContainer.style.padding = originalStyles.containerPadding;
+                
+                // 배경 이미지 복원
+                originalContainer.style.backgroundImage = tempBgImage;
+                originalContainer.style.background = '';
                 
                 if (table) {
                     table.style.borderRadius = originalTableBorderRadius;
