@@ -1,801 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 예쁜 시간표</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .controls {
-            background: rgba(255, 255, 255, 0.25);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-upload {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white;
-        }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
-        }
-
-        .btn-reset {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-reset:hover {
-            background: #5a6268;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        #timetable-wrapper {
-            position: relative;
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        }
-
-        #timetable-container {
-            position: relative;
-            padding: 30px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 600px;
-        }
-
-        #timetable-container.has-bg {
-            background-size: cover !important;
-            background-position: center !important;
-        }
-
-        #timetable-container.has-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.3);
-            z-index: 0;
-        }
-
-        h1 {
-            text-align: center;
-            color: #1a1a1a;
-            margin-bottom: 30px;
-            font-size: 34px;
-            font-weight: 800;
-            position: relative;
-            z-index: 1;
-            text-shadow: 2px 2px 5px rgba(255,255,255,0.95), -1px -1px 3px rgba(255,255,255,0.8);
-            background: rgba(255, 255, 255, 0.25);
-            padding: 10px 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .decorative-icon {
-            display: inline-block;
-            margin: 0 10px;
-            font-size: 24px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            position: relative;
-            z-index: 1;
-            background: transparent !important;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        th {
-            background: rgba(212, 181, 255, 0.25);
-            color: #000000;
-            padding: 15px;
-            font-weight: 900;
-            font-size: 17px;
-            text-shadow: 3px 3px 6px rgba(255,255,255,1), 
-                        -1px -1px 3px rgba(255,255,255,1),
-                        1px -1px 3px rgba(255,255,255,1),
-                        -1px 1px 3px rgba(255,255,255,1);
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        th:first-child {
-            width: 100px;
-            background: rgba(255, 184, 209, 0.25);
-            color: #000000;
-        }
-
-        td {
-            padding: 12px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            position: relative;
-            height: 80px;
-            vertical-align: middle;
-            background: transparent;
-        }
-
-        .time-cell {
-            background: rgba(255, 230, 243, 0.25);
-            font-weight: 900;
-            color: #000000;
-            font-size: 14px;
-            text-shadow: none;
-        }
-
-        .class-cell {
-            background: rgba(255, 255, 255, 0.25);
-            transition: all 0.3s;
-        }
-
-        .class-cell:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.2) !important;
-        }
-
-        .class-item {
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            margin: 2px 0;
-            display: inline-block;
-            min-width: 90%;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(0.5px);
-        }
-
-        .class-item::before {
-            display: none;
-        }
-
-        .subject-늘봄 {
-            background: rgba(255, 212, 229, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(255, 184, 209, 0.3);
-        }
-
-        .subject-방송댄스 {
-            background: rgba(229, 204, 255, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(212, 181, 255, 0.3);
-        }
-
-        .subject-창의과학 {
-            background: rgba(204, 229, 255, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(179, 217, 255, 0.3);
-        }
-
-        .subject-영어 {
-            background: rgba(255, 224, 240, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(255, 201, 227, 0.3);
-        }
-
-        .subject-피아노 {
-            background: rgba(240, 224, 255, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(230, 208, 255, 0.3);
-        }
-
-        .subject-미술 {
-            background: rgba(224, 240, 255, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(208, 230, 255, 0.3);
-        }
-
-        .subject-논술 {
-            background: rgba(255, 192, 217, 0.4);
-            color: #000000;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
-            border: 2px solid rgba(255, 173, 208, 0.3);
-        }
-
-        .empty-cell {
-            background: rgba(248, 249, 250, 0.25);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .class-item {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        /* 저장 모달 스타일 */
-        .save-modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .save-modal {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-            position: relative;
-            animation: modalSlideIn 0.3s ease;
-            margin: 20px;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .save-modal-header {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .save-modal-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .save-modal-subtitle {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .save-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .save-option {
-            background: #F8FAFC;
-            border: 2px solid #E2E8F0;
-            border-radius: 16px;
-            padding: 24px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .save-option:hover {
-            border-color: #5B21B6;
-            background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .save-option-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .save-option-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .save-option-desc {
-            font-size: 0.813rem;
-            color: #6b7280;
-            line-height: 1.4;
-        }
-
-        .save-modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-
-        .btn-modal-cancel {
-            background: white;
-            color: #6b7280;
-            border: 2px solid #E2E8F0;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-modal-cancel:hover {
-            background: #F8FAFC;
-            border-color: #6b7280;
-        }
-
-        /* 로딩 스피너 애니메이션 */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 모바일 최적화 - 480px 이하 */
-        @media (max-width: 480px) {
-            body {
-                padding: 2px;
-            }
-            
-            .container {
-                border-radius: 10px;
-                max-width: 100%;
-                margin: 0;
-            }
-            
-            .header {
-                padding: 10px 8px;
-            }
-            
-            .logo-zenith {
-                font-size: 1.6rem;
-                letter-spacing: 1px;
-            }
-            
-            .logo-english {
-                font-size: 1.2rem;
-                letter-spacing: 1px;
-            }
-            
-            .logo-star {
-                font-size: 1rem;
-            }
-            
-            .subtitle {
-                font-size: 0.7rem;
-                padding: 4px 12px;
-            }
-            
-            .season-indicator {
-                font-size: 1.2rem;
-                top: 6px;
-                right: 8px;
-            }
-            
-            .header-decoration {
-                font-size: 0.9rem;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 8px;
-                padding: 8px 12px;
-            }
-            
-            .date-selector {
-                width: 100%;
-                justify-content: center;
-                gap: 6px;
-            }
-            
-            select {
-                padding: 5px 20px 5px 8px;
-                font-size: 0.75rem;
-                min-width: 60px;
-            }
-            
-            .action-buttons {
-                width: 100%;
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 4px;
-            }
-            
-            .btn {
-                padding: 5px 10px;
-                font-size: 0.7rem;
-                gap: 3px;
-                flex: 1;
-                min-width: 80px;
-            }
-            
-            .calendar {
-                padding: 6px;
-            }
-            
-            .month-year-display {
-                font-size: 1rem;
-                margin-bottom: 8px;
-                gap: 6px;
-            }
-            
-            .month-decoration {
-                font-size: 0.9rem;
-            }
-            
-            .weekday {
-                padding: 6px 1px;
-                font-size: 0.65rem;
-            }
-            
-            .day {
-                min-height: 80px;
-                padding: 2px;
-            }
-            
-            .day-number {
-                font-size: 0.75rem;
-                margin-bottom: 2px;
-            }
-            
-            .events {
-                font-size: 0.55rem;
-                gap: 1px;
-                min-height: 35px;
-            }
-            
-            .event {
-                font-size: 0.55rem;
-                padding: 1px 2px;
-                min-height: 12px;
-                line-height: 1;
-            }
-            
-            .add-event-btn,
-            .clear-day-btn {
-                font-size: 0.45rem;
-                padding: 1px;
-                min-height: 12px;
-            }
-            
-            .modal-content {
-                margin: 20px 5px;
-                padding: 15px;
-                max-width: none;
-            }
-            
-            .modal h3 {
-                font-size: 1rem;
-            }
-            
-            .modal input {
-                font-size: 0.75rem;
-                padding: 6px;
-            }
-            
-            .footer {
-                padding: 8px;
-                font-size: 0.65rem;
-            }
-            
-            .save-options {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            
-            .save-modal {
-                padding: 20px 15px;
-                margin: 10px;
-            }
-        }
-
-        /* 반응형 */
-        @media (max-width: 768px) {
-            table {
-                font-size: 12px;
-            }
-            
-            th, td {
-                padding: 8px;
-            }
-            
-            .class-item {
-                font-size: 11px;
-                padding: 5px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="controls">
-            <label for="bgInput" class="btn btn-upload">
-                🖼️ 배경 이미지 업로드
-            </label>
-            <input type="file" id="bgInput" accept="image/*">
-            
-            <button class="btn btn-save" onclick="showSaveOptions()">
-                📄 JPG로 저장
-            </button>
-            
-            <button class="btn btn-reset" onclick="resetBackground()">
-                🔄 배경 초기화
-            </button>
-        </div>
-
-        <div id="timetable-wrapper">
-            <div id="timetable-container">
-                <h1>
-                    <span class="decorative-icon">🌟</span>
-                    나의 일주일 시간표
-                    <span class="decorative-icon">🌟</span>
-                </h1>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>시간</th>
-                            <th>월요일</th>
-                            <th>화요일</th>
-                            <th>수요일</th>
-                            <th>목요일</th>
-                            <th>금요일</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="time-cell">1:00~1:50</td>
-                            <td class="empty-cell"></td>
-                            <td class="empty-cell"></td>
-                            <td class="class-cell">
-                                <div class="class-item subject-방송댄스">🎵 방송댄스<br>(방과후)</div>
-                            </td>
-                            <td class="class-cell" rowspan="2">
-                                <div class="class-item subject-창의과학">🔬 창의과학<br>(방과후)<br>1:00~3:20</div>
-                            </td>
-                            <td class="empty-cell"></td>
-                        </tr>
-                        <tr>
-                            <td class="time-cell">1:50~3:20</td>
-                            <td class="class-cell">
-                                <div class="class-item subject-늘봄">🌱 늘봄</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-늘봄">🌱 늘봄</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-방송댄스">🎵 방송댄스<br>(~2:20)</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-늘봄">🌱 늘봄</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="time-cell">3:00~4:00</td>
-                            <td class="empty-cell"></td>
-                            <td class="empty-cell"></td>
-                            <td class="class-cell">
-                                <div class="class-item subject-영어">📚 영어</div>
-                            </td>
-                            <td class="empty-cell"></td>
-                            <td class="empty-cell"></td>
-                        </tr>
-                        <tr>
-                            <td class="time-cell">4:00~5:00</td>
-                            <td class="class-cell">
-                                <div class="class-item subject-영어">📚 영어</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-영어">📚 영어</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-미술">🎨 미술<br>(4:20~5:20)</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-영어">📚 영어</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-영어">📚 영어</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="time-cell">5:10~6:10</td>
-                            <td class="class-cell">
-                                <div class="class-item subject-피아노">🎹 피아노</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-피아노">🎹 피아노</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-논술">✏️ 논술<br>(5:30~6:30)</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-피아노">🎹 피아노</div>
-                            </td>
-                            <td class="class-cell">
-                                <div class="class-item subject-미술">🎨 미술<br>(5:30~6:30)</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="time-cell">6:20~7:20</td>
-                            <td class="class-cell">
-                                <div class="class-item subject-미술">🎨 미술</div>
-                            </td>
-                            <td class="empty-cell"></td>
-                            <td class="empty-cell"></td>
-                            <td class="empty-cell"></td>
-                            <td class="empty-cell"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 저장 옵션 선택 모달 -->
-    <div class="save-modal-overlay" id="save-modal-overlay"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
-        // 배경 이미지 업로드
-        document.getElementById('bgInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const container = document.getElementById('timetable-container');
-                    container.style.backgroundImage = `url(${e.target.result})`;
-                    container.style.backgroundSize = 'cover';
-                    container.style.backgroundPosition = 'center';
-                    container.style.backgroundRepeat = 'no-repeat';
-                    container.style.backgroundAttachment = 'fixed';
-                    container.classList.add('has-bg');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // 배경 초기화
-        function resetBackground() {
-            const container = document.getElementById('timetable-container');
-            container.style.backgroundImage = '';
-            container.classList.remove('has-bg');
-            document.getElementById('bgInput').value = '';
-        }
-
-        // 저장 옵션 모달 표시
-        function showSaveOptions() {
-            const modal = document.getElementById('save-modal-overlay');
-            modal.innerHTML = `
-                <div class="save-modal">
-                    <div class="save-modal-header">
-                        <h3 class="save-modal-title">시간표 저장 옵션</h3>
-                        <p class="save-modal-subtitle">저장할 형식을 선택하세요</p>
-                    </div>
-                    
-                    <div class="save-options">
-                        <div class="save-option landscape" onclick="saveAsJPG('landscape')" style="cursor: pointer;">
-                            <div class="save-option-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">📄</div>
-                            <div class="save-option-title">가로 A4</div>
-                            <div class="save-option-desc">A4 가로 용지에 최적화된 시간표</div>
-                        </div>
-                        
-                        <div class="save-option portrait" onclick="saveAsJPG('portrait')" style="cursor: pointer;">
-                            <div class="save-option-icon" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">📋</div>
-                            <div class="save-option-title">세로 A4</div>
-                            <div class="save-option-desc">A4 세로 용지에 최적화된 시간표</div>
-                        </div>
-                    </div>
-                    
-                    <div class="save-modal-actions">
-                        <button class="btn-modal-cancel" onclick="closeSaveModal()">취소</button>
-                    </div>
-                </div>
-            `;
-            modal.style.display = 'flex';
-        }
-
-        // 저장 옵션 모달 닫기
-        function closeSaveModal() {
-            const modal = document.getElementById('save-modal-overlay');
-            modal.style.display = 'none';
-        }
-
-        // JPG 저장 함수 (흰색 여백 완전 제거)
+// JPG 저장 함수 (흰색 여백 완전 제거)
         async function saveAsJPG(orientation) {
             closeSaveModal();
             
@@ -816,38 +19,11 @@
                 // 원본 스타일 저장
                 const originalStyles = {
                     controlsDisplay: controls ? controls.style.display : '',
-                    bodyBackground: document.body.style.background,
-                    bodyPadding: document.body.style.padding,
-                    elementBackground: element.style.background,
-                    elementBorderRadius: element.style.borderRadius,
-                    containerPadding: originalContainer.style.padding
+                    containerBackground: originalContainer.style.background
                 };
                 
                 // 컨트롤 숨기기
                 if (controls) controls.style.display = 'none';
-                
-                // body 배경을 투명하게 설정하여 흰색 여백 완전 제거
-                document.body.style.background = 'transparent';
-                document.body.style.padding = '0';
-                
-                // wrapper 배경도 투명하게 설정
-                element.style.background = 'transparent';
-                element.style.borderRadius = '0';
-                
-                // container 여백 최소화 및 배경 설정 제거
-                originalContainer.style.padding = '20px';
-                
-                // 저장할 때는 배경 이미지를 임시로 제거하여 반복 방지
-                const tempBgImage = originalContainer.style.backgroundImage;
-                originalContainer.style.backgroundImage = 'none';
-                originalContainer.style.background = 'transparent';
-                
-                // 테이블 모서리를 사각형으로 변경
-                const table = document.querySelector('table');
-                const originalTableBorderRadius = table ? table.style.borderRadius : '';
-                if (table) {
-                    table.style.borderRadius = '0';
-                }
                 
                 // A4 크기 설정
                 const A4_SIZES = {
@@ -858,14 +34,14 @@
                 const targetSize = A4_SIZES[orientation];
                 
                 // 렌더링 대기
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // html2canvas로 캡처 (배경을 투명으로 설정)
+                // html2canvas로 캡처 - 배경 이미지가 있으면 포함해서 캡처
                 const canvas = await html2canvas(element, {
                     scale: 2,
                     useCORS: true,
                     logging: false,
-                    backgroundColor: null, // 투명 배경으로 설정
+                    backgroundColor: '#ffffff', // 흰색 배경
                     width: targetSize.width,
                     height: targetSize.height,
                     windowWidth: targetSize.width,
@@ -881,79 +57,53 @@
                     imageTimeout: 30000
                 });
                 
-                // 여백 제거를 위한 캔버스 자르기
-                const ctx = canvas.getContext('2d');
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-                
-                // 실제 콘텐츠 영역 찾기 (투명하지 않은 픽셀 기준)
-                let minX = canvas.width, minY = canvas.height, maxX = 0, maxY = 0;
-                
-                for (let y = 0; y < canvas.height; y++) {
-                    for (let x = 0; x < canvas.width; x++) {
-                        const index = (y * canvas.width + x) * 4;
-                        const alpha = data[index + 3];
-                        
-                        if (alpha > 10) { // 거의 투명하지 않은 픽셀
-                            minX = Math.min(minX, x);
-                            minY = Math.min(minY, y);
-                            maxX = Math.max(maxX, x);
-                            maxY = Math.max(maxY, y);
-                        }
-                    }
-                }
-                
                 // 최종 캔버스 생성
-                let finalCanvas;
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = canvas.width;
+                finalCanvas.height = canvas.height;
+                const finalCtx = finalCanvas.getContext('2d');
+                
+                // 배경 이미지가 있는 경우 처리
                 if (hasBackgroundImage && backgroundImageUrl && backgroundImageUrl !== 'none') {
-                    // 배경 이미지가 있는 경우
-                    finalCanvas = document.createElement('canvas');
-                    finalCanvas.width = targetSize.width * 2; // scale 2 적용
-                    finalCanvas.height = targetSize.height * 2;
-                    const finalCtx = finalCanvas.getContext('2d');
-                    
                     const bgImg = new Image();
                     bgImg.crossOrigin = 'anonymous';
                     
                     await new Promise((resolve, reject) => {
                         bgImg.onload = function() {
-                            // 전체 캔버스를 흰색으로 초기화
-                            finalCtx.fillStyle = '#ffffff';
-                            finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-                            
-                            // 배경 이미지를 cover 방식으로 전체에 한 번만 그리기
+                            // 배경 이미지를 cover 방식으로 그리기
                             const canvasAspect = finalCanvas.width / finalCanvas.height;
                             const imgAspect = bgImg.width / bgImg.height;
                             
                             let drawWidth, drawHeight, drawX, drawY;
                             
                             if (imgAspect > canvasAspect) {
-                                // 이미지가 더 넓을 때 - 높이를 캔버스에 맞추고 너비는 잘림
                                 drawHeight = finalCanvas.height;
                                 drawWidth = drawHeight * imgAspect;
                                 drawX = (finalCanvas.width - drawWidth) / 2;
                                 drawY = 0;
                             } else {
-                                // 이미지가 더 높을 때 - 너비를 캔버스에 맞추고 높이는 잘림
                                 drawWidth = finalCanvas.width;
                                 drawHeight = drawWidth / imgAspect;
                                 drawX = 0;
                                 drawY = (finalCanvas.height - drawHeight) / 2;
                             }
                             
-                            // 배경 이미지를 한 번만 그리기 (반복 없음)
+                            // 배경 이미지 그리기
                             finalCtx.drawImage(bgImg, drawX, drawY, drawWidth, drawHeight);
                             
-                            // 30% 투명한 흰색 오버레이
+                            // 반투명 흰색 오버레이
                             finalCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                             finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
                             
-                            // 시간표 콘텐츠 그리기
-                            finalCtx.drawImage(canvas, 0, 0);
                             resolve();
                         };
                         
-                        bgImg.onerror = reject;
+                        bgImg.onerror = () => {
+                            // 배경 이미지 로드 실패 시 흰색 배경
+                            finalCtx.fillStyle = '#ffffff';
+                            finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                            resolve();
+                        };
                         
                         // base64 URL에서 이미지 로드
                         if (backgroundImageUrl.includes('url(')) {
@@ -966,22 +116,17 @@
                         }
                     });
                 } else {
-                    // 배경 이미지가 없는 경우 여백 제거된 캔버스 생성
-                    const contentWidth = maxX - minX + 1;
-                    const contentHeight = maxY - minY + 1;
-                    
-                    finalCanvas = document.createElement('canvas');
-                    finalCanvas.width = contentWidth;
-                    finalCanvas.height = contentHeight;
-                    const finalCtx = finalCanvas.getContext('2d');
-                    
-                    // 흰색 배경으로 채우기
-                    finalCtx.fillStyle = '#ffffff';
-                    finalCtx.fillRect(0, 0, contentWidth, contentHeight);
-                    
-                    // 여백이 제거된 이미지 그리기
-                    finalCtx.drawImage(canvas, minX, minY, contentWidth, contentHeight, 0, 0, contentWidth, contentHeight);
+                    // 배경 이미지가 없는 경우 그라데이션 배경
+                    const gradient = finalCtx.createLinearGradient(0, 0, finalCanvas.width, finalCanvas.height);
+                    gradient.addColorStop(0, '#ffccf2');
+                    gradient.addColorStop(0.5, '#e6ccff');
+                    gradient.addColorStop(1, '#ccddff');
+                    finalCtx.fillStyle = gradient;
+                    finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
                 }
+                
+                // 시간표 콘텐츠를 그 위에 그리기
+                finalCtx.drawImage(canvas, 0, 0);
                 
                 // JPG 다운로드
                 const link = document.createElement('a');
@@ -993,23 +138,11 @@
                 
                 // 모든 스타일 복원
                 if (controls) controls.style.display = originalStyles.controlsDisplay;
-                document.body.style.background = originalStyles.bodyBackground;
-                document.body.style.padding = originalStyles.bodyPadding;
-                element.style.background = originalStyles.elementBackground;
-                element.style.borderRadius = originalStyles.elementBorderRadius;
-                originalContainer.style.padding = originalStyles.containerPadding;
-                
-                // 배경 이미지 복원
-                originalContainer.style.backgroundImage = tempBgImage;
-                originalContainer.style.background = '';
-                
-                if (table) {
-                    table.style.borderRadius = originalTableBorderRadius;
-                }
+                originalContainer.style.background = originalStyles.containerBackground;
                 
                 hideLoadingOverlay();
                 
-                console.log(`${orientation} JPG 저장 완료 (여백 제거):`, filename);
+                console.log(`${orientation} JPG 저장 완료:`, filename);
                 
             } catch (error) {
                 console.error('JPG 생성 오류:', error);
@@ -1017,67 +150,3 @@
                 alert('이미지 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             }
         }
-
-        // 로딩 오버레이 표시/숨김
-        function showLoadingOverlay(message) {
-            let overlay = document.getElementById('loading-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'loading-overlay';
-                overlay.innerHTML = `
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text" id="loading-text"></div>
-                `;
-                overlay.style.cssText = `
-                    display: flex;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.7);
-                    z-index: 2000;
-                    justify-content: center;
-                    align-items: center;
-                    flex-direction: column;
-                    gap: 15px;
-                `;
-                
-                const spinner = overlay.querySelector('.loading-spinner');
-                spinner.style.cssText = `
-                    width: 40px;
-                    height: 40px;
-                    border: 4px solid #f3f3f3;
-                    border-top: 4px solid #5B21B6;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                `;
-                
-                const text = overlay.querySelector('.loading-text');
-                text.style.cssText = `
-                    color: white;
-                    font-size: 1rem;
-                `;
-                
-                document.body.appendChild(overlay);
-            }
-            
-            document.getElementById('loading-text').textContent = message;
-            overlay.style.display = 'flex';
-        }
-
-        function hideLoadingOverlay() {
-            const overlay = document.getElementById('loading-overlay');
-            if (overlay) {
-                overlay.style.display = 'none';
-            }
-        }
-
-        // 모달 외부 클릭 시 닫기
-        document.getElementById('save-modal-overlay').addEventListener('click', function(event) {
-            if (event.target === this) {
-                closeSaveModal();
-            }
-        });
-    </script>
-</body>
