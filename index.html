@@ -791,7 +791,7 @@
             modal.style.display = 'none';
         }
 
-        // JPG 저장 함수 (PC/모바일 동일 비율 보장)
+        // JPG 저장 함수 (PC/모바일 동일 비율 보장) - 배경 이미지 개선
         async function saveAsJPG(orientation) {
             closeSaveModal();
             
@@ -808,6 +808,16 @@
                 const addButtons = document.querySelectorAll('.add-event-btn, .clear-day-btn');
                 const container = document.querySelector('.container');
                 const body = document.body;
+                const originalContainer = document.getElementById('timetable-container');
+                
+                // 배경 이미지 정보 미리 추출
+                const hasBackgroundImage = originalContainer.classList.contains('has-bg');
+                const backgroundImageUrl = originalContainer.style.backgroundImage;
+                
+                console.log('배경 이미지 확인:', {
+                    hasClass: hasBackgroundImage,
+                    bgImage: backgroundImageUrl
+                });
                 
                 // 원본 스타일 완전 저장
                 const originalStyles = {
@@ -895,9 +905,9 @@
                 const waitTime = isMobile ? 1500 : 1000;
                 await new Promise(resolve => setTimeout(resolve, waitTime));
                 
-                // 캔버스 캡처 설정
-                const canvasOptions = {
-                    scale: 2,  // 모든 환경에서 동일한 고해상도
+                // html2canvas로 캡처 - 배경 이미지 처리 개선
+                const canvas = await html2canvas(element, {
+                    scale: 2,
                     useCORS: true,
                     logging: false,
                     backgroundColor: '#ffffff',
@@ -910,120 +920,115 @@
                     x: 0,
                     y: 0,
                     letterRendering: true,
-                    allowTaint: false,
-                    foreignObjectRendering: true,
+                    allowTaint: true,  // 배경 이미지를 위해 allowTaint를 true로 변경
+                    foreignObjectRendering: false,  // 안정성을 위해 false로 변경
                     removeContainer: false,
-                    imageTimeout: 30000,
-                    onclone: function(clonedDoc) {
-                        // 복제된 문서 최적화
-                        const clonedBody = clonedDoc.body;
-                        clonedBody.style.cssText = `
-                            margin: 0 !important;
-                            padding: 0 !important;
-                            overflow: hidden !important;
-                            width: ${targetSize.width}px !important;
-                            height: ${targetSize.height}px !important;
-                        `;
-                        
-                        const clonedElement = clonedDoc.getElementById('timetable-wrapper');
-                        const clonedContainer = clonedDoc.getElementById('timetable-container');
-                        
-                        if (clonedElement) {
-                            clonedElement.style.cssText = `
-                                width: ${targetSize.width}px !important;
-                                height: ${targetSize.height}px !important;
-                                max-width: ${targetSize.width}px !important;
-                                min-width: ${targetSize.width}px !important;
-                                transform: none !important;
-                                position: relative !important;
-                                left: 0 !important;
-                                top: 0 !important;
-                                margin: 0 !important;
-                                background: rgba(255, 255, 255, 0.25) !important;
-                                border-radius: 20px !important;
-                                overflow: hidden !important;
-                                box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
-                            `;
-                        }
-                        
-                        if (clonedContainer) {
-                            // 원본 컨테이너에서 배경 이미지 정보 가져오기
-                            const originalContainer = document.getElementById('timetable-container');
-                            const originalBgImage = originalContainer.style.backgroundImage;
-                            const hasClass = originalContainer.classList.contains('has-bg');
-                            
-                            clonedContainer.style.cssText = `
-                                position: relative !important;
-                                padding: 30px !important;
-                                background-size: cover !important;
-                                background-position: center !important;
-                                background-repeat: no-repeat !important;
-                                min-height: 600px !important;
-                                width: 100% !important;
-                                height: 100% !important;
-                            `;
-                            
-                            // 배경 이미지가 있는 경우 복사
-                            if (originalBgImage && originalBgImage !== 'none' && originalBgImage !== '') {
-                                clonedContainer.style.backgroundImage = originalBgImage;
-                                console.log('배경 이미지 복사됨:', originalBgImage);
-                                
-                                // has-bg 클래스가 있으면 오버레이 추가
-                                if (hasClass) {
-                                    const overlay = clonedDoc.createElement('div');
-                                    overlay.style.cssText = `
-                                        position: absolute !important;
-                                        top: 0 !important;
-                                        left: 0 !important;
-                                        right: 0 !important;
-                                        bottom: 0 !important;
-                                        background: rgba(255, 255, 255, 0.3) !important;
-                                        z-index: 0 !important;
-                                        pointer-events: none !important;
-                                    `;
-                                    clonedContainer.insertBefore(overlay, clonedContainer.firstChild);
-                                    console.log('배경 오버레이 추가됨');
-                                }
-                            } else {
-                                console.log('배경 이미지 없음');
-                            }
-                        }
-                        
-                        // 모든 텍스트 최적화
-                        const allElements = clonedDoc.querySelectorAll('*');
-                        allElements.forEach(el => {
-                            el.style.webkitFontSmoothing = 'antialiased';
-                            el.style.mozOsxFontSmoothing = 'grayscale';
-                        });
-                        
-                        // 시간 셀 강조
-                        const timeCells = clonedDoc.querySelectorAll('.time-cell');
-                        timeCells.forEach(cell => {
-                            cell.style.color = '#000000 !important';
-                            cell.style.fontWeight = '900 !important';
-                        });
-                        
-                        // 제목과 테이블 z-index 설정
-                        const title = clonedDoc.querySelector('h1');
-                        const table = clonedDoc.querySelector('table');
-                        if (title) title.style.zIndex = '10 !important';
-                        if (table) table.style.zIndex = '5 !important';
-                    }
-                };
-                
-                // html2canvas로 캡처
-                const canvas = await html2canvas(element, canvasOptions);
+                    imageTimeout: 30000
+                });
                 
                 // 뷰포트 복원
                 if (viewport) viewport.content = originalViewport;
                 
-                // JPG 다운로드
-                const link = document.createElement('a');
-                link.download = `${filename}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 0.95);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // 배경 이미지가 캡처되지 않은 경우 수동으로 합성
+                if (hasBackgroundImage && backgroundImageUrl && backgroundImageUrl !== 'none') {
+                    console.log('배경 이미지 수동 합성 시작');
+                    
+                    // 새 캔버스 생성하여 배경과 시간표 합성
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = canvas.width;
+                    finalCanvas.height = canvas.height;
+                    const ctx = finalCanvas.getContext('2d');
+                    
+                    // 배경 이미지 로드 및 그리기
+                    const bgImg = new Image();
+                    bgImg.crossOrigin = 'anonymous';
+                    
+                    bgImg.onload = function() {
+                        // 흰색 배경
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                        
+                        // 배경 이미지 그리기 (cover 효과)
+                        const wrapperRect = element.getBoundingClientRect();
+                        const containerPadding = 30; // padding 값
+                        
+                        const bgX = containerPadding * 2; // scale 2 적용
+                        const bgY = containerPadding * 2;
+                        const bgWidth = (wrapperRect.width - containerPadding * 2) * 2;
+                        const bgHeight = (wrapperRect.height - containerPadding * 2) * 2;
+                        
+                        // cover 방식으로 배경 이미지 그리기
+                        const imgAspect = bgImg.width / bgImg.height;
+                        const canvasAspect = bgWidth / bgHeight;
+                        
+                        let drawWidth, drawHeight, drawX, drawY;
+                        
+                        if (imgAspect > canvasAspect) {
+                            drawHeight = bgHeight;
+                            drawWidth = drawHeight * imgAspect;
+                            drawX = bgX - (drawWidth - bgWidth) / 2;
+                            drawY = bgY;
+                        } else {
+                            drawWidth = bgWidth;
+                            drawHeight = drawWidth / imgAspect;
+                            drawX = bgX;
+                            drawY = bgY - (drawHeight - bgHeight) / 2;
+                        }
+                        
+                        ctx.drawImage(bgImg, drawX, drawY, drawWidth, drawHeight);
+                        
+                        // 30% 흰색 오버레이
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                        ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+                        
+                        // 시간표 그리기
+                        ctx.drawImage(canvas, 0, 0);
+                        
+                        // JPG 다운로드
+                        const link = document.createElement('a');
+                        link.download = `${filename}.jpg`;
+                        link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        console.log('배경 이미지 합성 완료');
+                        hideLoadingOverlay();
+                    };
+                    
+                    bgImg.onerror = function() {
+                        console.log('배경 이미지 로드 실패, 기본 저장 진행');
+                        // 배경 이미지 로드 실패 시 기본 저장
+                        const link = document.createElement('a');
+                        link.download = `${filename}.jpg`;
+                        link.href = canvas.toDataURL('image/jpeg', 0.95);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        hideLoadingOverlay();
+                    };
+                    
+                    // base64 URL에서 이미지 로드
+                    if (backgroundImageUrl.includes('url(')) {
+                        const urlMatch = backgroundImageUrl.match(/url\(["']?(data:image[^"']+)["']?\)/);
+                        if (urlMatch) {
+                            bgImg.src = urlMatch[1];
+                        } else {
+                            // 일반 URL인 경우
+                            bgImg.src = backgroundImageUrl.replace(/url\(["']?([^"']+)["']?\)/, '$1');
+                        }
+                    }
+                    
+                } else {
+                    // 배경 이미지가 없는 경우 바로 저장
+                    const link = document.createElement('a');
+                    link.download = `${filename}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.95);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    hideLoadingOverlay();
+                }
                 
                 // 모든 스타일 완전 복원
                 element.style.width = originalStyles.elementWidth;
@@ -1050,9 +1055,8 @@
                 });
                 
                 style.remove();
-                hideLoadingOverlay();
                 
-                console.log(`${orientation} A4 JPG 저장 완료 (PC/모바일 동일 비율):`, filename);
+                console.log(`${orientation} A4 JPG 저장 완료 (배경 이미지 포함):`, filename);
                 
             } catch (error) {
                 console.error('JPG 생성 오류:', error);
