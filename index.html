@@ -791,7 +791,7 @@
             modal.style.display = 'none';
         }
 
-        // JPG 저장 함수 (PC/모바일 동일 비율 보장) - 배경 이미지 개선
+        // JPG 저장 함수 (배경 가득참, 사각형 모서리)
         async function saveAsJPG(orientation) {
             closeSaveModal();
             
@@ -799,11 +799,9 @@
             const today = new Date();
             const filename = `나의_시간표_${orientation === 'landscape' ? '가로' : '세로'}_${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
             
-            // 로딩 표시
             showLoadingOverlay(`${orientation === 'landscape' ? '가로' : '세로'} A4 JPG 생성 중...`);
             
             try {
-                // 모든 관련 요소들 저장
                 const controls = document.querySelector('.controls');
                 const addButtons = document.querySelectorAll('.add-event-btn, .clear-day-btn');
                 const container = document.querySelector('.container');
@@ -813,11 +811,6 @@
                 // 배경 이미지 정보 미리 추출
                 const hasBackgroundImage = originalContainer.classList.contains('has-bg');
                 const backgroundImageUrl = originalContainer.style.backgroundImage;
-                
-                console.log('배경 이미지 확인:', {
-                    hasClass: hasBackgroundImage,
-                    bgImage: backgroundImageUrl
-                });
                 
                 // 원본 스타일 완전 저장
                 const originalStyles = {
@@ -830,11 +823,15 @@
                     elementPosition: element.style.position,
                     elementLeft: element.style.left,
                     elementTop: element.style.top,
+                    elementPadding: element.style.padding,
+                    elementBorderRadius: element.style.borderRadius,
                     bodyPadding: body.style.padding,
                     bodyMargin: body.style.margin,
                     bodyOverflow: body.style.overflow,
                     containerMaxWidth: container ? container.style.maxWidth : '',
                     containerWidth: container ? container.style.width : '',
+                    containerPadding: originalContainer.style.padding,
+                    containerBorderRadius: originalContainer.style.borderRadius,
                     buttonDisplays: []
                 };
                 
@@ -845,17 +842,48 @@
                     btn.style.display = 'none';
                 });
                 
-                // 스크롤 방지 및 환경 최적화
+                // 환경 최적화
                 body.style.overflow = 'hidden';
                 body.style.padding = '0';
                 body.style.margin = '0';
                 
-                // 컨테이너 최적화
                 if (container) {
                     container.style.maxWidth = 'none';
                     container.style.width = '100%';
                     container.style.margin = '0';
                     container.style.padding = '0';
+                }
+                
+                // A4 크기 설정
+                const A4_SIZES = {
+                    landscape: { width: 1123, height: 794 },
+                    portrait: { width: 794, height: 1123 }
+                };
+                
+                const targetSize = A4_SIZES[orientation];
+                
+                // wrapper를 A4 크기로 설정하되 패딩 제거 및 사각형으로 변경
+                element.style.width = `${targetSize.width}px`;
+                element.style.height = `${targetSize.height}px`;
+                element.style.maxWidth = `${targetSize.width}px`;
+                element.style.minWidth = `${targetSize.width}px`;
+                element.style.transform = 'none';
+                element.style.position = 'relative';
+                element.style.left = '0';
+                element.style.top = '0';
+                element.style.margin = '0';
+                element.style.padding = '0';  // 패딩 제거
+                element.style.borderRadius = '0';  // 둥근 모서리 제거
+                
+                // container도 패딩 제거 및 사각형으로 변경
+                originalContainer.style.padding = '20px';  // 최소 패딩으로 축소
+                originalContainer.style.borderRadius = '0';  // 둥근 모서리 제거
+                
+                // 테이블 모서리도 사각형으로 변경
+                const table = document.querySelector('table');
+                const originalTableBorderRadius = table ? table.style.borderRadius : '';
+                if (table) {
+                    table.style.borderRadius = '0';
                 }
                 
                 // 선택 방지 스타일
@@ -871,41 +899,25 @@
                     }
                     ::selection, ::-moz-selection { background: transparent !important; }
                     body { margin: 0 !important; padding: 0 !important; }
+                    #timetable-wrapper { border-radius: 0 !important; }
+                    #timetable-container { border-radius: 0 !important; }
+                    table { border-radius: 0 !important; }
                 `;
                 document.head.appendChild(style);
                 
-                // A4 크기 설정 (고정값, PC/모바일 동일)
-                const A4_SIZES = {
-                    landscape: { width: 1123, height: 794 },  // 가로 A4
-                    portrait: { width: 794, height: 1123 }    // 세로 A4
-                };
-                
-                const targetSize = A4_SIZES[orientation];
-                
-                // 시간표 wrapper를 A4 크기로 강제 설정
-                element.style.width = `${targetSize.width}px`;
-                element.style.height = `${targetSize.height}px`;
-                element.style.maxWidth = `${targetSize.width}px`;
-                element.style.minWidth = `${targetSize.width}px`;
-                element.style.transform = 'none';
-                element.style.position = 'relative';
-                element.style.left = '0';
-                element.style.top = '0';
-                element.style.margin = '0 auto';
-                
-                // 뷰포트 메타태그 임시 조정
+                // 뷰포트 조정
                 const viewport = document.querySelector('meta[name="viewport"]');
                 const originalViewport = viewport ? viewport.content : '';
                 if (viewport) {
                     viewport.content = `width=${targetSize.width}, initial-scale=1.0, user-scalable=no`;
                 }
                 
-                // 렌더링 대기 (PC/모바일 구분)
+                // 렌더링 대기
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 const waitTime = isMobile ? 1500 : 1000;
                 await new Promise(resolve => setTimeout(resolve, waitTime));
                 
-                // html2canvas로 캡처 - 배경 이미지 처리 개선
+                // html2canvas로 캡처
                 const canvas = await html2canvas(element, {
                     scale: 2,
                     useCORS: true,
@@ -920,8 +932,8 @@
                     x: 0,
                     y: 0,
                     letterRendering: true,
-                    allowTaint: true,  // 배경 이미지를 위해 allowTaint를 true로 변경
-                    foreignObjectRendering: false,  // 안정성을 위해 false로 변경
+                    allowTaint: true,
+                    foreignObjectRendering: false,
                     removeContainer: false,
                     imageTimeout: 30000
                 });
@@ -929,57 +941,43 @@
                 // 뷰포트 복원
                 if (viewport) viewport.content = originalViewport;
                 
-                // 배경 이미지가 캡처되지 않은 경우 수동으로 합성
+                // 배경 이미지 수동 합성
                 if (hasBackgroundImage && backgroundImageUrl && backgroundImageUrl !== 'none') {
-                    console.log('배경 이미지 수동 합성 시작');
-                    
-                    // 새 캔버스 생성하여 배경과 시간표 합성
                     const finalCanvas = document.createElement('canvas');
                     finalCanvas.width = canvas.width;
                     finalCanvas.height = canvas.height;
                     const ctx = finalCanvas.getContext('2d');
                     
-                    // 배경 이미지 로드 및 그리기
                     const bgImg = new Image();
                     bgImg.crossOrigin = 'anonymous';
                     
                     bgImg.onload = function() {
-                        // 흰색 배경
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-                        
-                        // 배경 이미지 그리기 (cover 효과)
-                        const wrapperRect = element.getBoundingClientRect();
-                        const containerPadding = 30; // padding 값
-                        
-                        const bgX = containerPadding * 2; // scale 2 적용
-                        const bgY = containerPadding * 2;
-                        const bgWidth = (wrapperRect.width - containerPadding * 2) * 2;
-                        const bgHeight = (wrapperRect.height - containerPadding * 2) * 2;
-                        
-                        // cover 방식으로 배경 이미지 그리기
+                        // 배경 이미지를 캔버스 전체에 가득 차게 그리기 (cover 방식)
+                        const canvasAspect = finalCanvas.width / finalCanvas.height;
                         const imgAspect = bgImg.width / bgImg.height;
-                        const canvasAspect = bgWidth / bgHeight;
                         
                         let drawWidth, drawHeight, drawX, drawY;
                         
                         if (imgAspect > canvasAspect) {
-                            drawHeight = bgHeight;
+                            // 이미지가 더 넓을 때
+                            drawHeight = finalCanvas.height;
                             drawWidth = drawHeight * imgAspect;
-                            drawX = bgX - (drawWidth - bgWidth) / 2;
-                            drawY = bgY;
+                            drawX = (finalCanvas.width - drawWidth) / 2;
+                            drawY = 0;
                         } else {
-                            drawWidth = bgWidth;
+                            // 이미지가 더 높을 때
+                            drawWidth = finalCanvas.width;
                             drawHeight = drawWidth / imgAspect;
-                            drawX = bgX;
-                            drawY = bgY - (drawHeight - bgHeight) / 2;
+                            drawX = 0;
+                            drawY = (finalCanvas.height - drawHeight) / 2;
                         }
                         
+                        // 배경 이미지 전체에 그리기
                         ctx.drawImage(bgImg, drawX, drawY, drawWidth, drawHeight);
                         
-                        // 30% 흰색 오버레이
+                        // 30% 흰색 오버레이를 전체에 적용
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                        ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+                        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
                         
                         // 시간표 그리기
                         ctx.drawImage(canvas, 0, 0);
@@ -992,12 +990,10 @@
                         link.click();
                         document.body.removeChild(link);
                         
-                        console.log('배경 이미지 합성 완료');
                         hideLoadingOverlay();
                     };
                     
                     bgImg.onerror = function() {
-                        console.log('배경 이미지 로드 실패, 기본 저장 진행');
                         // 배경 이미지 로드 실패 시 기본 저장
                         const link = document.createElement('a');
                         link.download = `${filename}.jpg`;
@@ -1014,7 +1010,6 @@
                         if (urlMatch) {
                             bgImg.src = urlMatch[1];
                         } else {
-                            // 일반 URL인 경우
                             bgImg.src = backgroundImageUrl.replace(/url\(["']?([^"']+)["']?\)/, '$1');
                         }
                     }
@@ -1039,6 +1034,15 @@
                 element.style.position = originalStyles.elementPosition;
                 element.style.left = originalStyles.elementLeft;
                 element.style.top = originalStyles.elementTop;
+                element.style.padding = originalStyles.elementPadding;
+                element.style.borderRadius = originalStyles.elementBorderRadius;
+                
+                originalContainer.style.padding = originalStyles.containerPadding;
+                originalContainer.style.borderRadius = originalStyles.containerBorderRadius;
+                
+                if (table) {
+                    table.style.borderRadius = originalTableBorderRadius;
+                }
                 
                 body.style.padding = originalStyles.bodyPadding;
                 body.style.margin = originalStyles.bodyMargin;
@@ -1056,7 +1060,7 @@
                 
                 style.remove();
                 
-                console.log(`${orientation} A4 JPG 저장 완료 (배경 이미지 포함):`, filename);
+                console.log(`${orientation} A4 JPG 저장 완료 (배경 가득참, 사각형):`, filename);
                 
             } catch (error) {
                 console.error('JPG 생성 오류:', error);
