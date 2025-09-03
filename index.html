@@ -739,6 +739,10 @@
                 reader.onload = function(e) {
                     const container = document.getElementById('timetable-container');
                     container.style.backgroundImage = `url(${e.target.result})`;
+                    container.style.backgroundSize = 'cover';
+                    container.style.backgroundPosition = 'center';
+                    container.style.backgroundRepeat = 'no-repeat';
+                    container.style.backgroundAttachment = 'fixed';
                     container.classList.add('has-bg');
                 };
                 reader.readAsDataURL(file);
@@ -908,31 +912,38 @@
                     
                     await new Promise((resolve, reject) => {
                         bgImg.onload = function() {
-                            // 배경 이미지를 전체에 그리기
+                            // 전체 캔버스를 흰색으로 초기화
+                            finalCtx.fillStyle = '#ffffff';
+                            finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                            
+                            // 배경 이미지를 cover 방식으로 전체에 한 번만 그리기
                             const canvasAspect = finalCanvas.width / finalCanvas.height;
                             const imgAspect = bgImg.width / bgImg.height;
                             
                             let drawWidth, drawHeight, drawX, drawY;
                             
                             if (imgAspect > canvasAspect) {
+                                // 이미지가 더 넓을 때 - 높이를 캔버스에 맞추고 너비는 잘림
                                 drawHeight = finalCanvas.height;
                                 drawWidth = drawHeight * imgAspect;
                                 drawX = (finalCanvas.width - drawWidth) / 2;
                                 drawY = 0;
                             } else {
+                                // 이미지가 더 높을 때 - 너비를 캔버스에 맞추고 높이는 잘림
                                 drawWidth = finalCanvas.width;
                                 drawHeight = drawWidth / imgAspect;
                                 drawX = 0;
                                 drawY = (finalCanvas.height - drawHeight) / 2;
                             }
                             
+                            // 배경 이미지를 한 번만 그리기 (반복 없음)
                             finalCtx.drawImage(bgImg, drawX, drawY, drawWidth, drawHeight);
                             
-                            // 30% 흰색 오버레이
+                            // 30% 투명한 흰색 오버레이
                             finalCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                             finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
                             
-                            // 시간표 그리기
+                            // 시간표 콘텐츠 그리기
                             finalCtx.drawImage(canvas, 0, 0);
                             resolve();
                         };
