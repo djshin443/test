@@ -1,3 +1,6 @@
+수정된 전체 코드입니다:
+
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -176,15 +179,20 @@
         }
 
         .time-cell {
-            background: rgba(255, 230, 243, 0.25);
+            background: rgba(255, 230, 243, 0.95);
             font-weight: 900;
             color: #000000;
             font-size: 14px;
-            text-shadow: none;
+            text-shadow: 
+                1px 1px 0px rgba(255,255,255,1),
+                -1px -1px 0px rgba(255,255,255,1),
+                0px 0px 5px rgba(255,255,255,1);
+            position: relative;
+            z-index: 1;
         }
 
         .class-cell {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.5);
             transition: all 0.3s;
         }
 
@@ -206,102 +214,125 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(0.5px);
+            z-index: 999;
+            isolation: isolate;
         }
 
         .class-item::before {
             display: none;
         }
 
-        /* 과목 스타일 - 가독성 향상 */
+        /* 과목 스타일 - 완전히 선명하게 */
         .subject-늘봄 {
-            background: rgba(255, 212, 229, 0.9);
+            background: rgba(255, 212, 229, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(255, 184, 209, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #FFB8D1;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .subject-방송댄스 {
-            background: rgba(229, 204, 255, 0.9);
+            background: rgba(229, 204, 255, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(212, 181, 255, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #D4B5FF;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .subject-창의과학 {
-            background: rgba(204, 229, 255, 0.9);
+            background: rgba(204, 229, 255, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(179, 217, 255, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #B3D9FF;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .subject-영어 {
-            background: rgba(255, 224, 240, 0.9);
+            background: rgba(255, 224, 240, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(255, 201, 227, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #FFC9E3;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .subject-피아노 {
-            background: rgba(240, 224, 255, 0.9);
+            background: rgba(240, 224, 255, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(230, 208, 255, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #E6D0FF;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .subject-미술 {
-            background: rgba(224, 240, 255, 0.9);
+            background: rgba(224, 240, 255, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(208, 230, 255, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #D0E6FF;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .subject-논술 {
-            background: rgba(255, 192, 217, 0.9);
+            background: rgba(255, 192, 217, 0.95);
             color: #000000;
             font-weight: 900;
             text-shadow: 
-                3px 3px 6px rgba(255,255,255,1),
-                -2px -2px 4px rgba(255,255,255,1),
-                2px -2px 4px rgba(255,255,255,1),
-                -2px 2px 4px rgba(255,255,255,1);
-            border: 2px solid rgba(255, 173, 208, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                2px 2px 0px rgba(255,255,255,1),
+                -2px -2px 0px rgba(255,255,255,1),
+                2px -2px 0px rgba(255,255,255,1),
+                -2px 2px 0px rgba(255,255,255,1),
+                0px 0px 8px rgba(255,255,255,1);
+            border: 2px solid #FFADD0;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .empty-cell {
@@ -824,6 +855,43 @@
                         if (clonedContainer) {
                             clonedContainer.style.width = '100%';
                         }
+                        
+                        // 모든 과목 항목을 맨 앞으로
+                        const classItems = clonedDoc.querySelectorAll('.class-item');
+                        classItems.forEach(item => {
+                            item.style.position = 'relative';
+                            item.style.zIndex = '9999';
+                            
+                            // 각 과목별로 완전 불투명 배경색 적용
+                            if (item.classList.contains('subject-늘봄')) {
+                                item.style.backgroundColor = '#FFD4E5';
+                            } else if (item.classList.contains('subject-방송댄스')) {
+                                item.style.backgroundColor = '#E5CCFF';
+                            } else if (item.classList.contains('subject-창의과학')) {
+                                item.style.backgroundColor = '#CCE5FF';
+                            } else if (item.classList.contains('subject-영어')) {
+                                item.style.backgroundColor = '#FFE0F0';
+                            } else if (item.classList.contains('subject-피아노')) {
+                                item.style.backgroundColor = '#F0E0FF';
+                            } else if (item.classList.contains('subject-미술')) {
+                                item.style.backgroundColor = '#E0F0FF';
+                            } else if (item.classList.contains('subject-논술')) {
+                                item.style.backgroundColor = '#FFC0D9';
+                            }
+                            
+                            // 텍스트 스타일 강화
+                            item.style.color = '#000000';
+                            item.style.fontWeight = '900';
+                            item.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
+                            item.style.border = '2px solid rgba(0,0,0,0.2)';
+                        });
+                        
+                        // 시간 셀들도 조정
+                        const timeCells = clonedDoc.querySelectorAll('.time-cell');
+                        timeCells.forEach(cell => {
+                            cell.style.backgroundColor = '#FFE6F3';
+                            cell.style.zIndex = '100';
+                        });
                     }
                 });
                 
@@ -1014,3 +1082,13 @@
     </script>
 </body>
 </html>
+```
+
+주요 개선 사항:
+
+1. CSS에서 모든 과목 항목에 높은 z-index (999) 추가
+1. `onclone` 콜백에서 과목 항목들을 z-index 9999로 최상단 배치
+1. 각 과목별로 완전 불투명 배경색 적용
+1. 텍스트 그림자와 테두리 강화로 가독성 향상
+
+이제 JPG로 저장할 때 과목 텍스트가 배경 이미지보다 항상 앞에 위치하여 선명하게 보입니다.​​​​​​​​​​​​​​​​
