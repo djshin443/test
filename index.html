@@ -926,6 +926,8 @@
                         `;
                         
                         const clonedElement = clonedDoc.getElementById('timetable-wrapper');
+                        const clonedContainer = clonedDoc.getElementById('timetable-container');
+                        
                         if (clonedElement) {
                             clonedElement.style.cssText = `
                                 width: ${targetSize.width}px !important;
@@ -937,7 +939,54 @@
                                 left: 0 !important;
                                 top: 0 !important;
                                 margin: 0 !important;
+                                background: rgba(255, 255, 255, 0.25) !important;
+                                border-radius: 20px !important;
+                                overflow: hidden !important;
+                                box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
                             `;
+                        }
+                        
+                        if (clonedContainer) {
+                            // 원본 컨테이너에서 배경 이미지 정보 가져오기
+                            const originalContainer = document.getElementById('timetable-container');
+                            const originalBgImage = originalContainer.style.backgroundImage;
+                            const hasClass = originalContainer.classList.contains('has-bg');
+                            
+                            clonedContainer.style.cssText = `
+                                position: relative !important;
+                                padding: 30px !important;
+                                background-size: cover !important;
+                                background-position: center !important;
+                                background-repeat: no-repeat !important;
+                                min-height: 600px !important;
+                                width: 100% !important;
+                                height: 100% !important;
+                            `;
+                            
+                            // 배경 이미지가 있는 경우 복사
+                            if (originalBgImage && originalBgImage !== 'none' && originalBgImage !== '') {
+                                clonedContainer.style.backgroundImage = originalBgImage;
+                                console.log('배경 이미지 복사됨:', originalBgImage);
+                                
+                                // has-bg 클래스가 있으면 오버레이 추가
+                                if (hasClass) {
+                                    const overlay = clonedDoc.createElement('div');
+                                    overlay.style.cssText = `
+                                        position: absolute !important;
+                                        top: 0 !important;
+                                        left: 0 !important;
+                                        right: 0 !important;
+                                        bottom: 0 !important;
+                                        background: rgba(255, 255, 255, 0.3) !important;
+                                        z-index: 0 !important;
+                                        pointer-events: none !important;
+                                    `;
+                                    clonedContainer.insertBefore(overlay, clonedContainer.firstChild);
+                                    console.log('배경 오버레이 추가됨');
+                                }
+                            } else {
+                                console.log('배경 이미지 없음');
+                            }
                         }
                         
                         // 모든 텍스트 최적화
@@ -950,9 +999,15 @@
                         // 시간 셀 강조
                         const timeCells = clonedDoc.querySelectorAll('.time-cell');
                         timeCells.forEach(cell => {
-                            cell.style.color = '#000000';
-                            cell.style.fontWeight = '900';
+                            cell.style.color = '#000000 !important';
+                            cell.style.fontWeight = '900 !important';
                         });
+                        
+                        // 제목과 테이블 z-index 설정
+                        const title = clonedDoc.querySelector('h1');
+                        const table = clonedDoc.querySelector('table');
+                        if (title) title.style.zIndex = '10 !important';
+                        if (table) table.style.zIndex = '5 !important';
                     }
                 };
                 
