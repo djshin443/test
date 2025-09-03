@@ -1,221 +1,605 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly English Pattern</title>
-
-    <!-- Google Fonts - Poppins 추가 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- html2canvas & jsPDF 라이브러리 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <!-- CSS 파일들 임포트 -->
-    <link rel="stylesheet" href="variables.css">
-    <link rel="stylesheet" href="reset.css">
-    <link rel="stylesheet" href="layout.css">
-    <link rel="stylesheet" href="control-panel.css">
-    <link rel="stylesheet" href="buttons.css">
-    <link rel="stylesheet" href="header.css">
-    <link rel="stylesheet" href="patterns.css">
-    <link rel="stylesheet" href="inputs.css">
-    <link rel="stylesheet" href="date-system.css">
-    <link rel="stylesheet" href="blank-boxes.css">
-    <link rel="stylesheet" href="footer.css">
-    <link rel="stylesheet" href="modals.css">
-    <link rel="stylesheet" href="text-editor.css">
-    <link rel="stylesheet" href="theme-system.css">
-    <link rel="stylesheet" href="responsive.css">
-
-    <!-- 폰트 폴백 스타일 추가 -->
+    <title>나의 예쁜 시간표</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);  /* 파스텔 그라데이션 배경 */
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #timetable-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        #timetable-container {
+            position: relative;
+            padding: 30px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 600px;
+        }
+
+        #timetable-container.has-bg {
+            background-size: cover !important;
+            background-position: center !important;
+        }
+
+        #timetable-container.has-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.3);  /* 30% 흰색 오버레이로 배경 이미지 투명하게 */
+            z-index: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a1a;  /* 매우 진한 제목 */
+            margin-bottom: 30px;
+            font-size: 34px;
+            font-weight: 800;  /* 매우 굵게 */
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 5px rgba(255,255,255,0.95), -1px -1px 3px rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            padding: 10px 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .decorative-icon {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            position: relative;
+            z-index: 1;
+            background: transparent !important;  /* 테이블 자체도 완전 투명 */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: rgba(212, 181, 255, 0.25);  /* 25% 불투명도 */
+            color: #000000;
+            padding: 15px;
+            font-weight: 900;
+            font-size: 17px;
+            text-shadow: 3px 3px 6px rgba(255,255,255,1), 
+                        -1px -1px 3px rgba(255,255,255,1),
+                        1px -1px 3px rgba(255,255,255,1),
+                        -1px 1px 3px rgba(255,255,255,1);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        th:first-child {
+            width: 100px;
+            background: rgba(255, 184, 209, 0.25);  /* 25% 불투명도 */
+            color: #000000;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);  /* 매우 투명한 테두리 */
+            position: relative;
+            height: 80px;
+            vertical-align: middle;
+            background: transparent;  /* 기본 투명 */
+        }
+
+        .time-cell {
+            background: rgba(255, 230, 243, 0.25);  /* 25% 불투명도 */
+            font-weight: 900;
+            color: #000000;  /* 진한 검정색 */
+            font-size: 14px;
+            text-shadow: none;  /* 텍스트 그림자 제거 */
+        }
+
+        .class-cell {
+            background: rgba(255, 255, 255, 0.25);  /* 25% 불투명도 */
+            transition: all 0.3s;
+        }
+
+        .class-cell:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.2) !important;  /* 호버 시에도 투명 유지 */
+        }
+
+        .class-item {
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 2px 0;
+            display: inline-block;
+            min-width: 90%;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(0.5px);  /* 살짝 블러 효과 */
+        }
+
+        /* 호버 애니메이션 효과 제거 */
+        .class-item::before {
+            display: none;  /* 애니메이션 효과 제거 */
+        }
+
+        /* 과목별 색상 - 케이팝 데몬헌터스 파스텔 테마 */
+        .subject-늘봄 {
+            background: rgba(255, 212, 229, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(255, 184, 209, 0.3);
+        }
+
+        .subject-방송댄스 {
+            background: rgba(229, 204, 255, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(212, 181, 255, 0.3);
+        }
+
+        .subject-창의과학 {
+            background: rgba(204, 229, 255, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(179, 217, 255, 0.3);
+        }
+
+        .subject-영어 {
+            background: rgba(255, 224, 240, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(255, 201, 227, 0.3);
+        }
+
+        .subject-피아노 {
+            background: rgba(240, 224, 255, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(230, 208, 255, 0.3);
+        }
+
+        .subject-미술 {
+            background: rgba(224, 240, 255, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(208, 230, 255, 0.3);
+        }
+
+        .subject-논술 {
+            background: rgba(255, 192, 217, 0.4);  /* 40% 불투명도 */
+            color: #000000;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.95), -1px -1px 2px rgba(255,255,255,0.9);
+            border: 2px solid rgba(255, 173, 208, 0.3);
+        }
+
+        .empty-cell {
+            background: rgba(248, 249, 250, 0.25);  /* 25% 불투명도 */
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .class-item {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            .class-item {
+                font-size: 11px;
+                padding: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <!-- 컨트롤 패널 -->
-        <div class="control-panel">
-            <div class="control-header">
-                <h2 class="control-title">Weekly Pattern Builder</h2>
-                <p class="control-subtitle">Create this week's English patterns for your students</p>
-            </div>
-
-
-        <div class="control-section">
-            <div class="control-section-title">Actions</div>
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="addPattern()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                    </svg>
-                    Add New Pattern
-                </button>
-                
-                <button class="btn btn-outline" onclick="toggleExamples()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" id="examples-icon">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                    </svg>
-                    <span id="examples-btn-text">Show Examples</span>
-                </button>
-                
-                <button class="btn btn-outline" onclick="showSaveOptions()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                    </svg>
-                    Save File
-                </button>
-                
-                <button class="btn btn-danger" onclick="clearAll()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                    </svg>
-                    Clear All
-                </button>
-            </div>
+    <div class="container">
+        <div class="controls">
+            <label for="bgInput" class="btn btn-upload">
+                🖼️ 배경 이미지 업로드
+            </label>
+            <input type="file" id="bgInput" accept="image/*">
+            
+            <button class="btn btn-save" onclick="saveAsImage()">
+                💾 JPG로 저장
+            </button>
+            
+            <button class="btn btn-reset" onclick="resetBackground()">
+                🔄 배경 초기화
+            </button>
         </div>
 
-        <!-- 테마 선택 섹션 -->
-        <div class="control-section">
-            <div class="control-section-title">Theme</div>
-            <div class="theme-selector-wrapper">
-                <select class="theme-selector" id="theme-selector">
-                    <option value="">Choose a theme...</option>
-                </select>
-                <div class="theme-preview" id="theme-preview">
-                    <div class="theme-color-dots"></div>
-                    <div class="theme-description"></div>
-                </div>
-            </div>
-            <div class="btn-group" style="margin-top: 12px;">
-                <button class="btn btn-outline" onclick="applyRandomTheme()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-                    </svg>
-                    Random Theme
-                </button>
-                <button class="btn btn-outline" onclick="applySeasonalTheme()">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868L7.5 9.5H7v-6a.5.5 0 0 1 .5-.5z"/>
-                    </svg>
-                    Seasonal Theme
-                </button>
-            </div>
-        </div>
-        
-        <div class="control-section">
-            <div class="info-box">
-                <div class="info-box-title">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                    </svg>
-                    How to use
-                </div>
-                <ul style="margin-left: 20px; font-size: 0.813rem;">
-                    <li>Click on pattern to edit</li>
-                    <li>Type <span class="shortcut">[]</span> <span class="shortcut">[ ]</span> <span class="shortcut">[   ]</span> for different box sizes</li>
-                    <li>Hover over pattern card to see "Del" button</li>
-                    <li>Press <span class="shortcut">Enter</span> to save</li>
-                    <li>Press <span class="shortcut">ESC</span> to cancel</li>
-                    <li>Maximum 3 patterns per sheet</li>
-                </ul>
+        <div id="timetable-wrapper">
+            <div id="timetable-container">
+                <h1>
+                    <span class="decorative-icon">🌟</span>
+                    나의 일주일 시간표
+                    <span class="decorative-icon">🌟</span>
+                </h1>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>월요일</th>
+                            <th>화요일</th>
+                            <th>수요일</th>
+                            <th>목요일</th>
+                            <th>금요일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-cell">1:00~1:50</td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item subject-방송댄스">🎵 방송댄스<br>(방과후)</div>
+                            </td>
+                            <td class="class-cell" rowspan="2">
+                                <div class="class-item subject-창의과학">🔬 창의과학<br>(방과후)<br>1:00~3:20</div>
+                            </td>
+                            <td class="empty-cell"></td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">1:50~3:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-방송댄스">🎵 방송댄스<br>(~2:20)</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">3:00~4:00</td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">4:00~5:00</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-미술">🎨 미술<br>(4:20~5:20)</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">5:10~6:10</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-피아노">🎹 피아노</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-피아노">🎹 피아노</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-논술">✏️ 논술<br>(5:30~6:30)</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-피아노">🎹 피아노</div>
+                            </td>
+                            <td class="class-cell">
+                                <div class="class-item subject-미술">🎨 미술<br>(5:30~6:30)</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">6:20~7:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-미술">🎨 미술</div>
+                            </td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    
-    <!-- 메인 포스터 -->
-    <div class="container" id="poster-container">
-        <div class="poster">
-            <div class="bg-pattern"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // 배경 이미지 업로드
+        document.getElementById('bgInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.getElementById('timetable-container');
+                    container.style.backgroundImage = `url(${e.target.result})`;
+                    container.classList.add('has-bg');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 배경 초기화
+        function resetBackground() {
+            const container = document.getElementById('timetable-container');
+            container.style.backgroundImage = '';
+            container.classList.remove('has-bg');
+            document.getElementById('bgInput').value = '';
+        }
+
+        // JPG로 저장 (전체 시간표 완전 캡처)
+        function saveAsImage() {
+            const element = document.getElementById('timetable-wrapper');
             
-            <!-- 헤더 -->
-            <div class="header">
-                <div class="header-top">
-                    <div class="logo">
-                        <svg width="220" height="35" viewBox="0 0 220 35" class="logo-svg">
-                            <defs>
-                                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <text x="0" y="24" font-family="Poppins, sans-serif" font-size="20" font-weight="800" fill="url(#logoGradient)" letter-spacing="1">ZENITH ENGLISH</text>
-                            <rect x="0" y="28" width="110" height="3" fill="url(#logoGradient)" rx="1.5"/>
-                        </svg>
-                    </div>
-                </div>
+            // 페이지 최상단으로 스크롤
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            
+            // DOM이 안정화될 때까지 대기
+            setTimeout(() => {
+                // 요소의 실제 크기 측정
+                const rect = element.getBoundingClientRect();
+                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
                 
-                <h1 class="main-title" id="main-title">This Week's English<br>Pattern Practice</h1>
-                <p class="subtitle">Practice these patterns to speak better English!</p>
-            </div>
-            
-            <!-- 패턴 그리드 -->
-            <div class="patterns-grid" id="patterns-grid">
-                <!-- 패턴들이 여기에 동적으로 생성됩니다 -->
-            </div>
-            
-            <!-- 푸터 -->
-            <div class="footer">
-                <div class="footer-text">
-                    <span class="footer-logo">ZENITH ENGLISH</span>
-                    • Discover, Learn, Succeed
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="calendar-container"></div>
-
-<!-- 저장 옵션 선택 모달 -->
-<div class="save-modal-overlay" id="save-modal-overlay">
-    <div class="save-modal">
-        <div class="save-modal-header">
-            <h3 class="save-modal-title">Choose File Format</h3>
-            <p class="save-modal-subtitle">Select how you'd like to save your pattern sheet</p>
-        </div>
-        
-        <div class="save-options">
-            <div class="save-option pdf" onclick="saveAs('pdf')">
-                <div class="save-option-icon">📄</div>
-                <div class="save-option-title">PDF</div>
-                <div class="save-option-desc">Perfect for printing and sharing. Maintains quality at any size.</div>
-            </div>
-            
-            <div class="save-option png" onclick="saveAs('png')">
-                <div class="save-option-icon">🖼️</div>
-                <div class="save-option-title">PNG</div>
-                <div class="save-option-desc">High-quality image format. Great for digital use and presentations.</div>
-            </div>
-        </div>
-        
-        <div class="save-modal-actions">
-            <button class="btn-modal-cancel" onclick="closeSaveModal()">Cancel</button>
-        </div>
-    </div>
-</div>
-
-<!-- PDF 저장 중 로딩 -->
-<div class="loading-overlay" id="loading-overlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Generating PDF...</div>
-</div>
-
-<script src="core.js"></script>
-<script src="calendar.js"></script>  
-<script src="text-editor.js"></script>
-<script src="theme-system.js"></script>  <!-- 새로 추가됨 -->
-
+                html2canvas(document.body, {
+                    scale: 1.2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    letterRendering: true,
+                    foreignObjectRendering: true,
+                    imageTimeout: 30000,
+                    x: rect.left + scrollX - 10,  // 약간의 여백 포함
+                    y: rect.top + scrollY - 10,   // 약간의 여백 포함
+                    width: rect.width + 20,       // 여백 포함한 폭
+                    height: rect.height + 20,     // 여백 포함한 높이
+                    onclone: function(clonedDoc) {
+                        // 복제 문서에서 필요 없는 요소들 숨기기
+                        const controls = clonedDoc.querySelector('.controls');
+                        if (controls) {
+                            controls.style.display = 'none';
+                        }
+                        
+                        // body 스타일 초기화
+                        clonedDoc.body.style.cssText = `
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            overflow: visible !important;
+                        `;
+                        
+                        // 시간표 wrapper만 보이도록 다른 요소들 숨기기
+                        const allElements = clonedDoc.body.children;
+                        for (let i = 0; i < allElements.length; i++) {
+                            const child = allElements[i];
+                            if (!child.classList.contains('container') && child.id !== 'timetable-wrapper') {
+                                child.style.display = 'none';
+                            }
+                        }
+                        
+                        const clonedWrapper = clonedDoc.getElementById('timetable-wrapper');
+                        const clonedContainer = clonedDoc.getElementById('timetable-container');
+                        
+                        if (clonedWrapper) {
+                            clonedWrapper.style.cssText = `
+                                position: relative !important;
+                                background: rgba(255, 255, 255, 0.25) !important;
+                                border-radius: 20px !important;
+                                overflow: visible !important;
+                                box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+                                max-width: 1200px !important;
+                                margin: 0 auto !important;
+                                padding: 30px !important;
+                                box-sizing: border-box !important;
+                            `;
+                        }
+                        
+                        if (clonedContainer) {
+                            const originalContainer = document.getElementById('timetable-container');
+                            const originalBgImage = originalContainer.style.backgroundImage;
+                            const hasClass = originalContainer.classList.contains('has-bg');
+                            
+                            clonedContainer.style.cssText = `
+                                position: relative !important;
+                                padding: 30px !important;
+                                background-size: cover !important;
+                                background-position: center !important;
+                                background-repeat: no-repeat !important;
+                                min-height: 600px !important;
+                                width: 100% !important;
+                            `;
+                            
+                            if (originalBgImage && originalBgImage !== 'none') {
+                                clonedContainer.style.backgroundImage = originalBgImage;
+                                
+                                if (hasClass) {
+                                    const overlay = clonedDoc.createElement('div');
+                                    overlay.style.cssText = `
+                                        position: absolute !important;
+                                        top: 0 !important;
+                                        left: 0 !important;
+                                        right: 0 !important;
+                                        bottom: 0 !important;
+                                        background: rgba(255, 255, 255, 0.3) !important;
+                                        z-index: 0 !important;
+                                    `;
+                                    clonedContainer.insertBefore(overlay, clonedContainer.firstChild);
+                                }
+                            }
+                        }
+                        
+                        // z-index 설정
+                        const title = clonedDoc.querySelector('h1');
+                        const table = clonedDoc.querySelector('table');
+                        if (title) title.style.zIndex = '10';
+                        if (table) table.style.zIndex = '5';
+                    }
+                }).then(canvas => {
+                    // JPG로 변환 및 다운로드
+                    canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.download = '나의_시간표_' + new Date().toLocaleDateString('ko-KR').replace(/\./g, '') + '.jpg';
+                        link.href = url;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    }, 'image/jpeg', 0.92);
+                    
+                }).catch(error => {
+                    console.error('캔버스 생성 오류:', error);
+                    
+                    // 대안: 더 간단한 방법으로 재시도
+                    html2canvas(element, {
+                        scale: 1,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    }).then(canvas => {
+                        canvas.toBlob(function(blob) {
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.download = '나의_시간표_backup_' + Date.now() + '.jpg';
+                            link.href = url;
+                            link.click();
+                            URL.revokeObjectURL(url);
+                        }, 'image/jpeg', 0.9);
+                    }).catch(err => {
+                        alert('이미지 저장에 실패했습니다. 페이지를 새로고침 후 다시 시도해주세요.');
+                    });
+                });
+            }, 800);
+        }
+    </script>
 </body>
 </html>
