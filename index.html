@@ -12,7 +12,7 @@
             box-sizing: border-box;
         }
 
-```
+
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);
@@ -139,7 +139,7 @@
     table {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0;
+        border-spacing: 1px;
         position: relative;
         z-index: 1;
         background: transparent !important;
@@ -162,7 +162,7 @@
     }
 
     th:first-child {
-        width: 80px;
+        width: 60px;
         background: rgba(255, 184, 209, 0.5);
         color: #000000;
     }
@@ -181,13 +181,15 @@
         background: rgba(255, 230, 243, 0.5);
         font-weight: 900;
         color: #000000;
-        font-size: 11px;
+        font-size: 10px;
         text-shadow: 
             1px 1px 0px rgba(255,255,255,1),
             -1px -1px 0px rgba(255,255,255,1),
             0px 0px 5px rgba(255,255,255,1);
         position: relative;
         z-index: 1;
+        line-height: 1.1;
+        padding: 4px 2px;
     }
 
     .class-cell {
@@ -203,18 +205,20 @@
     }
 
     .class-item {
-        padding: 5px;
-        border-radius: 8px;
-        font-size: 11px;
+        padding: 4px;
+        border-radius: 6px;
+        font-size: 10px;
         font-weight: 600;
         margin: 1px 0;
         display: inline-block;
-        min-width: 85%;
+        min-width: 80%;
         position: relative;
         overflow: hidden;
         backdrop-filter: blur(0.5px);
         z-index: 999;
         isolation: isolate;
+        line-height: 1.2;
+        white-space: nowrap;
     }
 
     .class-item::before {
@@ -592,67 +596,67 @@
                     <tr>
                         <td class="time-cell">1:50<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            <div class="class-item subject-늘봄">🌱<br>늘봄</div>
                         </td>
                         <td class="time-cell">1:50<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            <div class="class-item subject-늘봄">🌱<br>늘봄</div>
                         </td>
                         <td class="time-cell">1:00<br>~<br>2:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-방송댄스">🎵 방송댄스(방과후)</div>
+                            <div class="class-item subject-방송댄스">🎵 방송댄스<br>(방과후)</div>
                         </td>
                         <td class="time-cell">1:00<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-창의과학">🔬 창의과학(방과후)</div>
+                            <div class="class-item subject-창의과학">🔬 창의과학<br>(방과후)</div>
                         </td>
                         <td class="time-cell">1:50<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            <div class="class-item subject-늘봄">🌱<br>늘봄</div>
                         </td>
                     </tr>
                     <tr>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
+                            <div class="class-item subject-영어">📚<br>영어</div>
                         </td>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
+                            <div class="class-item subject-영어">📚<br>영어</div>
                         </td>
                         <td class="time-cell">3:00<br>~<br>4:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
+                            <div class="class-item subject-영어">📚<br>영어</div>
                         </td>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
+                            <div class="class-item subject-영어">📚<br>영어</div>
                         </td>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
+                            <div class="class-item subject-영어">📚<br>영어</div>
                         </td>
                     </tr>
                     <tr>
                         <td class="time-cell">5:10<br>~<br>6:10</td>
                         <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹 피아노</div>
+                            <div class="class-item subject-피아노">🎹<br>피아노</div>
                         </td>
                         <td class="time-cell">5:10<br>~<br>6:10</td>
                         <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹 피아노</div>
+                            <div class="class-item subject-피아노">🎹<br>피아노</div>
                         </td>
                         <td class="time-cell">4:20<br>~<br>5:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-미술">🎨 미술</div>
+                            <div class="class-item subject-미술">🎨<br>미술</div>
                         </td>
                         <td class="time-cell">5:10<br>~<br>6:10</td>
                         <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹 피아노</div>
+                            <div class="class-item subject-피아노">🎹<br>피아노</div>
                         </td>
                         <td class="time-cell">5:30<br>~<br>6:30</td>
                         <td class="class-cell">
-                            <div class="class-item subject-미술">🎨 미술</div>
+                            <div class="class-item subject-미술">🎨<br>미술</div>
                         </td>
                     </tr>
                     <tr>
@@ -893,6 +897,11 @@
                     classItems.forEach(item => {
                         item.style.position = 'relative';
                         item.style.zIndex = '9999';
+                        item.style.whiteSpace = 'nowrap';
+                        item.style.overflow = 'visible';
+                        item.style.textAlign = 'center';
+                        item.style.lineHeight = '1.3';
+                        item.style.fontSize = '10px';
                         
                         // 각 과목별로 완전 불투명 배경색 적용
                         if (item.classList.contains('subject-늘봄')) {
@@ -925,6 +934,9 @@
                         cell.style.zIndex = '100';
                         cell.style.color = '#000000';
                         cell.style.fontWeight = '900';
+                        cell.style.fontSize = '9px';
+                        cell.style.lineHeight = '1.1';
+                        cell.style.padding = '4px 2px';
                         cell.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
                     });
                     
@@ -1138,7 +1150,7 @@
         }
     });
 </script>
-```
+
 
 </body>
 </html>
