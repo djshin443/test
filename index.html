@@ -149,7 +149,7 @@
     }
 
     th {
-        background: rgba(212, 181, 255, 0.25);
+        background: rgba(212, 181, 255, 0.5);
         color: #000000;
         padding: 10px;
         font-weight: 900;
@@ -163,7 +163,7 @@
 
     th:first-child {
         width: 80px;
-        background: rgba(255, 184, 209, 0.25);
+        background: rgba(255, 184, 209, 0.5);
         color: #000000;
     }
 
@@ -335,7 +335,7 @@
     }
 
     .empty-cell {
-        background: rgba(248, 249, 250, 0.25);
+        background: rgba(248, 249, 250, 0.5);
     }
 
     @keyframes fadeIn {
@@ -918,14 +918,33 @@
                         item.style.border = '2px solid rgba(0,0,0,0.2)';
                     });
                     
-                    // 시간 셀들도 조정 - 클래스 아이템과 같은 투명도
+                    // 시간 셀들과 헤더 셀들도 반투명하게 조정
                     const timeCells = clonedDoc.querySelectorAll('.time-cell');
                     timeCells.forEach(cell => {
-                        cell.style.backgroundColor = '#FFE6F3'; // 투명도 유지하면서 선명하게
+                        cell.style.backgroundColor = 'rgba(255, 230, 243, 0.5)';
                         cell.style.zIndex = '100';
                         cell.style.color = '#000000';
                         cell.style.fontWeight = '900';
                         cell.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
+                    });
+                    
+                    // 헤더 셀들도 반투명하게
+                    const headerCells = clonedDoc.querySelectorAll('th');
+                    headerCells.forEach(cell => {
+                        if (cell === headerCells[0] || cell.textContent.includes('시간')) {
+                            cell.style.backgroundColor = 'rgba(255, 184, 209, 0.5)';
+                        } else {
+                            cell.style.backgroundColor = 'rgba(212, 181, 255, 0.5)';
+                        }
+                        cell.style.color = '#000000';
+                        cell.style.fontWeight = '900';
+                        cell.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
+                    });
+                    
+                    // 빈 셀들도 반투명하게
+                    const emptyCells = clonedDoc.querySelectorAll('.empty-cell');
+                    emptyCells.forEach(cell => {
+                        cell.style.backgroundColor = 'rgba(248, 249, 250, 0.5)';
                     });
                 }
             });
