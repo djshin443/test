@@ -830,9 +830,9 @@
             // 렌더링 대기
             await new Promise(resolve => setTimeout(resolve, 1000));
             
-            // html2canvas로 캡처
+            // html2canvas로 캡처 - 고화질 설정
             const canvas = await html2canvas(element, {
-                scale: 2,
+                scale: 3, // 스케일을 3으로 증가 (더 높은 화질)
                 useCORS: true,
                 logging: false,
                 backgroundColor: null, // 투명 배경으로 설정
@@ -849,6 +849,10 @@
                 foreignObjectRendering: false,
                 removeContainer: false,
                 imageTimeout: 30000,
+                ignoreElements: function(element) {
+                    // 불필요한 요소들 제외하여 성능 향상
+                    return element.classList && element.classList.contains('controls');
+                },
                 onclone: function(clonedDoc) {
                     // 클론된 문서에서 모든 요소가 제대로 렌더링되도록 보장
                     const clonedElement = clonedDoc.getElementById('timetable-wrapper');
@@ -864,13 +868,18 @@
                             clonedTable.style.transform = 'scale(1)';
                             clonedElement.style.padding = '20px';
                         }
-                        // 세로모드: 테이블을 중간에 위치
+                        // 세로모드: 테이블을 중간에 위치 (크기는 기본 유지)
                         else if (orientation === 'portrait') {
-                            clonedTable.style.width = '90%';
+                            clonedTable.style.width = '100%';
                             clonedTable.style.margin = '0 auto';
-                            clonedTable.style.transform = 'scale(0.85)';
+                            clonedTable.style.transform = 'none';
                             clonedTable.style.transformOrigin = 'center center';
-                            clonedElement.style.padding = '30px 10px';
+                            clonedElement.style.padding = '40px 30px';
+                            clonedElement.style.display = 'flex';
+                            clonedElement.style.flexDirection = 'column';
+                            clonedElement.style.justifyContent = 'center';
+                            clonedElement.style.alignItems = 'center';
+                            clonedElement.style.minHeight = (targetSize.height - 80) + 'px';
                         }
                     }
                     
@@ -921,11 +930,15 @@
                 }
             });
             
-            // 최종 캔버스 생성
+            // 최종 캔버스 생성 - 고화질 유지
             let finalCanvas = document.createElement('canvas');
-            finalCanvas.width = targetSize.width * 2; // scale 2 적용
-            finalCanvas.height = targetSize.height * 2;
+            finalCanvas.width = targetSize.width * 3; // scale 3 적용
+            finalCanvas.height = targetSize.height * 3;
             const finalCtx = finalCanvas.getContext('2d');
+            
+            // 이미지 스무딩 비활성화로 원본 화질 유지
+            finalCtx.imageSmoothingEnabled = false;
+            finalCtx.imageSmoothingQuality = 'high';
             
             if (hasBackgroundImage && backgroundImageUrl && backgroundImageUrl !== 'none') {
                 // 배경 이미지가 있는 경우
@@ -996,10 +1009,10 @@
                 finalCtx.drawImage(canvas, 0, 0);
             }
             
-            // JPG 다운로드
+            // JPG 다운로드 - 최고 화질로 저장
             const link = document.createElement('a');
             link.download = `${filename}.jpg`;
-            link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
+            link.href = finalCanvas.toDataURL('image/jpeg', 1.0); // 품질을 1.0(최고화질)으로 설정
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
