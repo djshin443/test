@@ -733,6 +733,7 @@
     function showPreview() {
         const container = document.getElementById('timetable-container');
         const hasBackground = container.classList.contains('has-bg');
+        const backgroundImage = hasBackground ? container.style.backgroundImage : 'white';
         
         const modal = document.createElement('div');
         modal.style.cssText = `
@@ -766,7 +767,7 @@
                         border-radius: 8px;
                         overflow: hidden;
                         position: relative;
-                        background: ${hasBackground ? container.style.backgroundImage : 'white'};
+                        background: ${backgroundImage};
                         background-size: cover;
                         background-position: center;
                     ">
@@ -795,7 +796,7 @@
                         border-radius: 8px;
                         overflow: hidden;
                         position: relative;
-                        background: ${hasBackground ? container.style.backgroundImage : 'white'};
+                        background: ${backgroundImage};
                         background-size: cover;
                         background-position: center;
                     ">
@@ -819,7 +820,7 @@
             </div>
             
             <div style="display: flex; gap: 15px; margin-top: 20px;">
-                <button onclick="this.parentElement.parentElement.remove()" style="
+                <button onclick="closePreview()" style="
                     background: #6b7280;
                     color: white;
                     border: none;
@@ -830,7 +831,7 @@
                     font-weight: 600;
                 ">닫기</button>
                 
-                <button onclick="this.parentElement.parentElement.remove(); showSaveOptions();" style="
+                <button onclick="closePreview(); showSaveOptions();" style="
                     background: linear-gradient(135deg, #f093fb, #f5576c);
                     color: white;
                     border: none;
@@ -843,13 +844,21 @@
             </div>
         `;
         
+        modal.id = 'preview-modal';
         document.body.appendChild(modal);
         
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
-                modal.remove();
+                closePreview();
             }
         });
+    }
+
+    function closePreview() {
+        const modal = document.getElementById('preview-modal');
+        if (modal) {
+            modal.remove();
+        }
     }
 
     // 저장 옵션 모달 표시
@@ -863,13 +872,13 @@
                 </div>
                 
                 <div class="save-options">
-                    <div class="save-option landscape" onclick="saveAsJPG('landscape')" style="cursor: pointer;">
+                    <div class="save-option" onclick="saveAsJPG('landscape')" style="cursor: pointer;">
                         <div class="save-option-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">📄</div>
                         <div class="save-option-title">가로 A4</div>
                         <div class="save-option-desc">A4 가로 용지에 최적화된 시간표</div>
                     </div>
                     
-                    <div class="save-option portrait" onclick="saveAsJPG('portrait')" style="cursor: pointer;">
+                    <div class="save-option" onclick="saveAsJPG('portrait')" style="cursor: pointer;">
                         <div class="save-option-icon" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">📋</div>
                         <div class="save-option-title">세로 A4</div>
                         <div class="save-option-desc">A4 세로 용지에 최적화된 시간표</div>
@@ -914,6 +923,7 @@
             
             const targetSize = A4_SIZES[orientation];
             
+            // 원본 스타일 저장
             const originalStyles = {
                 controlsDisplay: controls ? controls.style.display : '',
                 bodyBackground: document.body.style.background,
@@ -923,30 +933,19 @@
                 containerPadding: originalContainer.style.padding,
                 containerWidth: originalContainer.style.width,
                 elementWidth: element.style.width,
-                viewportMeta: document.querySelector('meta[name="viewport"]')?.getAttribute('content'),
                 hasBackgroundClass: originalContainer.classList.contains('has-bg')
             };
             
-            const viewportMeta = document.querySelector('meta[name="viewport"]');
-            if (viewportMeta) {
-                viewportMeta.setAttribute('content', 'width=1200');
-            }
-            
+            // 스타일 조정
             if (controls) controls.style.display = 'none';
-            
-            if (hasBackgroundImage) {
-                originalContainer.classList.remove('has-bg');
-            }
+            if (hasBackgroundImage) originalContainer.classList.remove('has-bg');
             
             element.style.width = targetSize.width + 'px';
             originalContainer.style.width = '100%';
-            
             document.body.style.background = 'transparent';
             document.body.style.padding = '0';
-            
             element.style.background = 'transparent';
             element.style.borderRadius = '0';
-            
             originalContainer.style.padding = '20px';
             
             const tempBgImage = originalContainer.style.backgroundImage;
@@ -955,14 +954,13 @@
             
             const table = document.querySelector('table');
             const originalTableBorderRadius = table ? table.style.borderRadius : '';
-            if (table) {
-                table.style.borderRadius = '0';
-            }
+            if (table) table.style.borderRadius = '0';
             
             await new Promise(resolve => setTimeout(resolve, 1000));
             
+            // html2canvas 실행
             const canvas = await html2canvas(element, {
-                scale: 3,
+                scale: 2,
                 useCORS: true,
                 logging: false,
                 backgroundColor: null,
@@ -970,79 +968,44 @@
                 height: targetSize.height,
                 windowWidth: targetSize.width,
                 windowHeight: targetSize.height,
-                scrollY: -window.scrollY,
-                scrollX: -window.scrollX,
-                x: 0,
-                y: 0,
                 letterRendering: true,
                 allowTaint: true,
-                foreignObjectRendering: false,
-                removeContainer: false,
-                imageTimeout: 30000,
-                ignoreElements: function(element) {
-                    return element.classList && element.classList.contains('controls');
-                },
                 onclone: function(clonedDoc) {
                     const clonedElement = clonedDoc.getElementById('timetable-wrapper');
                     const clonedTable = clonedDoc.querySelector('table');
-                    const clonedContainer = clonedDoc.getElementById('timetable-container');
                     
                     if (clonedElement && clonedTable) {
                         clonedElement.style.width = targetSize.width + 'px';
-                        clonedElement.style.minWidth = targetSize.width + 'px';
                         clonedElement.style.height = targetSize.height + 'px';
-                        clonedElement.style.minHeight = targetSize.height + 'px';
                         
                         if (orientation === 'landscape') {
                             clonedTable.style.width = '100%';
-                            clonedTable.style.height = 'calc(100% - 80px)';
                             clonedElement.style.padding = '15px';
                             clonedElement.style.display = 'flex';
                             clonedElement.style.flexDirection = 'column';
                             clonedElement.style.justifyContent = 'stretch';
-                            
-                            const tableRows = clonedDoc.querySelectorAll('tbody tr');
-                            const availableHeight = targetSize.height - 150;
-                            const rowHeight = Math.floor(availableHeight / tableRows.length);
-                            
-                            tableRows.forEach(row => {
-                                row.style.height = rowHeight + 'px';
-                                const cells = row.querySelectorAll('td');
-                                cells.forEach(cell => {
-                                    cell.style.height = rowHeight + 'px';
-                                });
-                            });
-                        } else if (orientation === 'portrait') {
+                        } else {
                             clonedElement.style.display = 'flex';
                             clonedElement.style.flexDirection = 'column';
                             clonedElement.style.justifyContent = 'center';
                             clonedElement.style.alignItems = 'center';
                             clonedElement.style.padding = '30px 20px';
-                            
                             clonedTable.style.width = '100%';
-                            clonedTable.style.maxWidth = '100%';
                             clonedTable.style.margin = '0 auto';
-                            
-                            const availableHeight = targetSize.height - 200;
-                            clonedTable.style.minHeight = Math.min(availableHeight, 600) + 'px';
                         }
                     }
                     
-                    if (clonedContainer) {
-                        clonedContainer.style.width = '100%';
-                    }
-                    
+                    // 과목 스타일 강화
                     const classItems = clonedDoc.querySelectorAll('.class-item');
                     classItems.forEach(item => {
-                        item.style.position = 'relative';
-                        item.style.zIndex = '9999';
                         item.style.display = 'flex';
                         item.style.alignItems = 'center';
                         item.style.justifyContent = 'center';
                         item.style.textAlign = 'center';
-                        item.style.lineHeight = '1.3';
                         item.style.fontSize = '10px';
-                        item.style.minHeight = '30px';
+                        item.style.fontWeight = '900';
+                        item.style.color = '#000000';
+                        item.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
                         
                         if (item.classList.contains('subject-늘봄')) {
                             item.style.backgroundColor = '#FFD4E5';
@@ -1059,57 +1022,38 @@
                         } else if (item.classList.contains('subject-논술')) {
                             item.style.backgroundColor = '#FFC0D9';
                         }
-                        
-                        item.style.color = '#000000';
-                        item.style.fontWeight = '900';
-                        item.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
-                        item.style.border = '2px solid rgba(0,0,0,0.2)';
                     });
                     
+                    // 시간 셀 스타일
                     const timeCells = clonedDoc.querySelectorAll('.time-cell');
                     timeCells.forEach(cell => {
-                        cell.style.backgroundColor = 'rgba(255, 230, 243, 0.5)';
-                        cell.style.zIndex = '100';
-                        cell.style.color = '#000000';
-                        cell.style.fontWeight = '900';
+                        cell.style.backgroundColor = 'rgba(255, 230, 243, 0.8)';
                         cell.style.fontSize = '9px';
-                        cell.style.lineHeight = '1.1';
-                        cell.style.padding = '4px 2px';
-                        cell.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
+                        cell.style.fontWeight = '900';
+                        cell.style.textShadow = '1px 1px 0 white, -1px -1px 0 white';
                     });
                     
+                    // 헤더 셀 스타일
                     const headerCells = clonedDoc.querySelectorAll('th');
                     headerCells.forEach(cell => {
-                        if (cell === headerCells[0] || cell.textContent.includes('시간')) {
-                            cell.style.backgroundColor = 'rgba(255, 184, 209, 0.5)';
-                        } else {
-                            cell.style.backgroundColor = 'rgba(212, 181, 255, 0.5)';
-                        }
-                        cell.style.color = '#000000';
+                        cell.style.backgroundColor = 'rgba(212, 181, 255, 0.8)';
                         cell.style.fontWeight = '900';
-                        cell.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
-                    });
-                    
-                    const emptyCells = clonedDoc.querySelectorAll('.empty-cell');
-                    emptyCells.forEach(cell => {
-                        cell.style.backgroundColor = 'rgba(248, 249, 250, 0.5)';
+                        cell.style.textShadow = '2px 2px 0 white';
                     });
                 }
             });
             
+            // 최종 캔버스 생성
             let finalCanvas = document.createElement('canvas');
-            finalCanvas.width = targetSize.width * 3;
-            finalCanvas.height = targetSize.height * 3;
+            finalCanvas.width = targetSize.width * 2;
+            finalCanvas.height = targetSize.height * 2;
             const finalCtx = finalCanvas.getContext('2d');
-            
-            finalCtx.imageSmoothingEnabled = false;
-            finalCtx.imageSmoothingQuality = 'high';
             
             if (hasBackgroundImage && backgroundImageUrl && backgroundImageUrl !== 'none') {
                 const bgImg = new Image();
                 bgImg.crossOrigin = 'anonymous';
                 
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve) => {
                     bgImg.onload = function() {
                         const canvasAspect = finalCanvas.width / finalCanvas.height;
                         const imgAspect = bgImg.width / bgImg.height;
@@ -1124,38 +1068,23 @@
                             sourceY = (bgImg.height - sourceHeight) / 2;
                         }
                         
-                        finalCtx.drawImage(
-                            bgImg,
-                            sourceX, sourceY, sourceWidth, sourceHeight,
-                            0, 0, finalCanvas.width, finalCanvas.height
-                        );
-                        
+                        finalCtx.drawImage(bgImg, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, finalCanvas.width, finalCanvas.height);
                         finalCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
                         finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-                        
                         finalCtx.drawImage(canvas, 0, 0);
-                        
                         resolve();
                     };
                     
                     bgImg.onerror = function() {
-                        console.error('배경 이미지 로드 실패');
                         finalCtx.fillStyle = '#ffffff';
                         finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
                         finalCtx.drawImage(canvas, 0, 0);
                         resolve();
                     };
                     
-                    if (backgroundImageUrl.includes('url(')) {
-                        const urlMatch = backgroundImageUrl.match(/url\(["']?(data:image[^"']+)["']?\)/);
-                        if (urlMatch) {
-                            bgImg.src = urlMatch[1];
-                        } else {
-                            const cleanUrl = backgroundImageUrl.replace(/url\(["']?([^"']+)["']?\)/, '$1');
-                            bgImg.src = cleanUrl;
-                        }
-                    } else {
-                        bgImg.src = backgroundImageUrl;
+                    const urlMatch = backgroundImageUrl.match(/url\(["']?(data:image[^"']+)["']?\)/);
+                    if (urlMatch) {
+                        bgImg.src = urlMatch[1];
                     }
                 });
             } else {
@@ -1164,13 +1093,15 @@
                 finalCtx.drawImage(canvas, 0, 0);
             }
             
+            // 다운로드
             const link = document.createElement('a');
             link.download = `${filename}.jpg`;
-            link.href = finalCanvas.toDataURL('image/jpeg', 1.0);
+            link.href = finalCanvas.toDataURL('image/jpeg', 0.9);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
+            // 스타일 복원
             if (controls) controls.style.display = originalStyles.controlsDisplay;
             document.body.style.background = originalStyles.bodyBackground;
             document.body.style.padding = originalStyles.bodyPadding;
@@ -1179,9 +1110,7 @@
             element.style.width = originalStyles.elementWidth || '';
             originalContainer.style.padding = originalStyles.containerPadding;
             originalContainer.style.width = originalStyles.containerWidth || '';
-            
             originalContainer.style.backgroundImage = tempBgImage;
-            originalContainer.style.background = '';
             
             if (originalStyles.hasBackgroundClass) {
                 originalContainer.classList.add('has-bg');
@@ -1191,13 +1120,7 @@
                 table.style.borderRadius = originalTableBorderRadius;
             }
             
-            if (viewportMeta && originalStyles.viewportMeta) {
-                viewportMeta.setAttribute('content', originalStyles.viewportMeta);
-            }
-            
             hideLoadingOverlay();
-            
-            console.log(`${orientation} JPG 저장 완료:`, filename);
             
         } catch (error) {
             console.error('JPG 생성 오류:', error);
@@ -1206,6 +1129,7 @@
         }
     }
 
+    // 로딩 오버레이
     function showLoadingOverlay(message) {
         let overlay = document.getElementById('loading-overlay');
         if (!overlay) {
@@ -1260,6 +1184,7 @@
         }
     }
 
+    // 모달 외부 클릭 시 닫기
     document.getElementById('save-modal-overlay').addEventListener('click', function(event) {
         if (event.target === this) {
             closeSaveModal();
