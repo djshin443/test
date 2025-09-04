@@ -178,7 +178,7 @@
     }
 
     .time-cell {
-        background: rgba(255, 230, 243, 0.95);
+        background: rgba(255, 230, 243, 0.5);
         font-weight: 900;
         color: #000000;
         font-size: 11px;
@@ -852,10 +852,28 @@
                 onclone: function(clonedDoc) {
                     // 클론된 문서에서 모든 요소가 제대로 렌더링되도록 보장
                     const clonedElement = clonedDoc.getElementById('timetable-wrapper');
-                    if (clonedElement) {
+                    const clonedTable = clonedDoc.querySelector('table');
+                    
+                    if (clonedElement && clonedTable) {
                         clonedElement.style.width = targetSize.width + 'px';
                         clonedElement.style.minWidth = targetSize.width + 'px';
+                        
+                        // 가로모드: 테이블이 가득 차도록
+                        if (orientation === 'landscape') {
+                            clonedTable.style.width = '100%';
+                            clonedTable.style.transform = 'scale(1)';
+                            clonedElement.style.padding = '20px';
+                        }
+                        // 세로모드: 테이블을 중간에 위치
+                        else if (orientation === 'portrait') {
+                            clonedTable.style.width = '90%';
+                            clonedTable.style.margin = '0 auto';
+                            clonedTable.style.transform = 'scale(0.85)';
+                            clonedTable.style.transformOrigin = 'center center';
+                            clonedElement.style.padding = '30px 10px';
+                        }
                     }
+                    
                     const clonedContainer = clonedDoc.getElementById('timetable-container');
                     if (clonedContainer) {
                         clonedContainer.style.width = '100%';
@@ -891,11 +909,14 @@
                         item.style.border = '2px solid rgba(0,0,0,0.2)';
                     });
                     
-                    // 시간 셀들도 조정
+                    // 시간 셀들도 조정 - 클래스 아이템과 같은 투명도
                     const timeCells = clonedDoc.querySelectorAll('.time-cell');
                     timeCells.forEach(cell => {
-                        cell.style.backgroundColor = '#FFE6F3';
+                        cell.style.backgroundColor = '#FFE6F3'; // 투명도 유지하면서 선명하게
                         cell.style.zIndex = '100';
+                        cell.style.color = '#000000';
+                        cell.style.fontWeight = '900';
+                        cell.style.textShadow = '2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white';
                     });
                 }
             });
