@@ -1,4 +1,143 @@
-<!DOCTYPE html>
+// 출력 미리보기 기능
+function showPreview() {
+const container = document.getElementById(‘timetable-container’);
+const hasBackground = container.classList.contains(‘has-bg’);
+
+```
+        // 미리보기 모달 생성
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        `;
+        
+        // 미리보기 컨텐츠
+        modal.innerHTML = `
+            <div style="color: white; text-align: center; margin-bottom: 20px;">
+                <h3 style="font-size: 24px; margin-bottom: 10px;">📱 출력 미리보기</h3>
+                <p style="font-size: 16px;">가로/세로 모드에서 어느 부분까지 출력되는지 확인하세요</p>
+            </div>
+            
+            <div style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
+                <!-- 가로 미리보기 -->
+                <div style="text-align: center;">
+                    <h4 style="color: white; margin-bottom: 10px;">🖥️ 가로 모드 (A4 가로)</h4>
+                    <div id="landscape-preview" style="
+                        width: 400px;
+                        height: 283px;
+                        border: 3px solid #10B981;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        position: relative;
+                        background: ${hasBackground ? container.style.backgroundImage : 'white'};
+                        background-size: cover;
+                        background-position: center;
+                    ">
+                        <div style="
+                            position: absolute;
+                            inset: 0;
+                            background: rgba(255, 255, 255, 0.1);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #000;
+                            font-weight: bold;
+                            text-shadow: 2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white;
+                        ">
+                            시간표가 이 영역에<br>가득 차게 출력됩니다
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 세로 미리보기 -->
+                <div style="text-align: center;">
+                    <h4 style="color: white; margin-bottom: 10px;">📱 세로 모드 (A4 세로)</h4>
+                    <div id="portrait-preview" style="
+                        width: 283px;
+                        height: 400px;
+                        border: 3px solid #EF4444;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        position: relative;
+                        background: ${hasBackground ? container.style.backgroundImage : 'white'};
+                        background-size: cover;
+                        background-position: center;
+                    ">
+                        <div style="
+                            position: absolute;
+                            inset: 30px 20px;
+                            border: 2px dashed rgba(0, 0, 0, 0.5);
+                            background: rgba(255, 255, 255, 0.1);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #000;
+                            font-weight: bold;
+                            text-align: center;
+                            text-shadow: 2px 2px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white;
+                        ">
+                            시간표가 이 영역에<br>중앙 정렬되어 출력됩니다
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: #6b7280;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: 600;
+                ">닫기</button>
+                
+                <button onclick="this.parentElement.parentElement.remove(); showSaveOptions();" style="
+                    background: linear-gradient(135deg, #f093fb, #f5576c);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: 600;
+                ">저장하기</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // 모달 외부 클릭 시 닫기
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }        .btn-preview {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+    }
+
+    .btn-preview:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+    }            
+        <button class="btn btn-preview" onclick="showPreview()">
+            👁️ 출력 미리보기
+        </button><!DOCTYPE html>
+```
 
 <html lang="ko">
 <head>
@@ -210,15 +349,18 @@
         font-size: 10px;
         font-weight: 600;
         margin: 1px 0;
-        display: inline-block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         min-width: 80%;
+        min-height: 30px;
         position: relative;
         overflow: hidden;
         backdrop-filter: blur(0.5px);
         z-index: 999;
         isolation: isolate;
         line-height: 1.2;
-        white-space: nowrap;
+        text-align: center;
     }
 
     .class-item::before {
@@ -596,67 +738,67 @@
                     <tr>
                         <td class="time-cell">1:50<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱<br>늘봄</div>
+                            <div class="class-item subject-늘봄">늘봄</div>
                         </td>
                         <td class="time-cell">1:50<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱<br>늘봄</div>
+                            <div class="class-item subject-늘봄">늘봄</div>
                         </td>
                         <td class="time-cell">1:00<br>~<br>2:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-방송댄스">🎵 방송댄스<br>(방과후)</div>
+                            <div class="class-item subject-방송댄스">방송댄스<br>(방과후)</div>
                         </td>
                         <td class="time-cell">1:00<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-창의과학">🔬 창의과학<br>(방과후)</div>
+                            <div class="class-item subject-창의과학">창의과학<br>(방과후)</div>
                         </td>
                         <td class="time-cell">1:50<br>~<br>3:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱<br>늘봄</div>
+                            <div class="class-item subject-늘봄">늘봄</div>
                         </td>
                     </tr>
                     <tr>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚<br>영어</div>
+                            <div class="class-item subject-영어">영어</div>
                         </td>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚<br>영어</div>
+                            <div class="class-item subject-영어">영어</div>
                         </td>
                         <td class="time-cell">3:00<br>~<br>4:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚<br>영어</div>
+                            <div class="class-item subject-영어">영어</div>
                         </td>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚<br>영어</div>
+                            <div class="class-item subject-영어">영어</div>
                         </td>
                         <td class="time-cell">4:00<br>~<br>5:00</td>
                         <td class="class-cell">
-                            <div class="class-item subject-영어">📚<br>영어</div>
+                            <div class="class-item subject-영어">영어</div>
                         </td>
                     </tr>
                     <tr>
                         <td class="time-cell">5:10<br>~<br>6:10</td>
                         <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹<br>피아노</div>
+                            <div class="class-item subject-피아노">피아노</div>
                         </td>
                         <td class="time-cell">5:10<br>~<br>6:10</td>
                         <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹<br>피아노</div>
+                            <div class="class-item subject-피아노">피아노</div>
                         </td>
                         <td class="time-cell">4:20<br>~<br>5:20</td>
                         <td class="class-cell">
-                            <div class="class-item subject-미술">🎨<br>미술</div>
+                            <div class="class-item subject-미술">미술</div>
                         </td>
                         <td class="time-cell">5:10<br>~<br>6:10</td>
                         <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹<br>피아노</div>
+                            <div class="class-item subject-피아노">피아노</div>
                         </td>
                         <td class="time-cell">5:30<br>~<br>6:30</td>
                         <td class="class-cell">
-                            <div class="class-item subject-미술">🎨<br>미술</div>
+                            <div class="class-item subject-미술">미술</div>
                         </td>
                     </tr>
                     <tr>
@@ -897,11 +1039,13 @@
                     classItems.forEach(item => {
                         item.style.position = 'relative';
                         item.style.zIndex = '9999';
-                        item.style.whiteSpace = 'nowrap';
-                        item.style.overflow = 'visible';
+                        item.style.display = 'flex';
+                        item.style.alignItems = 'center';
+                        item.style.justifyContent = 'center';
                         item.style.textAlign = 'center';
                         item.style.lineHeight = '1.3';
                         item.style.fontSize = '10px';
+                        item.style.minHeight = '30px';
                         
                         // 각 과목별로 완전 불투명 배경색 적용
                         if (item.classList.contains('subject-늘봄')) {
