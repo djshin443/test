@@ -145,6 +145,7 @@
         border-radius: 15px;
         overflow: hidden;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        table-layout: fixed;
     }
 
     th {
@@ -153,15 +154,15 @@
         padding: 10px;
         font-weight: 900;
         font-size: 15px;
-        text-shadow: 3px 3px 6px rgba(255,255,255,1), 
+        text-shadow: 3px 3px 6px rgba(255,255,255,1),
                     -1px -1px 3px rgba(255,255,255,1),
                     1px -1px 3px rgba(255,255,255,1),
                     -1px 1px 3px rgba(255,255,255,1);
         border: 1px solid rgba(255,255,255,0.15);
+        width: 10%;
     }
 
-    th:first-child {
-        width: 80px;
+    th:nth-child(odd) {
         background: rgba(255, 184, 209, 0.5);
         color: #000000;
     }
@@ -174,6 +175,7 @@
         height: 60px;
         vertical-align: middle;
         background: transparent;
+        width: 10%;
     }
 
     .time-cell {
