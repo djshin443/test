@@ -12,7 +12,6 @@
             box-sizing: border-box;
         }
 
-```
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);
@@ -543,9 +542,7 @@
             padding: 5px;
         }
     }
-</style>
-```
-
+    </style>
 </head>
 <body>
     <div class="container">
@@ -554,128 +551,125 @@
                 🖼️ 배경 이미지 업로드
             </label>
             <input type="file" id="bgInput" accept="image/*">
+            <button class="btn btn-save" onclick="showSaveOptions()">
+                📄 JPG로 저장
+            </button>
+            <button class="btn btn-reset" onclick="resetBackground()">
+                🔄 배경 초기화
+            </button>
+        </div>
 
-```
-        <button class="btn btn-save" onclick="showSaveOptions()">
-            📄 JPG로 저장
-        </button>
-        
-        <button class="btn btn-reset" onclick="resetBackground()">
-            🔄 배경 초기화
-        </button>
-    </div>
+        <div id="timetable-wrapper">
+            <div id="timetable-container">
+                <h1>
+                    <span class="decorative-icon">🌟</span>
+                    나의 일주일 시간표
+                    <span class="decorative-icon">🌟</span>
+                </h1>
 
-    <div id="timetable-wrapper">
-        <div id="timetable-container">
-            <h1>
-                <span class="decorative-icon">🌟</span>
-                나의 일주일 시간표
-                <span class="decorative-icon">🌟</span>
-            </h1>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>시간</th>
-                        <th>월요일</th>
-                        <th>시간</th>
-                        <th>화요일</th>
-                        <th>시간</th>
-                        <th>수요일</th>
-                        <th>시간</th>
-                        <th>목요일</th>
-                        <th>시간</th>
-                        <th>금요일</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="time-cell">1:50<br>~<br>3:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱 늘봄</div>
-                        </td>
-                        <td class="time-cell">1:50<br>~<br>3:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱 늘봄</div>
-                        </td>
-                        <td class="time-cell">1:50<br>~<br>3:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-방송댄스">🎵 방송댄스(방과후)</div>
-                        </td>
-                        <td class="time-cell">1:50<br>~<br>3:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-창의과학">🔬 창의과학(방과후)</div>
-                        </td>
-                        <td class="time-cell">1:50<br>~<br>3:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-늘봄">🌱 늘봄</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="time-cell">4:00<br>~<br>5:00</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
-                        </td>
-                        <td class="time-cell">4:00<br>~<br>5:00</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
-                        </td>
-                        <td class="time-cell">4:00<br>~<br>5:00</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
-                        </td>
-                        <td class="time-cell">4:00<br>~<br>5:00</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
-                        </td>
-                        <td class="time-cell">4:00<br>~<br>5:00</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-영어">📚 영어</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="time-cell">5:10<br>~<br>6:10</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹 피아노</div>
-                        </td>
-                        <td class="time-cell">5:10<br>~<br>6:10</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹 피아노</div>
-                        </td>
-                        <td class="time-cell">5:10<br>~<br>6:10</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-미술">🎨 미술</div>
-                        </td>
-                        <td class="time-cell">5:10<br>~<br>6:10</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-피아노">🎹 피아노</div>
-                        </td>
-                        <td class="time-cell">5:10<br>~<br>6:10</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-미술">🎨 미술</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="time-cell">6:20<br>~<br>7:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-미술">🎨 미술</div>
-                        </td>
-                        <td class="time-cell">6:20<br>~<br>7:20</td>
-                        <td class="empty-cell"></td>
-                        <td class="time-cell">6:20<br>~<br>7:20</td>
-                        <td class="class-cell">
-                            <div class="class-item subject-논술">✏️ 논술</div>
-                        </td>
-                        <td class="time-cell">6:20<br>~<br>7:20</td>
-                        <td class="empty-cell"></td>
-                        <td class="time-cell">6:20<br>~<br>7:20</td>
-                        <td class="empty-cell"></td>
-                    </tr>
-                </tbody>
-            </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>월요일</th>
+                            <th>시간</th>
+                            <th>화요일</th>
+                            <th>시간</th>
+                            <th>수요일</th>
+                            <th>시간</th>
+                            <th>목요일</th>
+                            <th>시간</th>
+                            <th>금요일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-cell">1:50<br>~<br>3:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            </td>
+                            <td class="time-cell">1:50<br>~<br>3:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            </td>
+                            <td class="time-cell">1:50<br>~<br>3:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-방송댄스">🎵 방송댄스(방과후)</div>
+                            </td>
+                            <td class="time-cell">1:50<br>~<br>3:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-창의과학">🔬 창의과학(방과후)</div>
+                            </td>
+                            <td class="time-cell">1:50<br>~<br>3:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-늘봄">🌱 늘봄</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">4:00<br>~<br>5:00</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="time-cell">4:00<br>~<br>5:00</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="time-cell">4:00<br>~<br>5:00</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="time-cell">4:00<br>~<br>5:00</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                            <td class="time-cell">4:00<br>~<br>5:00</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-영어">📚 영어</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">5:10<br>~<br>6:10</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-피아노">🎹 피아노</div>
+                            </td>
+                            <td class="time-cell">5:10<br>~<br>6:10</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-피아노">🎹 피아노</div>
+                            </td>
+                            <td class="time-cell">5:10<br>~<br>6:10</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-미술">🎨 미술</div>
+                            </td>
+                            <td class="time-cell">5:10<br>~<br>6:10</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-피아노">🎹 피아노</div>
+                            </td>
+                            <td class="time-cell">5:10<br>~<br>6:10</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-미술">🎨 미술</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-cell">6:20<br>~<br>7:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-미술">🎨 미술</div>
+                            </td>
+                            <td class="time-cell">6:20<br>~<br>7:20</td>
+                            <td class="empty-cell"></td>
+                            <td class="time-cell">6:20<br>~<br>7:20</td>
+                            <td class="class-cell">
+                                <div class="class-item subject-논술">✏️ 논술</div>
+                            </td>
+                            <td class="time-cell">6:20<br>~<br>7:20</td>
+                            <td class="empty-cell"></td>
+                            <td class="time-cell">6:20<br>~<br>7:20</td>
+                            <td class="empty-cell"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
 <!-- 저장 옵션 선택 모달 -->
 <div class="save-modal-overlay" id="save-modal-overlay"></div>
@@ -1138,7 +1132,5 @@
         }
     });
 </script>
-```
-
 </body>
 </html>
