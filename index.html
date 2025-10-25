@@ -12,6 +12,13 @@
             box-sizing: border-box;
         }
 
+    html, body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+    }
+
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #ffccf2, #e6ccff, #ccddff);
@@ -22,6 +29,7 @@
     .container {
         max-width: 1200px;
         margin: 0 auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .controls {
@@ -367,6 +375,8 @@
         z-index: 3000;
         justify-content: center;
         align-items: center;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .save-modal {
@@ -494,6 +504,12 @@
 
     /* 모바일 최적화 - 480px 이하 */
     @media (max-width: 480px) {
+        html, body {
+            overflow-y: scroll !important;
+            -webkit-overflow-scrolling: touch !important;
+            height: auto;
+        }
+
         body {
             padding: 2px;
         }
@@ -689,7 +705,6 @@
                 container.style.backgroundSize = 'cover';
                 container.style.backgroundPosition = 'center';
                 container.style.backgroundRepeat = 'no-repeat';
-                container.style.backgroundAttachment = 'fixed';
                 container.classList.add('has-bg');
             };
             reader.readAsDataURL(file);
